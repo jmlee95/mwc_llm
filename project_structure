@@ -1,0 +1,16 @@
+project/
+├── static/
+│   ├── images/
+│   │   └── images/
+│   ├── styles/
+│   │   ├── reset.css
+│   │   └── style.css
+│   ├── js/
+│   │   ├── main.js
+│   │   └── sliders.js
+│   └── fonts/
+├── templates/
+│   ├── start.html
+│   ├── scenario_btn4.html 
+│   └── main.html
+└── app.py 

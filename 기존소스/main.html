@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KT MWC-main</title>
+
+  <!-- 스타일 -->
+  <link rel="stylesheet" href="styles/reset.css">
+  <link rel="stylesheet" href="styles/style.css">
+</head>
+
+<body>
+  <div class="wrap">
+    <!-- 로고 -->
+    <h1 class="logo">
+      <a href="#"><img src="images/kt_logo_w.png" alt="로고"></a>
+    </h1>
+
+    <!-- 처음으로 돌아가기 버튼 -->
+    <button type="button" class="btn_home"><img src="images/ic_home.png" alt="처음으로"></button>
+
+    <!-- 내용 -->
+    <div class="inner">
+      <!-- 리스트 -->
+      <section class="customer">
+        <div class="lists">
+          <div class="list">
+            <div class="staff_area">
+              <p class="staff_name">지니 상담사</p>
+            </div>
+            <div class="customer_area">
+              <div class="pic ic_profile"><img src="images/ic_profile.png" alt="프로필"></div>
+              <div class="txt_area">
+                <p class="customer_name">마이크 고객</p>
+                <p class="txt">안녕하세요</p>
+              </div>
+              <p class="date">2025.03.10</p>
+            </div>
+          </div>
+          <div class="list active">
+            <div class="staff_area">
+              <p class="staff_name">지니 상담사</p>
+            </div>
+            <div class="customer_area">
+              <div class="pic ic_profile"><img src="images/ic_profile.png" alt="프로필"></div>
+              <div class="txt_area">
+                <p class="customer_name">마이크 고객</p>
+                <p class="txt">안녕하세요</p>
+              </div>
+              <p class="date">2025.03.10</p>
+            </div>
+          </div>
+          <div class="list">
+            <div class="staff_area">
+              <p class="staff_name">지니 상담사</p>
+            </div>
+            <div class="customer_area">
+              <div class="pic ic_profile"><img src="images/ic_profile.png" alt="프로필"></div>
+              <div class="txt_area">
+                <p class="customer_name">마이크 고객</p>
+                <p class="txt">안녕하세요</p>
+              </div>
+              <p class="date">2025.03.10</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 채팅 -->
+      <section class="chat">
+        <h2>체험하기</h2>
+        <div class="chat_wrap">
+          <div class="top">
+            <button class="btn_speaker"><img src="images/ic_speakerOn.png" alt=""></button>
+            <p class="date">2025.03.10</p>
+          </div>
+          <div class="chat_area">
+            <div class="chat_area_staff">
+              <div class="staff_name_area">
+                <div class="pic ic_staff">
+                  <img src="images/ic_staff.png" alt="아이콘">
+                </div>
+                <h3 class="staff_name">지니 상담사</h3>
+              </div>
+              <div class="staff_comment">
+                <p>안녕하세요, AI 지니입니다. 무엇을 도와드릴까요?</p>
+              </div>
+            </div>
+            <div class="chat_area_customer">
+              <div class="customer_name_area">
+                <div class="pic ic_profile">
+                  <img src="images/ic_profile.png" alt="아이콘">
+                </div>
+                <h3 class="staff_name">홍길동 고객</h3>
+              </div>
+              <div class="customer_comment focusing">
+                <p>안녕하세요. 요금제 문의 좀 드릴려구요. 제가 지금 3기가 정도 사용중인데, 비싼것 같아서 더 저렴한 요금제는 없을까요?</p>
+              </div>
+              <button class="btn_red btn_choose">
+                <span class="pic"><img src="images/ic_arrow_u_w.png" alt="왼쪽 화살표"></span>
+                질문 선택하기
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 옵션 -->
+      <section class="options">
+        <div class="options_wrap">
+          <div class="options_answer">
+            <div class="box_area customer_focusing">
+              <div class="comment">
+                안녕하세요. 요금제 문의 좀 드릴려구요. 제가 지금 3기가 정도 사용중인데, 비싼것 같아서 더 저렴한 요금제는 없을까요?
+              </div>
+            </div>
+            <div class="aiAnswer_wrap">
+              <div class="top">
+                <h2>AI answer</h2>
+                <button type="button" class="btn_red btn_answerMaker">답변 생성하기</button>
+              </div>
+              <div class="box_area">
+                <div class="context">
+                  <div class="tab_wrap">
+                    <div class="tab_menu">
+                      <ul class="list">
+                        <li class="active">
+                          <a href="#tab_ai_1" class="btn active">답변 1</a>
+                        </li>
+                        <li>
+                          <a href="#tab_ai_2" class="btn">답변 2</a>
+                        </li>
+                      </ul>
+
+                      <div class="cont_area">
+                        <div id="tab_ai_1" class="cont" style="display:block;">
+                          답변 1 내용
+                        </div>
+                        <div id="tab_ai_2" class="cont">
+                          답변 2 내용
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="btns">
+                  <button type="button" class="btn_knowledge">추천지식1</button>
+                  <button type="button" class="btn_knowledge">추천지식2</button>
+                  <button type="button" class="btn_knowledge">추천지식3</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="options_gpt box_area">
+            <ul>
+              <li>
+                <label for="productType">상품분류</label>
+                <select name="productType" id="productType" class="select_st">
+                  <option value="mo">모바일</option>
+                  <option value="pc">PC</option>
+                </select>
+              </li>
+              <li>
+                <label for="mdName">Model Name</label>
+                <select name="mdName" id="mdName" class="select_st">
+                  <option value="mo01">gpt - 4o - mini</option>
+                  <option value="pc01">PC</option>
+                </select>
+              </li>
+              <li>
+                <label for="promptType">Prompt Type</label>
+                <select name="promptType" id="promptType" class="select_st">
+                  <option value="mo02">Freindly</option>
+                  <option value="pc02">PC</option>
+                </select>
+              </li>
+              <li>
+                <input type="text" class="slider1" name="Temperature" text="Temperature" min=0 max=1 round=2 value=0.5
+                  color="#4d6e91">
+              </li>
+              <li>
+                <input type="text" class="slider1" name="OutputToken" text="OutputToken" min=0 max=8000 value=2000
+                  color="#4d6e91">
+              </li>
+            </ul>
+          </div>
+          <div class="summary_wrap">
+            <div class="top">
+              <h2>summary</h2>
+              <button ype="button" class="btn_red btn_finish">상담 종료</button>
+            </div>
+            <div class="box_area">
+              <div class="context">
+                <h3>대화록 요약</h3>
+                <ul>
+                  <li>
+                    <p class="label"><strong>상담시간</strong></p>
+                    <p>1분 31초</p>
+                  </li>
+                  <li>
+                    <p class="label"><strong>상담분류</strong></p>
+                    <p>휴대폰 요금제 변경</p>
+                  </li>
+                  <li>
+                    <p class="label"><strong>문의내용</strong></p>
+                    <p>휴대폰 요금제 변경</p>
+                  </li>
+                  <li>
+                    <p class="label"><strong>대화록 요약</strong></p>
+                    <p>요약한 내용 작성</p>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="history_wrap">
+            <div class="top">
+              <h2>history</h2>
+            </div>
+            <div class="box_area">
+              <div class="context">
+                <ul>
+                  <li>
+                    <p class="num">001</p>
+                    <p class="tit">요금제 문의</p>
+                    <p class="date">2025.03.01</p>
+                  </li>
+                  <li>
+                    <p class="num">002</p>
+                    <p class="tit">요금제 문의</p>
+                    <p class="date">2025.03.01</p>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- 레이어팝업 -->
+  <div class="popup">
+    <div class="overlay">
+      <div class="popup_wrap">
+        <div class="top">
+          <h2 class="tit">인터넷 에센스/베이직 ver.2 [23.09.08]</h2>
+          <button type="button" class="btn_close"><img src="images/ic_close.png" alt="닫기"></button>
+        </div>
+        <div class="container">
+          <div class="navi">
+
+            <p class="navi_link"><a href="#"><span class="ic_home"><img src="images/ic_home.png" alt="홈으로"></span>
+                인터넷</a></p>
+            <p class="navi_link"><a href="#">상품(요금제)</a></p>
+          </div>
+          <div class="search_area">
+            <div class="searches">
+              <input type="search" name="search" id="search" class="search" placeholder="검색">
+              <button type="submit" class="btn_search"><img src="images/ic_search.png" alt="검색"></button>
+            </div>
+
+            <div class="btns">
+              <button type="button" class="btn_red"><img src="images/ic_bookmark.png" alt="즐겨찾기 아이콘"> 즐겨찾기 추가</button>
+              <button type="button" class="btn_red"><img src="images/ic_edit.png" alt="지식보완요청 아이콘"> 지식보완요청</button>
+            </div>
+          </div>
+          <div class="contents">
+            <div class="tab_wrap">
+              <div class="tab_menu">
+                <ul class="list">
+                  <li class="active">
+                    <a href="#tab1" class="btn">상품정보</a>
+                  </li>
+                  <li>
+                    <a href="#tab2" class="btn">지침</a>
+                  </li>
+                  <li>
+                    <a href="#tab3" class="btn">이벤트</a>
+                  </li>
+                </ul>
+
+                <div class="cont_area">
+                  <div id="tab1" class="cont" style="display:block;">
+                    상품정보 내용
+                  </div>
+                  <div id="tab2" class="cont">
+                    지침 내용
+                  </div>
+                  <div id="tab3" class="cont">
+                    이벤트 내용
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="lists">
+              <h3>목차</h3>
+              <ul>
+                <li>대상고객</li>
+                <li>유의사항</li>
+                <li>이용요금</li>
+              </ul>
+              <div class="btns">
+                <button type="button" class="btn_red"><img src="images/ic_history.png" alt="지식보완요청 아이콘"> 지식이력관리</button>
+                <button type="button" class="btn_red"><img src="images/ic_history.png" alt="지식보완요청 아이콘">
+                  지식제공자이력</button>
+                <button type="button" class="btn_red"><img src="images/ic_download.png" alt="지식보완요청 아이콘">
+                  지식html다운로드</button>
+                <button type="button" class="btn_red"><img src="images/ic_top.png" alt="지식보완요청 아이콘"> TOP</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 스크립트 -->
+  <script src="js/sliders.js"></script>
+  <script src="js/main.js"></script>
+</body>
+
+</html>
