@@ -12,8 +12,19 @@ def utility_processor():
 
 # LLM 응답을 시뮬레이션하기 위한 샘플 답변
 llm_responses = {
-    "answer1": "고객님의 데이터 사용량을 고려했을 때, '5G 슬림' 요금제를 추천드립니다. 월 3만원대로 매월 5GB의 데이터를 제공하며, 소진 후에도 1Mbps 속도로 무제한 사용이 가능합니다. 현재 요금제 대비 약 30% 정도 절감 효과를 보실 수 있습니다.",
-    "answer2": "또는 '5G 라이트' 요금제도 고려해보실 수 있습니다. 월 2만원대로 매월 2GB의 데이터를 제공하며, 추가 데이터가 필요한 경우 데이터 온디맨드 서비스를 통해 필요한 만큼만 구매하실 수 있습니다."
+    "answer1": """The 5G plans in the range of 60,000 KRW(40 EUR) are as follows:\n
+1. **5G Slim**\n
+   - Monthly Fee: 55,000 KRW(37 EUR)\n
+   - Unlimited voice calls and texts\n
+   - 300 minutes for video calls and additional calls\n
+   - Basic Data: 14GB (after consumption, speed is limited to a maximum of 1Mbps)\n
+2. **5G Simple**\n
+   - Monthly Fee: 61,000 KRW(41 EUR)\n
+   - Unlimited voice calls and texts\n
+   - 300 minutes for video calls and additional calls\n
+   - Basic Data: 30GB (after consumption, speed is limited to a maximum of 1Mbps)\n
+In addition, there are various options for 5G plans, so you can choose according to your needs.""",
+    "answer2": "Another option would be our promotional plans that offer special discounts for new subscribers. Would you like to hear about those as well?"
 }
 
 @app.route('/')
@@ -31,8 +42,14 @@ def main():
 @app.route('/api/stream_message')
 def stream_message():
     messages = [
-        "안녕하세요, AI 지니입니다. 무엇을 도와드릴까요?",
-        "안녕하세요. 요금제 문의 좀 드릴려구요. 제가 지금 3기가 정도 사용중인데, 비싼것 같아서 더 저렴한 요금제는 없을까요?"
+        "Hello, this is AI GENIE from KT. How can I help you?",
+        "Hello. I would like to change my plan.",
+        "Ah, I see. Which plan would you like to change to?",
+        "I would like to use a plan that costs around 60,000 KRW(40 EUR)",
+        "Yes, please change my plan to the \"5G Slim\" plan.",
+        "Understood. The change to the \"5G Slim\" plan at 55,000 KRW (37 EUR) has been completed. Is there anything else I can assist you with?",
+        "No, there isn't anything else.",
+        "Yes, thank you. This was AI GENIE from KT. Have a great day!"
     ]
     return jsonify({"messages": messages})
 

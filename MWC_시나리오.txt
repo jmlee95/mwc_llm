@@ -1,0 +1,38 @@
+상담사 :
+Hello, this is AI GENIE from KT. How can I help you?
+
+고객 :
+Hello. I would like to change my plan.
+
+상담사 :
+Ah, I see. Which plan would you like to change to?
+
+고객 문의(질문 선택하기 & 포커싱) :
+I would like to use a plan that costs around 60,000 KRW(40 EUR)
+
+LLM 답변(오른쪽 AI Answer 영역 답변 1 Text):
+"""
+The 5G plans in the range of 60,000 KRW(40 EUR) are as follows:
+1. **5G Slim**
+   - Monthly Fee: 55,000 KRW(37 EUR)
+   - Unlimited voice calls and texts
+   - 300 minutes for video calls and additional calls
+   - Basic Data: 14GB (after consumption, speed is limited to a maximum of 1Mbps)
+2. **5G Simple**
+   - Monthly Fee: 61,000 KRW(41 EUR)
+   - Unlimited voice calls and texts
+   - 300 minutes for video calls and additional calls
+   - Basic Data: 30GB (after consumption, speed is limited to a maximum of 1Mbps)
+In addition, there are various options for 5G plans, so you can choose according to your needs.
+"""
+고객 대답 :
+Yes, please change my plan to the "5G Slim" plan.
+
+상담사 :
+Understood. The change to the "5G Slim" plan at 55,000 KRW (37 EUR) has been completed. Is there anything else I can assist you with?
+
+고객 대답 :
+No, there isn't anything else.
+
+상담사 :
+Yes, thank you. This was AI GENIE from KT. Have a great day!
