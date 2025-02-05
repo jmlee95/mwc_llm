@@ -28,26 +28,26 @@
         <div class="lists">
           <div class="list active">
             <div class="staff_area">
-              <p class="staff_name">지니 상담사</p>
+              <p class="staff_name">AI GENIE</p>
             </div>
             <div class="customer_area">
-              <div class="pic ic_profile"><img src="{{ url_for('static', filename='images/ic_profile.png') }}" alt="프로필"></div>
+              <div class="pic ic_profile"><img src="{{ url_for('static', filename='images/ic_profile.png') }}" alt="profile"></div>
               <div class="txt_area">
-                <p class="customer_name">마이크 고객</p>
-                <p class="txt">안녕하세요</p>
+                <p class="customer_name">Danny</p>
+                <p class="txt">Hello</p>
               </div>
               <p class="date">2025.03.04</p>
             </div>
           </div>
           <div class="list">
             <div class="staff_area">
-              <p class="staff_name">지니 상담사</p>
+              <p class="staff_name">AI GENIE</p>
             </div>
             <div class="customer_area">
-              <div class="pic ic_profile"><img src="{{ url_for('static', filename='images/ic_profile.png') }}" alt="프로필"></div>
+              <div class="pic ic_profile"><img src="{{ url_for('static', filename='images/ic_profile.png') }}" alt="profile"></div>
               <div class="txt_area">
-                <p class="customer_name">마이크 고객</p>
-                <p class="txt">안녕하세요</p>
+                <p class="customer_name">Mike</p>
+                <p class="txt">Hello</p>
               </div>
               <p class="date">2025.03.03</p>
             </div>
@@ -83,8 +83,8 @@
                 <h2>AI answer</h2>
                 <div class="btn_wrap">
                   <!--<button type="button" class="btn_red btn_answerMaker btn_blink">답변 생성하기</button>-->
-                  <button type="button" class="btn_red btn_answerMaker">답변 생성하기</button>
-                  <button type="button" class="btn_red btn_answer">답변하기</button>
+                  <button type="button" class="btn_red btn_answerMaker">Generate Answer</button>
+                  <button type="button" class="btn_red btn_answer">Answer</button>
                 </div>
               </div>
               <div class="box_area">
@@ -93,10 +93,10 @@
                     <div class="tab_menu">
                       <ul class="list">
                         <li class="active">
-                          <a href="#tab_ai_1" class="btn active">답변 1</a>
+                          <a href="#tab_ai_1" class="btn active">Answer 1</a>
                         </li>
                         <li>
-                          <a href="#tab_ai_2" class="btn">답변 2</a>
+                          <a href="#tab_ai_2" class="btn">Answer 2</a>
                         </li>
                       </ul>
 
@@ -112,9 +112,9 @@
                   </div>
                 </div>
                 <div class="btns">
-                  <button type="button" class="btn_knowledge" id="knowledge1" style="display: none;">추천지식1</button>
-                  <button type="button" class="btn_knowledge" id="knowledge2" style="display: none;">추천지식2</button>
-                  <button type="button" class="btn_knowledge" id="knowledge3" style="display: none;">추천지식3</button>
+                  <button type="button" class="btn_knowledge" id="knowledge1" style="display: none;">Knowledge 1</button>
+                  <button type="button" class="btn_knowledge" id="knowledge2" style="display: none;">Knowledge 2</button>
+                  <button type="button" class="btn_knowledge" id="knowledge3" style="display: none;">Knowledge 3</button>
                 </div>
               </div>
             </div>
@@ -122,9 +122,9 @@
           <div class="options_gpt box_area">
             <ul>
               <li>
-                <label for="productType">상품분류</label>
+                <label for="productType">Product Type</label>
                 <select name="productType" id="productType" class="select_st">
-                  <option value="mo">모바일</option>
+                  <option value="mo">Mobile</option>
                   <option value="pc">PC</option>
                 </select>
               </li>
@@ -132,47 +132,47 @@
                 <label for="mdName">Model Name</label>
                 <select name="mdName" id="mdName" class="select_st">
                   <option value="mo01">gpt - 4o - mini</option>
-                  <option value="pc01">PC</option>
+                  <option value="pc01">claude 3.5 sonnet</option>
                 </select>
               </li>
               <li>
                 <label for="promptType">Prompt Type</label>
                 <select name="promptType" id="promptType" class="select_st">
-                  <option value="mo02">Freindly</option>
-                  <option value="pc02">PC</option>
+                  <option value="mo02">Friendly</option>
+                  <option value="pc02">Professional</option>
                 </select>
               </li>
               <li>
                 <input type="text" class="slider1" name="Temperature" text="Temperature" min=0 max=1 round=2 value=0.5 color="#4d6e91">
               </li>
               <li>
-                <input type="text" class="slider1" name="OutputToken" text="OutputToken" min=0 max=8000 value=2000 color="#4d6e91">
+                <input type="text" class="slider1" name="OutputToken" text="Output Token" min=0 max=8000 value=2000 color="#4d6e91">
               </li>
             </ul>
           </div>
           <div class="summary_wrap">
             <div class="top">
               <h2>summary</h2>
-              <button type="button" class="btn_red btn_finish">상담 종료</button>
+              <button type="button" class="btn_red btn_finish">End Consultation</button>
             </div>
             <div class="box_area">
               <div class="context">
-                <h3>대화록 요약</h3>
+                <h3>Consultation Summary</h3>
                 <ul>
                   <li>
-                    <p class="label"><strong>상담시간</strong></p>
+                    <p class="label"><strong>Duration</strong></p>
                     <p>0m 0s</p>
                   </li>
                   <li>
-                    <p class="label"><strong>상담분류</strong></p>
+                    <p class="label"><strong>Category</strong></p>
                     <p>...</p>
                   </li>
                   <li>
-                    <p class="label"><strong>문의내용</strong></p>
+                    <p class="label"><strong>Inquiry</strong></p>
                     <p>...</p>
                   </li>
                   <li>
-                    <p class="label"><strong>대화록 요약</strong></p>
+                    <p class="label"><strong>Summary</strong></p>
                     <p>...</p>
                   </li>
                 </ul>
@@ -182,20 +182,15 @@
           <div class="history_wrap">
             <div class="top">
               <h2>history</h2>
-              <button type="button" class="btn_red">저장</button>
+              <button type="button" class="btn_red">Save</button>
             </div>
             <div class="box_area">
               <div class="context">
                 <ul>
                   <li>
                     <p class="num">001</p>
-                    <p class="tit">plan1</p>
+                    <p class="tit">Mike - TV Plan</p>
                     <p class="date">2025.03.03</p>
-                  </li>
-                  <li>
-                    <p class="num">002</p>
-                    <p class="tit">plan2</p>
-                    <p class="date">2025.03.04</p>
                   </li>
                 </ul>
               </div>
@@ -211,22 +206,22 @@
     <div class="overlay">
         <div class="popup_wrap">
             <div class="top">
-                <h2 class="tit">인터넷 에센스/베이직 ver.2 [23.09.08]</h2>
-                <button type="button" class="btn_close"><img src="{{ url_for('static', filename='images/ic_close.png') }}" alt="닫기"></button>
+                <h2 class="tit">Internet Essence/Basic ver.2 [23.09.08]</h2>
+                <button type="button" class="btn_close"><img src="{{ url_for('static', filename='images/ic_close.png') }}" alt="close"></button>
             </div>
             <div class="container">
                 <div class="navi">
-                    <p class="navi_link"><a href="#"><span class="ic_home"><img src="{{ url_for('static', filename='images/ic_home.png') }}" alt="홈으로"></span> 인터넷</a></p>
-                    <p class="navi_link"><a href="#">상품(요금제)</a></p>
+                    <p class="navi_link"><a href="#"><span class="ic_home"><img src="{{ url_for('static', filename='images/ic_home.png') }}" alt="홈으로"></span> Internet</a></p>
+                    <p class="navi_link"><a href="#">Product(Plan)</a></p>
                 </div>
                 <div class="search_area">
                     <div class="searches">
-                        <input type="search" name="search" id="search" class="search" placeholder="검색">
-                        <button type="submit" class="btn_search"><img src="{{ url_for('static', filename='images/ic_search.png') }}" alt="검색"></button>
+                        <input type="search" name="search" id="search" class="search" placeholder="Search">
+                        <button type="submit" class="btn_search"><img src="{{ url_for('static', filename='images/ic_search.png') }}" alt="search"></button>
                     </div>
                     <div class="btns">
-                        <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_bookmark.png') }}" alt="즐겨찾기 아이콘"> 즐겨찾기 추가</button>
-                        <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_edit.png') }}" alt="지식보완요청 아이콘"> 지식보완요청</button>
+                        <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_bookmark.png') }}" alt="bookmark"> Bookmark</button>
+                        <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_edit.png') }}" alt="knowledge request"> Knowledge Request</button>
                     </div>
                 </div>
                 <div class="contents">
@@ -234,40 +229,40 @@
                         <div class="tab_menu">
                             <ul class="list">
                                 <li class="active">
-                                    <a href="#tab1" class="btn">상품정보</a>
+                                    <a href="#tab1" class="btn">Product Info</a>
                                 </li>
                                 <li>
-                                    <a href="#tab2" class="btn">지침</a>
+                                    <a href="#tab2" class="btn">Guideline</a>
                                 </li>
                                 <li>
-                                    <a href="#tab3" class="btn">이벤트</a>
+                                    <a href="#tab3" class="btn">Event</a>
                                 </li>
                             </ul>
                             <div class="cont_area">
                                 <div id="tab1" class="cont" style="display:block;">
-                                    상품정보 내용
+                                    Product Info
                                 </div>
                                 <div id="tab2" class="cont">
-                                    지침 내용
+                                    Guideline
                                 </div>
                                 <div id="tab3" class="cont">
-                                    이벤트 내용
+                                    Event
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="lists">
-                        <h3>목차</h3>
+                        <h3>Contents</h3>
                         <ul>
-                            <li>대상고객</li>
-                            <li>유의사항</li>
-                            <li>이용요금</li>
+                            <li>Target Customer</li>
+                            <li>Notice</li>
+                            <li>Fee</li>
                         </ul>
                         <div class="btns">
-                            <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_history.png') }}" alt="지식보완요청 아이콘"> 지식이력관리</button>
-                            <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_history.png') }}" alt="지식보완요청 아이콘"> 지식제공자이력</button>
-                            <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_download.png') }}" alt="지식보완요청 아이콘"> 지식html다운로드</button>
-                            <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_top.png') }}" alt="지식보완요청 아이콘"> TOP</button>
+                            <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_history.png') }}" alt="knowledge history"> Knowledge History</button>
+                            <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_history.png') }}" alt="knowledge provider history"> Knowledge Provider History</button>
+                            <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_download.png') }}" alt="knowledge html download"> Knowledge HTML Download</button>
+                            <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_top.png') }}" alt="top"> TOP</button>
                         </div>
                     </div>
                 </div>
@@ -281,27 +276,27 @@
     <div class="overlay">
         <div class="popup_wrap">
             <div class="top">
-                <h2 class="tit">상담 내역</h2>
-                <button type="button" class="btn_close"><img src="{{ url_for('static', filename='images/ic_close.png') }}" alt="닫기"></button>
+                <h2 class="tit">Consultation Details</h2>
+                <button type="button" class="btn_close"><img src="{{ url_for('static', filename='images/ic_close.png') }}" alt="close"></button>
             </div>
             <div class="container">
                 <div class="summary_detail">
-                    <h3>대화록 요약</h3>
+                    <h3>Consultation Summary</h3>
                     <ul>
                         <li>
-                            <p class="label"><strong>상담시간</strong></p>
+                            <p class="label"><strong>Duration</strong></p>
                             <p>2m 30s</p>
                         </li>
                         <li>
-                            <p class="label"><strong>상담분류</strong></p>
+                            <p class="label"><strong>Category</strong></p>
                             <p>Mobile Plan</p>
                         </li>
                         <li>
-                            <p class="label"><strong>문의내용</strong></p>
+                            <p class="label"><strong>Inquiry</strong></p>
                             <p>Change of Plan</p>
                         </li>
                         <li>
-                            <p class="label"><strong>대화록 요약</strong></p>
+                            <p class="label"><strong>Summary</strong></p>
                             <p>Customer inquired about changing their mobile plan. After reviewing available options, they chose the 5G Slim plan (55,000 KRW/37 EUR) which includes unlimited calls/texts and 14GB data. The plan change was successfully processed.</p>
                         </li>
                     </ul>

@@ -25,25 +25,26 @@
       <div class="top">
         <div class="pic"><img src="{{ url_for('static', filename='images/character.png') }}" alt="이미지"></div>
         <div class="bubble">
-          <p>원하는 시나리오를 <strong>선택</strong>하세요!</p>
+          <!--<p>원하는 시나리오를 <strong>선택</strong>하세요!</p>-->
+          <p><strong>Select</strong> the scenario you want!</p>
         </div>
       </div>
       <div class="btn_wrap_scenario">
         <button class="btn btn_scenario" onclick="location.href='/main'">
           <span class="pic"><img src="{{ url_for('static', filename='images/ic_change.png') }}" alt="아이콘"></span>
-          휴대폰 요금제 변경
+          Change Mobile plan
         </button>
         <button class="btn btn_scenario">
           <span class="pic"><img src="{{ url_for('static', filename='images/ic_combine.png') }}" alt="아이콘"></span>
-          결합신청
+          Combine Service
         </button>
         <button class="btn btn_scenario">
           <span class="pic"><img src="{{ url_for('static', filename='images/ic_membership.png') }}" alt="아이콘"></span>
-          멤버십 혜택문의
+          Membership Benefit
         </button>
         <button class="btn btn_scenario">
           <span class="pic"><img src="{{ url_for('static', filename='images/ic_roaming.png') }}" alt="아이콘"></span>
-          로밍 서비스 신청
+          Roaming Service
         </button>
       </div>
     </div>

@@ -133,7 +133,7 @@ async function streamMessages() {
 		chooseButton.className = 'btn_red btn_choose';
 		chooseButton.innerHTML = `
 			<span class="pic"><img src="${window.STATIC_URLS.arrow_icon}" alt="왼쪽 화살표"></span>
-			질문 선택하기
+			Select Question
 		`;
 		
 		// 버튼 클릭 이벤트 수정
@@ -219,7 +219,7 @@ function createStaffMessage(text) {
 			<div class="pic ic_staff">
 				<img src="${window.STATIC_URLS.staff_icon}" alt="아이콘">
 			</div>
-			<h3 class="staff_name">지니 상담사</h3>
+			<h3 class="staff_name">AI GENIE</h3>
 		</div>
 		<div class="staff_comment">
 			<p></p>
@@ -237,7 +237,7 @@ function createCustomerMessage(text) {
 			<div class="pic ic_profile">
 				<img src="${window.STATIC_URLS.profile_icon}" alt="아이콘">
 			</div>
-			<h3 class="staff_name">홍길동 고객</h3>
+			<h3 class="staff_name">Danny Customer</h3>
 		</div>
 		<div class="customer_comment">
 			<p>${text}</p>
@@ -283,14 +283,14 @@ document.addEventListener('DOMContentLoaded', function() {
 				try {
 					// 답변 생성 중인 경우 처리
 					if (isGeneratingAnswer) {
-						showAlert('답변 생성중입니다');
+						showAlert('Generating answer in progress');
 						return;
 					}
 
 					// 고객 질문 선택 여부 확인
 					const customerQuestion = document.querySelector('.box_area.customer_focusing .comment').textContent;
 					if (!customerQuestion.trim()) {
-						showAlert('고객 질문을 선택해주세요');
+						showAlert('Please select a customer question');
 						return;
 					}
 
@@ -366,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				try {
 					// 답변 생성 중인지 확인
 					if (isGeneratingAnswer) {
-						showAlert('답변 생성중입니다');
+						showAlert('Generating answer in progress');
 						return;
 					}
 
@@ -380,7 +380,7 @@ document.addEventListener('DOMContentLoaded', function() {
 					const selectedAnswer = document.querySelector(selectedTab);
 					
 					if (!selectedAnswer || !selectedAnswer.textContent.trim()) {
-						showAlert('답변을 생성해주세요');
+						showAlert('Please generate an answer first');
 						// 버튼 상태 복구
 						this.disabled = false;
 						this.style.opacity = '1';
@@ -471,7 +471,7 @@ document.addEventListener('DOMContentLoaded', function() {
 								 lastStaffMessage.querySelector('.staff_comment p').textContent.includes('Have a great day');
 				
 				if (!isComplete) {
-					showAlert('현재 고객과 통화중이므로 종료할 수 없습니다');
+					showAlert('Cannot end consultation while in conversation with customer');
 					return;
 				}
 				
@@ -517,22 +517,22 @@ document.addEventListener('DOMContentLoaded', function() {
 				const summaryContent = `Customer inquired about changing their mobile plan. After reviewing available options, they chose the 5G Slim plan (55,000 KRW/37 EUR) which includes unlimited calls/texts and 14GB data. The plan change was successfully processed.`;
 				
 				summaryArea.innerHTML = `
-					<h3>대화록 요약</h3>
+					<h3>Summary of Conversation</h3>
 					<ul>
 						<li>
-							<p class="label"><strong>상담시간</strong></p>
+							<p class="label"><strong>Duration</strong></p>
 							<p>${consultationTime}</p>
 						</li>
 						<li>
-							<p class="label"><strong>상담분류</strong></p>
+							<p class="label"><strong>Category</strong></p>
 							<p>Mobile Plan</p>
 						</li>
 						<li>
-							<p class="label"><strong>문의내용</strong></p>
+							<p class="label"><strong>Inquiry</strong></p>
 							<p>Change of Plan</p>
 						</li>
 						<li>
-							<p class="label"><strong>대화록 요약</strong></p>
+							<p class="label"><strong>Summary</strong></p>
 							<p>${summaryContent}</p>
 						</li>
 					</ul>
@@ -572,7 +572,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	
 	historyItems.forEach(item => {
 		item.addEventListener('click', function() {
-			if (this.querySelector('.num').textContent === '003') {
+			if (this.querySelector('.num').textContent === '002') {
 				// 다른 항목의 focusing 제거
 				document.querySelectorAll('.history_wrap .context li').forEach(item => {
 					item.classList.remove('focusing');
@@ -593,19 +593,19 @@ document.addEventListener('DOMContentLoaded', function() {
 				const popupContent = historyPopup.querySelector('.summary_detail ul');
 				popupContent.innerHTML = `
 					<li>
-						<p class="label"><strong>상담시간</strong></p>
+						<p class="label"><strong>Consultation Time</strong></p>
 						<p>${summaryContent.time}</p>
 					</li>
 					<li>
-						<p class="label"><strong>상담분류</strong></p>
+						<p class="label"><strong>Category</strong></p>
 						<p>${summaryContent.category}</p>
 					</li>
 					<li>
-						<p class="label"><strong>문의내용</strong></p>
+						<p class="label"><strong>Inquiry</strong></p>
 						<p>${summaryContent.inquiry}</p>
 					</li>
 					<li>
-						<p class="label"><strong>대화록 요약</strong></p>
+						<p class="label"><strong>Summary</strong></p>
 						<p>${summaryContent.summary}</p>
 					</li>
 				`;
@@ -633,7 +633,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			// 상담 종료 여부 확인
 			const finishBtn = document.querySelector('.btn_finish');
 			if (!finishBtn.disabled) {
-				showAlert('상담이 종료되지 않았습니다');
+				showAlert('Consultation has not been ended');
 				return;
 			}
 			
@@ -657,8 +657,8 @@ document.addEventListener('DOMContentLoaded', function() {
 			const historyList = document.querySelector('.history_wrap .context ul');
 			const newHistoryItem = document.createElement('li');
 			newHistoryItem.innerHTML = `
-				<p class="num">003</p>
-				<p class="tit">요금제 문의</p>
+				<p class="num">002</p>
+				<p class="tit">Danny -Change Mobile Plan</p>
 				<p class="date">2025.03.04</p>
 			`;
 			
@@ -673,19 +673,19 @@ document.addEventListener('DOMContentLoaded', function() {
 				const popupContent = historyPopup.querySelector('.summary_detail ul');
 				popupContent.innerHTML = `
 					<li>
-						<p class="label"><strong>상담시간</strong></p>
+						<p class="label"><strong>Consultation Time</strong></p>
 						<p>${summaryContent.time}</p>
 					</li>
 					<li>
-						<p class="label"><strong>상담분류</strong></p>
+						<p class="label"><strong>Category</strong></p>
 						<p>${summaryContent.category}</p>
 					</li>
 					<li>
-						<p class="label"><strong>문의내용</strong></p>
+						<p class="label"><strong>Inquiry</strong></p>
 						<p>${summaryContent.inquiry}</p>
 					</li>
 					<li>
-						<p class="label"><strong>대화록 요약</strong></p>
+						<p class="label"><strong>Summary</strong></p>
 						<p>${summaryContent.summary}</p>
 					</li>
 				`;
@@ -839,106 +839,20 @@ function showAlert(message) {
 // options_gpt 영역의 입력 제어 수정
 const optionsGptArea = document.querySelector('.options_gpt.box_area');
 if (optionsGptArea) {
-	// select 요소들에 이벤트 리스너 추가
-	const selects = optionsGptArea.querySelectorAll('select');
-	selects.forEach(select => {
-		select.addEventListener('mousedown', function(e) {
-			e.preventDefault();
-			showAlert('관리자 권한이 없습니다');
-		});
-		
-		// 키보드 입력 방지
-		select.addEventListener('keydown', function(e) {
-			e.preventDefault();
-			showAlert('관리자 권한이 없습니다');
-		});
-	});
-	
-	// input 요소들에 이벤트 리스너 추가
-	const inputs = optionsGptArea.querySelectorAll('input');
-	inputs.forEach(input => {
-		input.addEventListener('mousedown', function(e) {
-			e.preventDefault();
-			showAlert('관리자 권한이 없습니다');
-		});
-		
-		// 키보드 입력 방지
-		input.addEventListener('keydown', function(e) {
-			e.preventDefault();
-			showAlert('관리자 권한이 없습니다');
-		});
-	});
-	
-	// 게이지(range) 요소들에 이벤트 리스너 추가
-	const rangeInputs = optionsGptArea.querySelectorAll('input[type="range"]');
-	rangeInputs.forEach(range => {
-		// 마우스 이벤트
-		range.addEventListener('mousedown', function(e) {
-			e.preventDefault();
-			showAlert('관리자 권한이 없습니다');
-		});
-		
-		// 터치 이벤트
-		range.addEventListener('touchstart', function(e) {
-			e.preventDefault();
-			showAlert('관리자 권한이 없습니다');
-		});
-		
-		// 키보드 이벤트
-		range.addEventListener('keydown', function(e) {
-			e.preventDefault();
-			showAlert('관리자 권한이 없습니다');
-		});
-		
-		// 값 변경 시도 방지
-		range.addEventListener('input', function(e) {
-			e.preventDefault();
-			// 원래 값으로 복원
-			this.value = this.defaultValue;
-			showAlert('관리자 권한이 없습니다');
-		});
-		
-		// 스타일 적용
-		range.style.cursor = 'not-allowed';
-		range.style.opacity = '0.7';
-	});
-	
-	// groove_parent 요소에 이벤트 리스너 추가
-	const grooveParents = optionsGptArea.querySelectorAll('.groove_parent');
-	grooveParents.forEach(groove => {
-		// 마우스 이벤트
-		groove.addEventListener('mousedown', function(e) {
-			e.preventDefault();
-			showAlert('관리자 권한이 없습니다');
-		});
-		
-		// 터치 이벤트
-		groove.addEventListener('touchstart', function(e) {
-			e.preventDefault();
-			showAlert('관리자 권한이 없습니다');
-		});
-		
-		// 키보드 이벤트
-		groove.addEventListener('keydown', function(e) {
-			e.preventDefault();
-			showAlert('관리자 권한이 없습니다');
-		});
-		
-		// 드래그 방지
-		groove.addEventListener('dragstart', function(e) {
-			e.preventDefault();
-			showAlert('관리자 권한이 없습니다');
-		});
-		
-		// 스타일 적용
-		groove.style.cursor = 'not-allowed';
-		groove.style.opacity = '0.7';
-		groove.style.pointerEvents = 'none'; // 클릭/드래그 이벤트 완전 차단
-	});
+	// select, input, range, groove_parent 요소들에 대한 이벤트 리스너
+	const allElements = [
+		...optionsGptArea.querySelectorAll('select'),
+		...optionsGptArea.querySelectorAll('input'),
+		...optionsGptArea.querySelectorAll('input[type="range"]'),
+		...optionsGptArea.querySelectorAll('.groove_parent')
+	];
 
-	// readonly 속성 추가 대상에 groove_parent 포함
-	[...selects, ...inputs, ...rangeInputs, ...grooveParents].forEach(element => {
-		element.setAttribute('readonly', true);
-		element.style.cursor = 'not-allowed';
+	allElements.forEach(element => {
+		['mousedown', 'touchstart', 'keydown', 'dragstart', 'input'].forEach(eventType => {
+			element.addEventListener(eventType, function(e) {
+				e.preventDefault();
+				showAlert('Administrator privileges required');
+			});
+		});
 	});
 }
