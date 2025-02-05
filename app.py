@@ -1,5 +1,6 @@
-from flask import Flask, render_template, jsonify, url_for
+from flask import Flask, render_template, jsonify, url_for, send_from_directory
 import time
+import os
 
 app = Flask(__name__, 
     static_url_path='/static',
@@ -53,9 +54,25 @@ def stream_message():
     ]
     return jsonify({"messages": messages})
 
+
 @app.route('/api/get_answers')
 def get_answers():
     return jsonify(llm_responses)
+
+# knwlgFile 디렉토리의 파일을 제공하기 위한 라우트 추가
+@app.route('/knwlgFile/<path:filename>')
+def serve_knowledge_file(filename):
+    # knwlgFile 디렉토리의 절대 경로를 얻습니다
+    knowledge_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'knwlgFile')
+    # 파일의 디렉토리 경로를 얻습니다
+    directory = os.path.dirname(os.path.join(knowledge_dir, filename))
+    # 파일 이름만 추출합니다
+    file_name = os.path.basename(filename)
+    try:
+        return send_from_directory(directory, file_name)
+    except Exception as e:
+        app.logger.error(f"Error serving file {filename}: {str(e)}")
+        return f"File not found: {filename}", 404
 
 if __name__ == '__main__':
     app.run(debug=True) 
