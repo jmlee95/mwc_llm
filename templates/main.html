@@ -202,74 +202,7 @@
   </div>
 
   <!-- 레이어팝업 -->
-  <div class="popup">
-    <div class="overlay">
-        <div class="popup_wrap">
-            <div class="top">
-                <h2 class="tit">Internet Essence/Basic ver.2 [23.09.08]</h2>
-                <button type="button" class="btn_close"><img src="{{ url_for('static', filename='images/ic_close.png') }}" alt="close"></button>
-            </div>
-            <div class="container">
-                <div class="navi">
-                    <p class="navi_link"><a href="#"><span class="ic_home"><img src="{{ url_for('static', filename='images/ic_home.png') }}" alt="홈으로"></span> Internet</a></p>
-                    <p class="navi_link"><a href="#">Product(Plan)</a></p>
-                </div>
-                <div class="search_area">
-                    <div class="searches">
-                        <input type="search" name="search" id="search" class="search" placeholder="Search">
-                        <button type="submit" class="btn_search"><img src="{{ url_for('static', filename='images/ic_search.png') }}" alt="search"></button>
-                    </div>
-                    <div class="btns">
-                        <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_bookmark.png') }}" alt="bookmark"> Bookmark</button>
-                        <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_edit.png') }}" alt="knowledge request"> Knowledge Request</button>
-                    </div>
-                </div>
-                <div class="contents">
-                    <div class="tab_wrap">
-                        <div class="tab_menu">
-                            <ul class="list">
-                                <li class="active">
-                                    <a href="#tab1" class="btn">Product Info</a>
-                                </li>
-                                <li>
-                                    <a href="#tab2" class="btn">Guideline</a>
-                                </li>
-                                <li>
-                                    <a href="#tab3" class="btn">Event</a>
-                                </li>
-                            </ul>
-                            <div class="cont_area">
-                                <div id="tab1" class="cont" style="display:block;">
-                                    Product Info
-                                </div>
-                                <div id="tab2" class="cont">
-                                    Guideline
-                                </div>
-                                <div id="tab3" class="cont">
-                                    Event
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="lists">
-                        <h3>Contents</h3>
-                        <ul>
-                            <li>Target Customer</li>
-                            <li>Notice</li>
-                            <li>Fee</li>
-                        </ul>
-                        <div class="btns">
-                            <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_history.png') }}" alt="knowledge history"> Knowledge History</button>
-                            <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_history.png') }}" alt="knowledge provider history"> Knowledge Provider History</button>
-                            <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_download.png') }}" alt="knowledge html download"> Knowledge HTML Download</button>
-                            <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_top.png') }}" alt="top"> TOP</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-  </div>
+  {% include 'knwlg_popup.html' %}
 
   <!-- 히스토리 상세 팝업 -->
   <div class="history_popup popup">
@@ -317,6 +250,7 @@
   </script>
   <script src="{{ url_for('static', filename='js/sliders.js') }}"></script>
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/knwlg_popup.js') }}"></script>
 </body>
 
 </html> 
