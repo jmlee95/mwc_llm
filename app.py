@@ -74,5 +74,9 @@ def serve_knowledge_file(filename):
         app.logger.error(f"Error serving file {filename}: {str(e)}")
         return f"File not found: {filename}", 404
 
+@app.route('/static/audio/<path:filename>')
+def serve_audio(filename):
+    return send_from_directory('static/audio', filename)
+
 if __name__ == '__main__':
     app.run(debug=True) 

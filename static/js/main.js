@@ -92,76 +92,172 @@ function scrollToBottom(element) {
 	});
 }
 
-// 채팅 메시지 스트리밍 함수
+// 오디오 관리를 위한 전역 변수 추가
+let currentAudio = null;
+let isSpeakerOn = true;
+
+// 오디오 파일 매핑
+const audioMap = {
+    'AI_GENIE_1': '/static/audio/AI_GENIE_1.mp3',
+    'AI_GENIE_2': '/static/audio/AI_GENIE_2.mp3',
+    'AI_GENIE_3': '/static/audio/AI_GENIE_3.mp3',
+    'AI_GENIE_4': '/static/audio/AI_GENIE_4.mp3',
+	'AI_GENIE_5': '/static/audio/AI_GENIE_5.mp3',
+    'CUSTOMER_1': '/static/audio/CUSTOMER_1.mp3',
+    'CUSTOMER_2': '/static/audio/CUSTOMER_2.mp3',
+    'CUSTOMER_3': '/static/audio/CUSTOMER_3.mp3',
+    'CUSTOMER_4': '/static/audio/CUSTOMER_4.mp3'
+};
+
+// 스피커 버튼 이벤트 처리
+const speakerBtn = document.querySelector('.btn_speaker');
+if (speakerBtn) {
+    speakerBtn.addEventListener('click', function() {
+        isSpeakerOn = !isSpeakerOn;
+        const imgSrc = isSpeakerOn ? 
+            '/static/images/ic_speakerOn.png' : 
+            '/static/images/ic_speakerOff.png';
+        this.querySelector('img').src = imgSrc;
+        
+        if (!isSpeakerOn && currentAudio) {
+            currentAudio.pause();
+            currentAudio = null;
+        }
+    });
+}
+
+// 오디오 재생 함수
+async function playAudio(audioKey) {
+    if (!isSpeakerOn) return;
+    
+    if (currentAudio) {
+        currentAudio.pause();
+        currentAudio = null;
+    }
+    
+    const audioPath = audioMap[audioKey];
+    if (!audioPath) return;
+    
+    try {
+        currentAudio = new Audio(audioPath);
+        currentAudio.muted = false;
+        currentAudio.playsInline = true;
+        
+        return new Promise((resolve) => {
+            currentAudio.addEventListener('ended', () => {
+                currentAudio = null;
+                resolve();
+            });
+            
+            currentAudio.addEventListener('error', (e) => {
+                console.error('Audio playback error:', e);
+                currentAudio = null;
+                resolve();
+            });
+            
+            currentAudio.play().catch(error => {
+                console.warn('Autoplay prevented:', error);
+                resolve();
+            });
+        });
+    } catch (error) {
+        console.error('Audio playback error:', error);
+        return Promise.resolve();
+    }
+}
+
+// 채팅 메시지 스트리밍 함수 수정
 async function streamMessages() {
 	try {
 		const response = await fetch('/api/stream_message');
 		const data = await response.json();
 		const chatArea = document.querySelector('.chat_area');
 		
-		// 초기 AI 메시지
-		const staffMessage1 = createStaffMessage(data.messages[0]);
-		chatArea.appendChild(staffMessage1);
-		await typeWriter(staffMessage1.querySelector('.staff_comment p'), data.messages[0]);
-		
+        // 각 메시지 쌍을 순차적으로 처리
+        const messagePairs = [
+            {
+                staff: { text: data.messages[0], audio: 'AI_GENIE_1' },
+                customer: { text: data.messages[1], audio: 'CUSTOMER_1' }
+            },
+            {
+                staff: { text: data.messages[2], audio: 'AI_GENIE_2' },
+                customer: { text: data.messages[3], audio: 'CUSTOMER_2' }
+            }
+        ];
+
+        for (const pair of messagePairs) {
+            // AI 메시지 표시 및 오디오 재생
+            await createAndPlayMessage(true, pair.staff.text, pair.staff.audio, chatArea);
+		// 잠시 대기
 		await new Promise(resolve => setTimeout(resolve, 1000));
 		
-		// 첫 번째 고객 메시지
-		const customerMessage1 = createCustomerMessage(data.messages[1]);
-		chatArea.appendChild(customerMessage1);
-		await typeWriter(customerMessage1.querySelector('.customer_comment p'), data.messages[1]);
-		
-		await new Promise(resolve => setTimeout(resolve, 1000));
-		
-		// 두 번째 AI 메시지
-		const staffMessage2 = createStaffMessage(data.messages[2]);
-		chatArea.appendChild(staffMessage2);
-		await typeWriter(staffMessage2.querySelector('.staff_comment p'), data.messages[2]);
-		
-		await new Promise(resolve => setTimeout(resolve, 1000));
-		
-		// 두 번째 고객 메시지 (포커싱 대상)
-		const customerMessage2 = createCustomerMessage(data.messages[3]);
-		chatArea.appendChild(customerMessage2);
-		await typeWriter(customerMessage2.querySelector('.customer_comment p'), data.messages[3]);
-		
-		// focusing 클래스 추가
-		customerMessage2.querySelector('.customer_comment').classList.add('focusing');
-		
-		// 질문선택하기 버튼 추가
-		const chooseButton = document.createElement('button');
-		chooseButton.className = 'btn_red btn_choose';
-		chooseButton.innerHTML = `
-			<span class="pic"><img src="${window.STATIC_URLS.arrow_icon}" alt="왼쪽 화살표"></span>
-			Select Question
-		`;
-		
-		// 버튼 클릭 이벤트 수정
-		chooseButton.addEventListener('click', function() {
-			const text = customerMessage2.querySelector('.customer_comment p').textContent;
-			document.querySelector('.box_area.customer_focusing .comment').textContent = text;
-			
-			// 답변생성하기 버튼에 깜빡임 효과 추가
-			const answerMakerBtn = document.querySelector('.btn_answerMaker');
-			answerMakerBtn.classList.add('focusing');
-			
-			// 답변하기 버튼의 깜빡임 효과 제거
-			const answerBtn = document.querySelector('.btn_answer');
-			answerBtn.classList.remove('focusing');
-		});
-		
-		customerMessage2.appendChild(chooseButton);
-		
-		// 스크롤 최하단으로 이동
-		scrollToBottom(chatArea);
-		
+            // 고객 메시지 표시 및 오디오 재생
+            await createAndPlayMessage(false, pair.customer.text, pair.customer.audio, chatArea);
+            // 다음 쌍으로 넘어가기 전 대기
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        // 마지막 고객 메시지 후 질문선택하기 버튼 추가
+        const lastCustomerMessage = chatArea.lastElementChild;
+        const chooseButton = document.createElement('button');
+        chooseButton.className = 'btn_red btn_choose';
+        chooseButton.innerHTML = `
+            <span class="pic"><img src="${window.STATIC_URLS.arrow_icon}" alt="arrow"></span>
+            Select Question
+        `;
+        
+        // 버튼 클릭 이벤트
+        chooseButton.addEventListener('click', function() {
+            const text = lastCustomerMessage.querySelector('.customer_comment p').textContent;
+            document.querySelector('.box_area.customer_focusing .comment').textContent = text;
+            
+            // 답변생성하기 버튼에 깜빡임 효과 추가
+            const answerMakerBtn = document.querySelector('.btn_answerMaker');
+            answerMakerBtn.classList.add('focusing');
+            
+            // 답변하기 버튼의 깜빡임 효과 제거
+            const answerBtn = document.querySelector('.btn_answer');
+            answerBtn.classList.remove('focusing');
+        });
+        
+        lastCustomerMessage.appendChild(chooseButton);
+        
 	} catch (error) {
 		console.error('Error:', error);
 	}
 }
 
+// 메시지 생성 및 재생 함수 수정
+async function createAndPlayMessage(isStaff, text, audioKey, chatArea) {
+    // 메시지 요소 생성
+    const messageElement = isStaff ? createStaffMessage(text) : createCustomerMessage(text);
+    chatArea.appendChild(messageElement);
+    
+    // 메시지 타이핑과 오디오 재생을 동시에 시작
+    const textElement = messageElement.querySelector(isStaff ? '.staff_comment p' : '.customer_comment p');
+    
+    try {
+		if(isStaff){
+			await Promise.all([
+				typeWriter(textElement, text, 65),
+				playAudio(audioKey)
+			]);
+		}
+		else{
+			await Promise.all([
+				typeWriter(textElement, text),
+				playAudio(audioKey)
+        	]);
+    	} 
+	}catch (error) {
+        console.error('Error in createAndPlayMessage:', error);
+    }
+    
+    scrollToBottom(chatArea);
+}
+
 // 메시지 타이핑 효과 수정
-async function typeWriter(element, text, speed = 10) {
+async function typeWriter(element, text, speed = 50) {
 	const lines = text.split('\n');
 	element.innerHTML = '';
 	
@@ -248,322 +344,53 @@ function createCustomerMessage(text) {
 
 // 페이지 로드 시 실행
 document.addEventListener('DOMContentLoaded', function() {
-	// main.html 페이지인 경우에만 실행
 	const chatArea = document.querySelector('.chat_area');
 	if (chatArea) {
-		// 기존 채팅 내용 제거
-		chatArea.innerHTML = '';
-		// 채팅 시작
-		streamMessages();
+		// 오디오 컨텍스트 초기화
+		const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 		
-		// 고객 메시지 클릭 이벤트
-		document.addEventListener('click', function(e) {
-			if (e.target.closest('.customer_comment.focusing')) {
-				const text = e.target.closest('.customer_comment').querySelector('p').textContent;
-				document.querySelector('.box_area.customer_focusing .comment').textContent = text;
-				
-				// 질문 선택 후 답변생성하기 버튼에 깜빡임 효과 추가
-				const answerMakerBtn = document.querySelector('.btn_answerMaker');
-				answerMakerBtn.classList.add('focusing');
-			}
-			// 기존 고객 메시지의 포커싱 제거
-			const existingCustomerComments = document.querySelectorAll('.customer_comment');
-			existingCustomerComments.forEach(comment => {
-			comment.classList.remove('focusing'); // 포커싱 클래스 제거
-			});
+		// 클릭 오버레이 생성
+		const overlay = document.createElement('div');
+		overlay.style.cssText = `
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0, 0, 0, 0.5);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			z-index: 9999;
+			cursor: pointer;
+	 `;
+		
+		const startText = document.createElement('div');
+		startText.style.cssText = `
+			color: white;
+			font-size: 24px;
+			padding: 20px 40px;
+			background-color: rgba(0, 0, 0, 0.7);
+			border-radius: 10px;
+	 `;
+		startText.textContent = 'Click anywhere to start conversation';
+		
+		overlay.appendChild(startText);
+		document.body.appendChild(overlay);
+		
+		// 오버레이 클릭 이벤트
+		overlay.addEventListener('click', async function() {
+			await audioContext.resume();
+			overlay.remove();
+			
+			// 2초 대기 후 채팅 시작
+			await new Promise(resolve => setTimeout(resolve, 1500));
+			chatArea.innerHTML = '';
+			streamMessages();
 		});
 		
-		// 전역 변수로 답변 생성 상태 추가
-		let isGeneratingAnswer = false;
-		
-		// 답변 생성하기 버튼 클릭 이벤트
-		const answerMakerBtn = document.querySelector('.btn_answerMaker');
-		if (answerMakerBtn) {
-			answerMakerBtn.addEventListener('click', async function() {
-				try {
-					// 답변 생성 중인 경우 처리
-					if (isGeneratingAnswer) {
-						showAlert('Generating answer in progress');
-						return;
-					}
-
-					// 고객 질문 선택 여부 확인
-					const customerQuestion = document.querySelector('.box_area.customer_focusing .comment').textContent;
-					if (!customerQuestion.trim()) {
-						showAlert('Please select a customer question');
-						return;
-					}
-
-					// 답변 생성 상태 설정
-					isGeneratingAnswer = true;
-					
-					// 상담 종료 상태 체크
-					const finishBtn = document.querySelector('.btn_finish');
-					if (finishBtn.classList.contains('focusing') || finishBtn.disabled) {
-						return;
-					}
-
-					// 로딩 상태 표시
-					const answer1Element = document.querySelector('#tab_ai_1');
-					const answer2Element = document.querySelector('#tab_ai_2');
-					
-					answer1Element.textContent = '';
-					answer2Element.textContent = '';
-					
-					// 로딩 애니메이션
-					const loadingText = '답변 생성 중';
-					let dots = '';
-					const loadingInterval = setInterval(() => {
-						dots = dots.length < 3 ? dots + '.' : '';
-						answer1Element.textContent = loadingText + dots;
-						answer2Element.textContent = loadingText + dots;
-					}, 500);
-					
-					// 서버에서 답변 가져오기
-					const response = await fetch('/api/get_answers');
-					const data = await response.json();
-					
-					// 로딩 애니메이션 중지
-					clearInterval(loadingInterval);
-					
-					// 서버에서 받은 답변 데이터의 줄바꿈 정규화
-					data.answer1 = data.answer1.replace(/\n\s*\n/g, '\n');
-					data.answer2 = data.answer2.replace(/\n\s*\n/g, '\n');
-					
-					// 답변 1 스트리밍 효과
-					answer1Element.textContent = '';
-					await typeWriter(answer1Element, data.answer1);
-					
-					// 답변 2는 바로 표시
-					answer2Element.textContent = data.answer2;
-					
-					// 깜빡임 효과 전환
-					answerMakerBtn.classList.remove('focusing');
-					const answerBtn = document.querySelector('.btn_answer');
-					answerBtn.classList.add('focusing');
-					
-					// 추천 지식 버튼 보이기
-					const knowledgeButtons = document.querySelectorAll('.btn_knowledge');
-					knowledgeButtons.forEach(button => {
-						button.style.display = 'inline-block';
-					});
-					
-					// 답변 생성 완료 후 상태 초기화
-					isGeneratingAnswer = false;
-					
-				} catch (error) {
-					console.error('Error:', error);
-					// 에러 발생 시에도 상태 초기화
-					isGeneratingAnswer = false;
-				}
-			});
-		}
-
-		// 답변하기 버튼 클릭 이벤트
-		const answerBtn = document.querySelector('.btn_answer');
-		if (answerBtn) {
-			answerBtn.addEventListener('click', async function() {
-				try {
-					// 답변 생성 중인지 확인
-					if (isGeneratingAnswer) {
-						showAlert('Generating answer in progress');
-						return;
-					}
-
-					// 버튼 비활성화 추가
-					this.disabled = true;
-					this.style.opacity = '0.5';
-					this.style.cursor = 'default';
-					
-					// 답변 생성 여부 확인
-					const selectedTab = document.querySelector('.tab_menu .list li.active a').getAttribute('href');
-					const selectedAnswer = document.querySelector(selectedTab);
-					
-					if (!selectedAnswer || !selectedAnswer.textContent.trim()) {
-						showAlert('Please generate an answer first');
-						// 버튼 상태 복구
-						this.disabled = false;
-						this.style.opacity = '1';
-						this.style.cursor = 'pointer';
-						return;
-					}
-					
-					// 상담 종료 상태 체크
-					const finishBtn = document.querySelector('.btn_finish');
-					if (finishBtn.classList.contains('focusing') || finishBtn.disabled) {
-						return;
-					}
-					
-					// 질문선택하기 버튼 제거
-					const chooseButton = document.querySelector('.btn_choose');
-					if (chooseButton) {
-						chooseButton.remove();
-					}
-					
-					const chatArea = document.querySelector('.chat_area');
-					
-					// 슬라이드 애니메이션 적용
-					selectedAnswer.classList.add('slide-animation');
-					
-					// 애니메이션 완료 후 채팅 추가
-					await new Promise(resolve => setTimeout(resolve, 500));
-					
-					// AI 답변 추가
-					const staffMessage = createStaffMessage(selectedAnswer.textContent);
-					chatArea.appendChild(staffMessage);
-					await typeWriter(staffMessage.querySelector('.staff_comment p'), selectedAnswer.textContent);
-					scrollToBottom(chatArea);
-					
-					// 깜빡임 효과 전환
-					this.classList.remove('focusing');
-					const answerMakerBtn = document.querySelector('.btn_answerMaker');
-					answerMakerBtn.classList.remove('focusing');
-					
-					await new Promise(resolve => setTimeout(resolve, 1000));
-					
-					// 고객 응답
-					const customerMessage = createCustomerMessage("Yes, please change my plan to the \"5G Slim\" plan.");
-					chatArea.appendChild(customerMessage);
-					await typeWriter(customerMessage.querySelector('.customer_comment p'), "Yes, please change my plan to the \"5G Slim\" plan.");
-					scrollToBottom(chatArea);
-					
-					await new Promise(resolve => setTimeout(resolve, 1000));
-					
-					// AI 확인 메시지
-					const confirmMessage = createStaffMessage("Understood. The change to the \"5G Slim\" plan at 55,000 KRW (37 EUR) has been completed. Is there anything else I can assist you with?");
-					chatArea.appendChild(confirmMessage);
-					await typeWriter(confirmMessage.querySelector('.staff_comment p'), "Understood. The change to the \"5G Slim\" plan at 55,000 KRW (37 EUR) has been completed. Is there anything else I can assist you with?");
-					scrollToBottom(chatArea);
-					
-					await new Promise(resolve => setTimeout(resolve, 1000));
-					
-					// 고객 마지막 응답
-					const finalCustomerMessage = createCustomerMessage("No, there isn't anything else.");
-					chatArea.appendChild(finalCustomerMessage);
-					await typeWriter(finalCustomerMessage.querySelector('.customer_comment p'), "No, there isn't anything else.");
-					scrollToBottom(chatArea);
-					
-					await new Promise(resolve => setTimeout(resolve, 1000));
-					
-					// AI 마지막 메시지
-					const finalStaffMessage = createStaffMessage("Yes, thank you. This was AI GENIE from KT. Have a great day!");
-					chatArea.appendChild(finalStaffMessage);
-					await typeWriter(finalStaffMessage.querySelector('.staff_comment p'), "Yes, thank you. This was AI GENIE from KT. Have a great day!");
-					scrollToBottom(chatArea);
-					
-					// 상담 종료 버튼에 깜빡임 효과 추가
-					finishBtn.classList.add('focusing');
-					
-				} catch (error) {
-					console.error('Error:', error);
-				}
-			});
-		}
-
-		// 상담 종료 버튼 클릭 이벤트
-		const finishBtn = document.querySelector('.btn_finish');
-		if (finishBtn) {
-			finishBtn.addEventListener('click', async function() {
-				// 대화 시나리오 완료 여부 확인
-				const lastStaffMessage = document.querySelector('.chat_area').lastElementChild;
-				const isComplete = lastStaffMessage && 
-								 lastStaffMessage.classList.contains('chat_area_staff') &&
-								 lastStaffMessage.querySelector('.staff_comment p').textContent.includes('Have a great day');
-				
-				if (!isComplete) {
-					showAlert('Cannot end consultation while in conversation with customer');
-					return;
-				}
-				
-				// 깜빡임 효과 제거
-				this.classList.remove('focusing');
-				// 버튼 비활성화 표시
-				this.disabled = true;
-				
-				const summaryWrap = document.querySelector('.summary_wrap');
-				const boxArea = summaryWrap.querySelector('.box_area');
-				
-				// 로딩 오버레이 생성
-				const overlay = document.createElement('div');
-				overlay.className = 'loading-overlay';
-				overlay.innerHTML = '<div class="loading-spinner"></div>';
-				boxArea.style.position = 'relative';
-				boxArea.appendChild(overlay);
-				
-				// 2초 대기
-				await new Promise(resolve => setTimeout(resolve, 2000));
-				
-				const summaryArea = summaryWrap.querySelector('.context');
-				// 시뮬레이션 시작 시간 가져오기 (페이지 로드 시 저장된 시간)
-				const startTime = window.chatStartTime;
-				const endTime = new Date();
-				const timeDiff = Math.floor((endTime - startTime) / 1000); // 초 단위
-				
-				// 시간 포맷팅 (분:초)
-				const minutes = Math.floor(timeDiff / 60);
-				const seconds = timeDiff % 60;
-				const consultationTime = `${minutes}m ${seconds}s`;
-				
-				// 채팅 내용 수집
-				const chatMessages = [];
-				document.querySelectorAll('.chat_area > div').forEach(msg => {
-					const messageText = msg.querySelector('p').textContent;
-					if (messageText) {
-						chatMessages.push(messageText);
-					}
-				});
-				
-				// 채팅 요약본 생성
-				const summaryContent = `Customer inquired about changing their mobile plan. After reviewing available options, they chose the 5G Slim plan (55,000 KRW/37 EUR) which includes unlimited calls/texts and 14GB data. The plan change was successfully processed.`;
-				
-				summaryArea.innerHTML = `
-					<h3>Summary of Conversation</h3>
-					<ul>
-						<li>
-							<p class="label"><strong>Duration</strong></p>
-							<p>${consultationTime}</p>
-						</li>
-						<li>
-							<p class="label"><strong>Category</strong></p>
-							<p>Mobile Plan</p>
-						</li>
-						<li>
-							<p class="label"><strong>Inquiry</strong></p>
-							<p>Change of Plan</p>
-						</li>
-						<li>
-							<p class="label"><strong>Summary</strong></p>
-							<p>${summaryContent}</p>
-						</li>
-					</ul>
-				`;
-				
-				// 로딩 오버레이 제거
-				overlay.remove();
-				
-				// 답변생성하기와 답변하기 버튼 완전 비활성화
-				const answerMakerBtn = document.querySelector('.btn_answerMaker');
-				const answerBtn = document.querySelector('.btn_answer');
-				
-				// 버튼 비활성화 및 스타일 적용
-				[answerMakerBtn, answerBtn].forEach(btn => {
-					btn.disabled = true;
-					btn.style.opacity = '0.5';
-					btn.style.cursor = 'default';
-					btn.classList.remove('focusing');
-				});
-				
-				// 대화록 요약이 표시된 후 3초 대기
-				await new Promise(resolve => setTimeout(resolve, 3000));
-				
-				// 저장 버튼에 깜빡임 효과 추가
-				const saveBtn = document.querySelector('.history_wrap .btn_red');
-				saveBtn.classList.add('focusing');
-			});
-		}
-
-		// 페이지 로드 시 시작 시간 저장
-		window.chatStartTime = new Date(); // 채팅 시작 시간 저장
+		// 시작 시간 저장
+		window.chatStartTime = new Date();
 	}
 
 	// 히스토리 항목 클릭 이벤트
@@ -856,3 +683,282 @@ if (optionsGptArea) {
 		});
 	});
 }
+
+// 답변 생성 상태를 관리하는 전역 변수 추가
+let isGeneratingAnswer = false;
+
+// 답변 생성하기 버튼 클릭 이벤트 수정
+const answerMakerBtn = document.querySelector('.btn_answerMaker');
+if (answerMakerBtn) {
+    answerMakerBtn.addEventListener('click', async function() {
+        try {
+            // 답변 생성 중인 경우 처리
+            if (isGeneratingAnswer) {
+                showAlert('Generating answer in progress');
+                return;
+            }
+
+            // 고객 질문 선택 여부 확인
+            const customerQuestion = document.querySelector('.box_area.customer_focusing .comment').textContent;
+            if (!customerQuestion.trim()) {
+                showAlert('Please select a customer question');
+                return;
+            }
+            
+            // 상담 종료 상태 체크
+            const finishBtn = document.querySelector('.btn_finish');
+            if (finishBtn.classList.contains('focusing') || finishBtn.disabled) {
+                return;
+            }
+
+            // 답변 생성 상태 설정
+            isGeneratingAnswer = true;
+            
+            // Knowledge 버튼과 Select Question 버튼 숨기기
+            const knowledgeButtons = document.querySelectorAll('.btn_knowledge');
+            const selectQuestionBtn = document.querySelector('.btn_choose');
+            knowledgeButtons.forEach(btn => {
+                btn.style.display = 'none';
+            });
+            if (selectQuestionBtn) {
+                selectQuestionBtn.style.display = 'none';
+            }
+            
+            // AI 답변 가져오기
+            const response = await fetch('/api/get_answers');
+            const answers = await response.json();
+            
+            // 각 탭에 답변 표시
+            const tab1 = document.querySelector('#tab_ai_1');
+            const tab2 = document.querySelector('#tab_ai_2');
+            
+            await typeWriter(tab1, answers.answer1, 10);
+            await typeWriter(tab2, answers.answer2, 10);
+            
+            // 답변 생성 완료 후 Knowledge 버튼 표시
+            knowledgeButtons.forEach(btn => {
+                btn.style.display = 'inline-block';
+            });
+            
+            // 답변하기 버튼 깜빡임 효과
+            const answerBtn = document.querySelector('.btn_answer');
+            answerBtn.classList.add('focusing');
+            
+            // 답변 생성하기 버튼 깜빡임 효과 제거
+            this.classList.remove('focusing');
+            
+            // 답변 생성 상태 초기화
+            isGeneratingAnswer = false;
+            
+        } catch (error) {
+            console.error('Error:', error);
+            isGeneratingAnswer = false;
+        }
+    });
+}
+
+// 답변하기 버튼 클릭 이벤트 수정
+const answerBtn = document.querySelector('.btn_answer');
+if (answerBtn) {
+    answerBtn.addEventListener('click', async function() {
+        try {
+            // 답변 생성 중인지 확인
+            if (isGeneratingAnswer) {
+                showAlert('Generating answer in progress');
+                return;
+            }
+
+            // 버튼 비활성화
+            this.disabled = true;
+            this.style.opacity = '0.5';
+            this.style.cursor = 'default';
+            
+            // 답변 생성 여부 확인
+            const selectedTab = document.querySelector('.tab_menu .list li.active a').getAttribute('href');
+            const selectedAnswer = document.querySelector(selectedTab);
+            
+            if (!selectedAnswer || !selectedAnswer.textContent.trim()) {
+                showAlert('Please generate an answer first');
+                // 버튼 상태 복구
+                this.disabled = false;
+                this.style.opacity = '1';
+                this.style.cursor = 'pointer';
+                return;
+            }
+
+            const chatArea = document.querySelector('.chat_area');
+            
+            // AI 답변을 채팅창에 추가
+            await createAndPlayMessage(true, selectedAnswer.textContent, 'AI_GENIE_3', chatArea);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // 고객 응답 추가
+            await createAndPlayMessage(false, "Yes, please change my plan to the \"5G Slim\" plan.", 'CUSTOMER_3', chatArea);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // AI 최종 응답 추가
+            await createAndPlayMessage(true, "Understood. The change to the \"5G Slim\" plan at 55,000 KRW (37 EUR) has been completed. Is there anything else I can assist you with?", 'AI_GENIE_4', chatArea);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // 고객 마지막 응답
+            await createAndPlayMessage(false, "No, there isn't anything else.", 'CUSTOMER_4', chatArea);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            // AI 마지막 인사
+            await createAndPlayMessage(true, "Yes, thank you. This was AI GENIE from KT. Have a great day!", 'AI_GENIE_5', chatArea);
+            
+            // 상담 종료 버튼 깜빡임 효과
+            const finishBtn = document.querySelector('.btn_finish');
+            finishBtn.classList.add('focusing');
+            
+            // 답변하기 버튼 깜빡임 효과 제거
+            this.classList.remove('focusing');
+            
+            // 추천 지식 버튼들 표시
+            const knowledgeButtons = document.querySelectorAll('.btn_knowledge');
+            knowledgeButtons.forEach(btn => {
+                btn.style.display = 'inline-block';
+            });
+
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    });
+}
+
+// 상담 종료 버튼 클릭 이벤트
+const finishBtn = document.querySelector('.btn_finish');
+if (finishBtn) {
+    finishBtn.addEventListener('click', async function() {
+        // 대화 시나리오 완료 여부 확인
+        const lastStaffMessage = document.querySelector('.chat_area').lastElementChild;
+        const isComplete = lastStaffMessage && 
+                         lastStaffMessage.classList.contains('chat_area_staff') &&
+                         lastStaffMessage.querySelector('.staff_comment p').textContent.includes('Have a great day');
+        
+        if (!isComplete) {
+            showAlert('Cannot end consultation while in conversation with customer');
+            return;
+        }
+
+        // Generate Answer 버튼 비활성화
+        const answerMakerBtn = document.querySelector('.btn_answerMaker');
+        if (answerMakerBtn) {
+            answerMakerBtn.disabled = true;
+            answerMakerBtn.style.opacity = '0.5';
+            answerMakerBtn.style.cursor = 'default';
+        }
+
+        // 로딩 표시 추가
+        const loadingBar = document.createElement('div');
+        loadingBar.className = 'loading_bar';
+        loadingBar.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        `;
+        
+        loadingBar.innerHTML = `
+            <div class="loading_wrap" style="text-align: center;">
+                <div class="loading" style="
+                    width: 50px;
+                    height: 50px;
+                    border: 5px solid #f3f3f3;
+                    border-top: 5px solid #526d82;
+                    border-radius: 50%;
+                    margin: 0 auto 20px;
+                    animation: spin 1s linear infinite;
+                "></div>
+                <p style="color: white; font-size: 18px;">Saving consultation history...</p>
+            </div>
+        `;
+        
+        // 애니메이션 스타일 추가
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        document.body.appendChild(loadingBar);
+        
+        // 깜빡임 효과 제거
+        this.classList.remove('focusing');
+        
+        // 버튼 비활성화
+        this.disabled = true;
+        this.style.opacity = '0.5';
+        this.style.cursor = 'default';
+
+        // Summary 업데이트 전에 2초 대기
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // Summary 업데이트
+        const summaryArea = document.querySelector('.summary_wrap .context');
+        if (summaryArea) {
+            // 상담 시간 계산
+            const endTime = new Date();
+            const timeDiff = Math.floor((endTime - window.chatStartTime) / 1000); // 초 단위
+            const minutes = Math.floor(timeDiff / 60);
+            const seconds = timeDiff % 60;
+            const consultationTime = `${minutes}m ${seconds}s`;
+
+            // Summary 내용 설정
+            const summaryContent = `Customer inquired about changing their mobile plan. After reviewing available options, they chose the 5G Slim plan (55,000 KRW/37 EUR) which includes unlimited calls/texts and 14GB data. The plan change was successfully processed.`;
+
+            // Summary 영역 업데이트
+            summaryArea.innerHTML = `
+                <h3>Summary of Conversation</h3>
+                <ul>
+                    <li>
+                        <p class="label"><strong>Duration</strong></p>
+                        <p>${consultationTime}</p>
+                    </li>
+                    <li>
+                        <p class="label"><strong>Category</strong></p>
+                        <p>Mobile Plan</p>
+                    </li>
+                    <li>
+                        <p class="label"><strong>Inquiry</strong></p>
+                        <p>Change of Plan</p>
+                    </li>
+                    <li>
+                        <p class="label"><strong>Summary</strong></p>
+                        <p>${summaryContent}</p>
+                    </li>
+                </ul>
+            `;
+        }
+        
+        // 로딩 표시 제거
+        loadingBar.remove();
+        style.remove();
+        
+        // 저장 버튼 깜빡임 효과
+        const saveBtn = document.querySelector('.history_wrap .btn_red');
+        saveBtn.classList.add('focusing');
+    });
+}
+
+// 추천 지식 버튼 표시 유지
+function showKnowledgeButtons() {
+    const knowledgeButtons = document.querySelectorAll('.btn_knowledge');
+    knowledgeButtons.forEach(btn => {
+        btn.style.display = 'inline-block';
+    });
+}
+
+// 페이지 로드 시 추천 지식 버튼 표시
+document.addEventListener('DOMContentLoaded', function() {
+    showKnowledgeButtons();
+});
