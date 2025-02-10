@@ -1,11 +1,14 @@
 from flask import Flask, render_template, jsonify, url_for, send_from_directory
 import time
 import os
+import webbrowser
 
 app = Flask(__name__, 
     static_url_path='/static',
     static_folder='static'
 )
+
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0  # 캐시 비활성화
 
 @app.context_processor
 def utility_processor():
@@ -79,4 +82,5 @@ def serve_audio(filename):
     return send_from_directory('static/audio', filename)
 
 if __name__ == '__main__':
-    app.run(debug=True) 
+    webbrowser.open('http://localhost:5005')
+    app.run(debug=True, use_reloader=True, port=5005) 

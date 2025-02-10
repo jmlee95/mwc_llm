@@ -57,15 +57,18 @@
 
       <!-- 채팅 -->
       <section class="chat">
-        <h2>체험하기</h2>
+        <h2>Experience KT Customer Service AI Agent</h2>
         <div class="chat_wrap">
           <div class="top">
-            <button class="btn_speaker"><img src="{{ url_for('static', filename='images/ic_speakerOn.png') }}" alt=""></button>
+            <button class="btn_speaker">
+              <img src="{{ url_for('static', filename='images/ic_speakerOn.png') }}" alt="">
+            </button>
             <p class="date">2025.03.04</p>
           </div>
-          <div class="chat_area">
+          <div class="chat_area" style="max-height: calc(100vh - 230px); overflow-y: auto;">
             <!-- 채팅 내용은 JavaScript로 동적 생성됨 -->
           </div>
+          <button type="button" class="btn_red btn_finish" style="float: right; margin-right: 20px;">End Consultation</button>
         </div>
       </section>
 
@@ -81,11 +84,7 @@
             <div class="aiAnswer_wrap">
               <div class="top">
                 <h2>AI answer</h2>
-                <div class="btn_wrap">
-                  <!--<button type="button" class="btn_red btn_answerMaker btn_blink">답변 생성하기</button>-->
-                  <button type="button" class="btn_red btn_answerMaker">Generate Answer</button>
-                  <button type="button" class="btn_red btn_answer">Answer</button>
-                </div>
+                <button type="button" class="btn_red btn_answerMaker">Generate Answer</button>
               </div>
               <div class="box_area">
                 <div class="context">
@@ -153,7 +152,7 @@
           <div class="summary_wrap">
             <div class="top">
               <h2>summary</h2>
-              <button type="button" class="btn_red btn_finish">End Consultation</button>
+              <button type="button" class="btn_red btn_answer">Answer</button>
             </div>
             <div class="box_area">
               <div class="context">

@@ -142,6 +142,7 @@ async function playAudio(audioKey) {
         currentAudio = new Audio(audioPath);
         currentAudio.muted = false;
         currentAudio.playsInline = true;
+        currentAudio.preload = 'auto';
         
         return new Promise((resolve) => {
             currentAudio.addEventListener('ended', () => {
@@ -160,71 +161,10 @@ async function playAudio(audioKey) {
                 resolve();
             });
         });
-    } catch (error) {
+	} catch (error) {
         console.error('Audio playback error:', error);
         return Promise.resolve();
     }
-}
-
-// 채팅 메시지 스트리밍 함수 수정
-async function streamMessages() {
-	try {
-		const response = await fetch('/api/stream_message');
-		const data = await response.json();
-		const chatArea = document.querySelector('.chat_area');
-		
-        // 각 메시지 쌍을 순차적으로 처리
-        const messagePairs = [
-            {
-                staff: { text: data.messages[0], audio: 'AI_GENIE_1' },
-                customer: { text: data.messages[1], audio: 'CUSTOMER_1' }
-            },
-            {
-                staff: { text: data.messages[2], audio: 'AI_GENIE_2' },
-                customer: { text: data.messages[3], audio: 'CUSTOMER_2' }
-            }
-        ];
-
-        for (const pair of messagePairs) {
-            // AI 메시지 표시 및 오디오 재생
-            await createAndPlayMessage(true, pair.staff.text, pair.staff.audio, chatArea);
-		// 잠시 대기
-		await new Promise(resolve => setTimeout(resolve, 1000));
-		
-            // 고객 메시지 표시 및 오디오 재생
-            await createAndPlayMessage(false, pair.customer.text, pair.customer.audio, chatArea);
-            // 다음 쌍으로 넘어가기 전 대기
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-
-        // 마지막 고객 메시지 후 질문선택하기 버튼 추가
-        const lastCustomerMessage = chatArea.lastElementChild;
-        const chooseButton = document.createElement('button');
-        chooseButton.className = 'btn_red btn_choose';
-        chooseButton.innerHTML = `
-            <span class="pic"><img src="${window.STATIC_URLS.arrow_icon}" alt="arrow"></span>
-            Select Question
-        `;
-        
-        // 버튼 클릭 이벤트
-        chooseButton.addEventListener('click', function() {
-            const text = lastCustomerMessage.querySelector('.customer_comment p').textContent;
-            document.querySelector('.box_area.customer_focusing .comment').textContent = text;
-            
-            // 답변생성하기 버튼에 깜빡임 효과 추가
-            const answerMakerBtn = document.querySelector('.btn_answerMaker');
-            answerMakerBtn.classList.add('focusing');
-            
-            // 답변하기 버튼의 깜빡임 효과 제거
-            const answerBtn = document.querySelector('.btn_answer');
-            answerBtn.classList.remove('focusing');
-        });
-        
-        lastCustomerMessage.appendChild(chooseButton);
-        
-	} catch (error) {
-		console.error('Error:', error);
-	}
 }
 
 // 메시지 생성 및 재생 함수 수정
@@ -237,23 +177,26 @@ async function createAndPlayMessage(isStaff, text, audioKey, chatArea) {
     const textElement = messageElement.querySelector(isStaff ? '.staff_comment p' : '.customer_comment p');
     
     try {
-		if(isStaff){
-			await Promise.all([
-				typeWriter(textElement, text, 65),
-				playAudio(audioKey)
-			]);
-		}
-		else{
-			await Promise.all([
-				typeWriter(textElement, text),
-				playAudio(audioKey)
-        	]);
-    	} 
-	}catch (error) {
+        if(isStaff){
+            await Promise.all([
+                typeWriter(textElement, text, 65),
+                playAudio(audioKey)
+            ]);
+        }
+        else{
+            await Promise.all([
+                typeWriter(textElement, text),
+                playAudio(audioKey)
+            ]);
+        } 
+    } catch (error) {
         console.error('Error in createAndPlayMessage:', error);
     }
     
     scrollToBottom(chatArea);
+    
+    // 메시지 요소 반환 추가
+    return messageElement;
 }
 
 // 메시지 타이핑 효과 수정
@@ -385,8 +328,8 @@ document.addEventListener('DOMContentLoaded', function() {
 			
 			// 2초 대기 후 채팅 시작
 			await new Promise(resolve => setTimeout(resolve, 1500));
-			chatArea.innerHTML = '';
-			streamMessages();
+		chatArea.innerHTML = '';
+		streamMessages();
 		});
 		
 		// 시작 시간 저장
@@ -456,7 +399,7 @@ document.addEventListener('DOMContentLoaded', function() {
 	// 저장 버튼 클릭 이벤트
 	const saveBtn = document.querySelector('.history_wrap .btn_red');
 	if (saveBtn) {
-		saveBtn.addEventListener('click', function() {
+		saveBtn.addEventListener('click', async function() {
 			// 상담 종료 여부 확인
 			const finishBtn = document.querySelector('.btn_finish');
 			if (!finishBtn.disabled) {
@@ -647,6 +590,49 @@ style.textContent = `
 		word-break: break-word;
 		line-height: 1.5;
 	}
+
+	/* 클릭 유도 관련 스타일 추가 */
+	.click-guide-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.7);
+		z-index: 1000;
+		pointer-events: none;
+	}
+
+	.click-target {
+		position: relative;
+		z-index: 1001;
+		animation: pulse 2s infinite;
+	}
+
+	.click-guide-text {
+		position: absolute;
+		left: 50%;
+		transform: translateX(-50%);
+		bottom: -60px;
+		color: #fff;
+		font-size: 16px;
+		background: rgba(82, 109, 130, 0.9);
+		padding: 10px 20px;
+		border-radius: 5px;
+		white-space: nowrap;
+	}
+
+	@keyframes pulse {
+		0% {
+			box-shadow: 0 0 0 0 rgba(82, 109, 130, 0.7);
+		}
+		70% {
+			box-shadow: 0 0 0 15px rgba(82, 109, 130, 0);
+		}
+		100% {
+			box-shadow: 0 0 0 0 rgba(82, 109, 130, 0);
+		}
+	}
 `;
 document.head.appendChild(style);
 
@@ -675,11 +661,12 @@ if (optionsGptArea) {
 	];
 
 	allElements.forEach(element => {
-		['mousedown', 'touchstart', 'keydown', 'dragstart', 'input'].forEach(eventType => {
+		['mousedown', 'touchstart', 'keydown', 'dragstart', 'input', 'click'].forEach(eventType => {
 			element.addEventListener(eventType, function(e) {
 				e.preventDefault();
+				e.stopPropagation();
 				showAlert('Administrator privileges required');
-			});
+			}, { capture: true });
 		});
 	});
 }
@@ -714,15 +701,47 @@ if (answerMakerBtn) {
             // 답변 생성 상태 설정
             isGeneratingAnswer = true;
             
-            // Knowledge 버튼과 Select Question 버튼 숨기기
-            const knowledgeButtons = document.querySelectorAll('.btn_knowledge');
+            // Select Question 버튼 숨기기
             const selectQuestionBtn = document.querySelector('.btn_choose');
-            knowledgeButtons.forEach(btn => {
-                btn.style.display = 'none';
-            });
             if (selectQuestionBtn) {
                 selectQuestionBtn.style.display = 'none';
             }
+            
+            // aiAnswer_wrap 영역에 로딩 표시 추가
+            const aiAnswerWrap = document.querySelector('.aiAnswer_wrap .box_area');
+            const loadingOverlay = document.createElement('div');
+            loadingOverlay.style.cssText = `
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.7);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+            `;
+            
+            loadingOverlay.innerHTML = `
+                <div class="loading" style="
+                    width: 40px;
+                    height: 40px;
+                    border: 4px solid #f3f3f3;
+                    border-top: 4px solid #526d82;
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                "></div>
+            `;
+            
+            aiAnswerWrap.style.position = 'relative';
+            aiAnswerWrap.appendChild(loadingOverlay);
+            
+            // 1.5초 대기
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // 로딩 오버레이 제거
+            loadingOverlay.remove();
             
             // AI 답변 가져오기
             const response = await fetch('/api/get_answers');
@@ -736,9 +755,22 @@ if (answerMakerBtn) {
             await typeWriter(tab2, answers.answer2, 10);
             
             // 답변 생성 완료 후 Knowledge 버튼 표시
+            const knowledgeButtons = document.querySelectorAll('.btn_knowledge');
             knowledgeButtons.forEach(btn => {
                 btn.style.display = 'inline-block';
             });
+            
+            // Knowledge 1 버튼에만 가이드 적용
+            const knowledge1Btn = document.querySelector('#knowledge1');
+            if (knowledge1Btn) {
+                createClickGuide(
+                    knowledge1Btn,
+                    'Please click the button to see the detail knowledge',
+                    () => {
+                        // 클릭 후 동작이 필요한 경우 여기에 추가
+                    }
+                );
+            }
             
             // 답변하기 버튼 깜빡임 효과
             const answerBtn = document.querySelector('.btn_answer');
@@ -950,15 +982,282 @@ if (finishBtn) {
     });
 }
 
-// 추천 지식 버튼 표시 유지
-function showKnowledgeButtons() {
+// 페이지 로드 시 Knowledge 버튼 숨김 처리 (showKnowledgeButtons 함수 제거)
+document.addEventListener('DOMContentLoaded', function() {
     const knowledgeButtons = document.querySelectorAll('.btn_knowledge');
     knowledgeButtons.forEach(btn => {
-        btn.style.display = 'inline-block';
+        btn.style.display = 'none';
+    });
+});
+
+// Save 버튼 클릭 이벤트 추가
+const saveBtn = document.querySelector('.history_wrap .btn_red');
+if (saveBtn) {
+    saveBtn.addEventListener('click', async function() {
+        // 로딩 표시
+        const loadingBar = document.createElement('div');
+        loadingBar.className = 'loading_bar';
+        loadingBar.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        `;
+        
+        loadingBar.innerHTML = `
+            <div class="loading_wrap" style="text-align: center;">
+                <div class="loading" style="
+                    width: 50px;
+                    height: 50px;
+                    border: 5px solid #f3f3f3;
+                    border-top: 5px solid #526d82;
+                    border-radius: 50%;
+                    margin: 0 auto 20px;
+                    animation: spin 1s linear infinite;
+                "></div>
+                <p style="color: white; font-size: 18px;">Saving...</p>
+            </div>
+        `;
+        
+        document.body.appendChild(loadingBar);
+        
+        // 2초 대기
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // 로딩 제거
+        loadingBar.remove();
+        
+        // 완료 팝업 생성
+        const completionPopup = document.createElement('div');
+        completionPopup.className = 'completion_popup';
+        completionPopup.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 10000;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        `;
+        
+        completionPopup.innerHTML = `
+            <h2 style="margin-bottom: 20px; color: #526d82; font-size: 24px;">Consultation Saved</h2>
+            <div style="display: flex; justify-content: center; gap: 20px;">
+                <button class="btn_home_popup" style="
+                    padding: 10px 20px;
+                    background: #526d82;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                ">Home</button>
+                <button class="btn_scenario_popup" style="
+                    padding: 10px 20px;
+                    background: #526d82;
+                    color: white;
+                    border: none;
+                    border-radius: 5px;
+                    cursor: pointer;
+                ">Another Scenario</button>
+            </div>
+        `;
+        
+        document.body.appendChild(completionPopup);
+        
+        // 버튼 이벤트 추가
+        completionPopup.querySelector('.btn_home_popup').addEventListener('click', () => {
+            window.location.href = '/';
+        });
+        
+        completionPopup.querySelector('.btn_scenario_popup').addEventListener('click', () => {
+            window.location.href = '/scenario';
+        });
     });
 }
 
-// 페이지 로드 시 추천 지식 버튼 표시
-document.addEventListener('DOMContentLoaded', function() {
-    showKnowledgeButtons();
-});
+// 클릭 가이드 함수 추가
+function createClickGuide(targetElement, guideText, onClickCallback) {
+    if (!targetElement) {
+        console.error('Target element is undefined');
+        return;
+    }
+
+    // 오버레이 생성
+    const overlay = document.createElement('div');
+    overlay.className = 'click-guide-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.7);
+        z-index: 1000;
+    `;
+    document.body.appendChild(overlay);
+
+    // 클릭 대상 요소에 스타일 추가
+    targetElement.classList.add('click-target');
+    const originalStyles = targetElement.style.cssText;
+    targetElement.style.cssText = `
+        position: relative;
+        z-index: 1001;
+        cursor: pointer;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+    `;
+    
+    // 가이드 텍스트 추가
+    const guideTextElement = document.createElement('div');
+    guideTextElement.className = 'click-guide-text';
+    guideTextElement.textContent = guideText;
+    guideTextElement.style.cssText = `
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: -60px;
+        color: #fff;
+        font-size: 16px;
+        background: rgba(82, 109, 130, 0.9);
+        padding: 10px 20px;
+        border-radius: 5px;
+        white-space: nowrap;
+        pointer-events: none;
+        z-index: 1002;
+    `;
+    
+    // Knowledge 버튼인 경우 위치 추가 조정
+    if (targetElement.classList.contains('btn_knowledge')) {
+        guideTextElement.style.bottom = '-70px';
+    }
+    
+    targetElement.appendChild(guideTextElement);
+
+    // 이벤트 리스너 추가
+    const handleClick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // 클릭 가이드 제거
+        removeClickGuide();
+        
+        // 콜백 실행
+        if (onClickCallback) {
+            onClickCallback(e);
+        }
+    };
+    
+    // 클릭 가이드 제거 함수
+    function removeClickGuide() {
+        overlay.remove();
+        guideTextElement.remove();
+        targetElement.classList.remove('click-target');
+        targetElement.style.cssText = originalStyles; // 원래 스타일로 복원
+        targetElement.removeEventListener('click', handleClick);
+        targetElement.removeEventListener('mousedown', preventDrag);
+        overlay.removeEventListener('click', preventClick);
+    }
+    
+    // 드래그 방지
+    const preventDrag = function(e) {
+        e.preventDefault();
+    };
+    
+    // 다른 영역 클릭 방지
+    const preventClick = function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    };
+    
+    // 이벤트 리스너 등록
+    targetElement.addEventListener('click', handleClick);
+    targetElement.addEventListener('mousedown', preventDrag);
+    overlay.addEventListener('click', preventClick);
+    
+    // 제거 함수 반환 (필요한 경우 외부에서 수동으로 제거할 수 있도록)
+    return removeClickGuide;
+}
+
+// streamMessages 함수 내에서 사용 예시
+async function streamMessages() {
+    try {
+        const response = await fetch('/api/stream_message');
+        const data = await response.json();
+        const chatArea = document.querySelector('.chat_area');
+        
+        // 각 메시지 쌍을 순차적으로 처리
+        const messagePairs = [
+            {
+                staff: { text: data.messages[0], audio: 'AI_GENIE_1' },
+                customer: { text: data.messages[1], audio: 'CUSTOMER_1' }
+            },
+            {
+                staff: { text: data.messages[2], audio: 'AI_GENIE_2' },
+                customer: { text: data.messages[3], audio: 'CUSTOMER_2' }
+            }
+        ];
+
+        for (const [index, pair] of messagePairs.entries()) {
+            const staffMessage = await createAndPlayMessage(true, pair.staff.text, pair.staff.audio, chatArea);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            const customerMessage = await createAndPlayMessage(false, pair.customer.text, pair.customer.audio, chatArea);
+            
+            // 두 번째 고객 응답(index === 1) 후 클릭 가이드 추가
+            if (index === 1 && customerMessage) {
+                const customerComment = customerMessage.querySelector('.customer_comment');
+                if (customerComment) {
+                    createClickGuide(
+                        customerComment,
+                        'Please click the button for search knowledge',
+                        () => {
+                            const text = customerComment.querySelector('p').textContent;
+                            document.querySelector('.box_area.customer_focusing .comment').textContent = text;
+                            
+                            // Generate Answer 버튼에 가이드 추가
+                            const answerMakerBtn = document.querySelector('.btn_answerMaker');
+                            if (answerMakerBtn) {
+                                setTimeout(() => {
+                                    createClickGuide(
+                                        answerMakerBtn,
+                                        'Please click the button to see the recommended knowledge',
+                                        null
+                                    );
+                                }, 500); // 0.5초 후에 가이드 표시
+                            }
+                        }
+                    );
+                }
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+// 다른 곳에서 사용 예시
+function someOtherFunction() {
+    const targetElement = document.querySelector('.some-element');
+    createClickGuide(
+        targetElement,
+        'Click here to continue',
+        () => {
+            console.log('Element clicked!');
+            // 추가 동작 실행
+        }
+    );
+}
