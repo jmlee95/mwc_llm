@@ -1,5 +1,6 @@
 //======= 탭
 let activeCont = ''; // 현재 활성화 된 컨텐츠 (기본:#tab1 활성화)
+let closeYN = 0; // 전역 boolean 변수 선언
 
 function tab(tablist, contents) {
 	for (var i = 0; i < tablist.length; i++) {
@@ -51,7 +52,27 @@ knowledgeBtn.addEventListener('click', function (e) {
 });
 popupCloseBtn.addEventListener('click', function (e) {
 	e.preventDefault();
+    closeYN++;
 	popup.classList.remove('active');
+
+    // Knowledge1 버튼 클릭 시 answerBtn에 대한 createClickGuide 호출
+    const answerBtn = document.querySelector('.btn_answer');
+    if (answerBtn && closeYN == 1) {
+        setTimeout(() => {
+            createClickGuide(
+                answerBtn,
+                'Please click the button to use it for consultation',
+                () => {
+                    // 고객의 comment 텍스트 비우기
+                    const customerCommentArea = document.querySelector('.box_area.customer_focusing .comment');
+                    if (customerCommentArea) {
+                        customerCommentArea.textContent = ''; // 텍스트 비우기
+                    }
+                },
+                'top-left'
+            );
+        }, 1000);
+    }
 });
 
 // 첫 번째 추천지식 버튼 클릭 이벤트
@@ -395,79 +416,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		// 페이지 새로고침 대신 초기화면으로 이동
 		window.location.href = '/';
 	});
-	
-	// 저장 버튼 클릭 이벤트
-	const saveBtn = document.querySelector('.history_wrap .btn_red');
-	if (saveBtn) {
-		saveBtn.addEventListener('click', async function() {
-			// 상담 종료 여부 확인
-			const finishBtn = document.querySelector('.btn_finish');
-			if (!finishBtn.disabled) {
-				showAlert('Consultation has not been ended');
-				return;
-			}
-			
-			// 깜빡임 효과 제거
-			this.classList.remove('focusing');
-			
-			// 버튼 비활성화
-			this.disabled = true;
-			this.style.opacity = '0.5';
-			this.style.cursor = 'default';
-			
-			// Summary 내용 가져오기
-			const summaryContent = {
-				time: document.querySelector('.summary_wrap .context li:nth-child(1) p:not(.label)').textContent,
-				category: document.querySelector('.summary_wrap .context li:nth-child(2) p:not(.label)').textContent,
-				inquiry: document.querySelector('.summary_wrap .context li:nth-child(3) p:not(.label)').textContent,
-				summary: document.querySelector('.summary_wrap .context li:nth-child(4) p:not(.label)').textContent
-			};
-			
-			// 현재 상담 내용을 히스토리에 저장
-			const historyList = document.querySelector('.history_wrap .context ul');
-			const newHistoryItem = document.createElement('li');
-			newHistoryItem.innerHTML = `
-				<p class="num">002</p>
-				<p class="tit">Danny -Change Mobile Plan</p>
-				<p class="date">2025.03.04</p>
-			`;
-			
-			// 클릭 이벤트 수정
-			newHistoryItem.addEventListener('click', function() {
-				// focusing 효과 제거
-				this.classList.remove('focusing');
-				
-				const historyPopup = document.querySelector('.history_popup');
-				
-				// 팝업 내용 업데이트
-				const popupContent = historyPopup.querySelector('.summary_detail ul');
-				popupContent.innerHTML = `
-					<li>
-						<p class="label"><strong>Consultation Time</strong></p>
-						<p>${summaryContent.time}</p>
-					</li>
-					<li>
-						<p class="label"><strong>Category</strong></p>
-						<p>${summaryContent.category}</p>
-					</li>
-					<li>
-						<p class="label"><strong>Inquiry</strong></p>
-						<p>${summaryContent.inquiry}</p>
-					</li>
-					<li>
-						<p class="label"><strong>Summary</strong></p>
-						<p>${summaryContent.summary}</p>
-					</li>
-				`;
-				
-				historyPopup.classList.add('active');
-			});
-			
-			historyList.appendChild(newHistoryItem);
-			// 새로 추가된 항목에 focusing 효과 추가
-			newHistoryItem.classList.add('focusing');
-		});
-	}
 });
 
 // CSS 스타일 추가를 위한 스타일 태그 수정
@@ -613,7 +561,7 @@ style.textContent = `
 		position: absolute;
 		left: 50%;
 		transform: translateX(-50%);
-		bottom: -60px;
+		bottom: -40px;
 		color: #fff;
 		font-size: 16px;
 		background: rgba(82, 109, 130, 0.9);
@@ -677,587 +625,676 @@ let isGeneratingAnswer = false;
 // 답변 생성하기 버튼 클릭 이벤트 수정
 const answerMakerBtn = document.querySelector('.btn_answerMaker');
 if (answerMakerBtn) {
-    answerMakerBtn.addEventListener('click', async function() {
-        try {
-            // 답변 생성 중인 경우 처리
-            if (isGeneratingAnswer) {
-                showAlert('Generating answer in progress');
-                return;
-            }
+	answerMakerBtn.addEventListener('click', async function() {
+		try {
+			// 답변 생성 중인 경우 처리
+			if (isGeneratingAnswer) {
+				showAlert('Generating answer in progress');
+				return;
+			}
 
-            // 고객 질문 선택 여부 확인
-            const customerQuestion = document.querySelector('.box_area.customer_focusing .comment').textContent;
-            if (!customerQuestion.trim()) {
-                showAlert('Please select a customer question');
-                return;
-            }
-            
-            // 상담 종료 상태 체크
-            const finishBtn = document.querySelector('.btn_finish');
-            if (finishBtn.classList.contains('focusing') || finishBtn.disabled) {
-                return;
-            }
+			// 고객 질문 선택 여부 확인
+			const customerQuestion = document.querySelector('.box_area.customer_focusing .comment').textContent;
+			if (!customerQuestion.trim()) {
+				showAlert('Please select a customer question');
+				return;
+			}
+			
+			// 상담 종료 상태 체크
+			const finishBtn = document.querySelector('.btn_finish');
+			if (finishBtn.classList.contains('focusing') || finishBtn.disabled) {
+				return;
+			}
 
-            // 답변 생성 상태 설정
-            isGeneratingAnswer = true;
-            
-            // Select Question 버튼 숨기기
-            const selectQuestionBtn = document.querySelector('.btn_choose');
-            if (selectQuestionBtn) {
-                selectQuestionBtn.style.display = 'none';
-            }
-            
-            // aiAnswer_wrap 영역에 로딩 표시 추가
-            const aiAnswerWrap = document.querySelector('.aiAnswer_wrap .box_area');
-            const loadingOverlay = document.createElement('div');
-            loadingOverlay.style.cssText = `
-                position: absolute;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.7);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                z-index: 9999;
-            `;
-            
-            loadingOverlay.innerHTML = `
-                <div class="loading" style="
-                    width: 40px;
-                    height: 40px;
-                    border: 4px solid #f3f3f3;
-                    border-top: 4px solid #526d82;
-                    border-radius: 50%;
-                    animation: spin 1s linear infinite;
-                "></div>
-            `;
-            
-            aiAnswerWrap.style.position = 'relative';
-            aiAnswerWrap.appendChild(loadingOverlay);
-            
-            // 1.5초 대기
-            await new Promise(resolve => setTimeout(resolve, 1500));
-            
-            // 로딩 오버레이 제거
-            loadingOverlay.remove();
-            
-            // AI 답변 가져오기
-            const response = await fetch('/api/get_answers');
-            const answers = await response.json();
-            
-            // 각 탭에 답변 표시
-            const tab1 = document.querySelector('#tab_ai_1');
-            const tab2 = document.querySelector('#tab_ai_2');
-            
-            await typeWriter(tab1, answers.answer1, 10);
-            await typeWriter(tab2, answers.answer2, 10);
-            
-            // 답변 생성 완료 후 Knowledge 버튼 표시
-            const knowledgeButtons = document.querySelectorAll('.btn_knowledge');
-            knowledgeButtons.forEach(btn => {
-                btn.style.display = 'inline-block';
-            });
-            
-            // Knowledge 1 버튼에만 가이드 적용
-            const knowledge1Btn = document.querySelector('#knowledge1');
-            if (knowledge1Btn) {
-                createClickGuide(
-                    knowledge1Btn,
-                    'Please click the button to see the detail knowledge',
-                    () => {
-                        // 클릭 후 동작이 필요한 경우 여기에 추가
-                    }
-                );
-            }
-            
-            // 답변하기 버튼 깜빡임 효과
-            const answerBtn = document.querySelector('.btn_answer');
-            answerBtn.classList.add('focusing');
-            
-            // 답변 생성하기 버튼 깜빡임 효과 제거
-            this.classList.remove('focusing');
-            
-            // 답변 생성 상태 초기화
-            isGeneratingAnswer = false;
-            
-        } catch (error) {
-            console.error('Error:', error);
-            isGeneratingAnswer = false;
-        }
-    });
+			// 답변 생성 상태 설정
+			isGeneratingAnswer = true;
+			
+			// Select Question 버튼 숨기기
+			const selectQuestionBtn = document.querySelector('.btn_choose');
+			if (selectQuestionBtn) {
+				selectQuestionBtn.style.display = 'none';
+			}
+			
+			// aiAnswer_wrap 영역에 로딩 표시 추가
+			const aiAnswerWrap = document.querySelector('.aiAnswer_wrap .box_area');
+			const loadingOverlay = document.createElement('div');
+			loadingOverlay.style.cssText = `
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.7);
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				z-index: 9999;
+		 `;
+			
+			loadingOverlay.innerHTML = `
+				<div class="loading" style="
+					width: 40px;
+					height: 40px;
+					border: 4px solid #f3f3f3;
+					border-top: 4px solid #526d82;
+					border-radius: 50%;
+					animation: spin 1s linear infinite;
+			 "></div>
+		 `;
+			
+			aiAnswerWrap.style.position = 'relative';
+			aiAnswerWrap.appendChild(loadingOverlay);
+			
+			// 1.5초 대기
+			await new Promise(resolve => setTimeout(resolve, 1500));
+			
+			// 로딩 오버레이 제거
+			loadingOverlay.remove();
+			
+			// AI 답변 가져오기
+			const response = await fetch('/api/get_answers');
+			const answers = await response.json();
+			
+			// 각 탭에 답변 표시
+			const tab1 = document.querySelector('#tab_ai_1');
+			const tab2 = document.querySelector('#tab_ai_2');
+			
+			await typeWriter(tab1, answers.answer1, 10);
+			await typeWriter(tab2, answers.answer2, 10);
+			
+			// 답변 생성 완료 후 Knowledge 버튼 표시
+			const knowledgeButtons = document.querySelectorAll('.btn_knowledge');
+			knowledgeButtons.forEach(btn => {
+				btn.style.display = 'inline-block';
+			});
+			
+			// Knowledge 1 버튼에만 가이드 적용
+			const knowledge1Btn = document.querySelector('#knowledge1');
+			if (knowledge1Btn) {
+				setTimeout(() => {
+					createClickGuide(
+						knowledge1Btn,
+						'Please click the button to see the detail knowledge',
+						null,
+						'top-left'
+					);
+				}, 500);
+			}
+			
+			// 답변 생성 상태 초기화
+			isGeneratingAnswer = false;
+			
+		} catch (error) {
+			console.error('Error:', error);
+			isGeneratingAnswer = false;
+		}
+	});
 }
 
 // 답변하기 버튼 클릭 이벤트 수정
 const answerBtn = document.querySelector('.btn_answer');
 if (answerBtn) {
-    answerBtn.addEventListener('click', async function() {
-        try {
-            // 답변 생성 중인지 확인
-            if (isGeneratingAnswer) {
-                showAlert('Generating answer in progress');
-                return;
-            }
+	answerBtn.addEventListener('click', async function() {
+		try {
+			// 답변 생성 중인지 확인
+			if (isGeneratingAnswer) {
+				showAlert('Generating answer in progress');
+				return;
+			}
 
-            // 버튼 비활성화
-            this.disabled = true;
-            this.style.opacity = '0.5';
-            this.style.cursor = 'default';
-            
-            // 답변 생성 여부 확인
-            const selectedTab = document.querySelector('.tab_menu .list li.active a').getAttribute('href');
-            const selectedAnswer = document.querySelector(selectedTab);
-            
-            if (!selectedAnswer || !selectedAnswer.textContent.trim()) {
-                showAlert('Please generate an answer first');
-                // 버튼 상태 복구
-                this.disabled = false;
-                this.style.opacity = '1';
-                this.style.cursor = 'pointer';
-                return;
-            }
+			// 버튼 비활성화
+			this.disabled = true;
+			this.style.opacity = '0.5';
+			this.style.cursor = 'default';
+			
+			// 답변 생성 여부 확인
+			const selectedTab = document.querySelector('.tab_menu .list li.active a').getAttribute('href');
+			const selectedAnswer = document.querySelector(selectedTab);
+			
+			if (!selectedAnswer || !selectedAnswer.textContent.trim()) {
+				showAlert('Please generate an answer first');
+				// 버튼 상태 복구
+				this.disabled = false;
+				this.style.opacity = '1';
+				this.style.cursor = 'pointer';
+				return;
+			}
 
-            const chatArea = document.querySelector('.chat_area');
-            
-            // AI 답변을 채팅창에 추가
-            await createAndPlayMessage(true, selectedAnswer.textContent, 'AI_GENIE_3', chatArea);
-            await new Promise(resolve => setTimeout(resolve, 1000));
+			const chatArea = document.querySelector('.chat_area');
+			
+			// AI 답변을 채팅창에 추가
+			await createAndPlayMessage(true, selectedAnswer.textContent, 'AI_GENIE_3', chatArea);
+			await new Promise(resolve => setTimeout(resolve, 1000));
 
-            // 고객 응답 추가
-            await createAndPlayMessage(false, "Yes, please change my plan to the \"5G Slim\" plan.", 'CUSTOMER_3', chatArea);
-            await new Promise(resolve => setTimeout(resolve, 1000));
+			// 고객 응답 추가
+			await createAndPlayMessage(false, "Yes, please change my plan to the \"5G Slim\" plan.", 'CUSTOMER_3', chatArea);
+			await new Promise(resolve => setTimeout(resolve, 1000));
 
-            // AI 최종 응답 추가
-            await createAndPlayMessage(true, "Understood. The change to the \"5G Slim\" plan at 55,000 KRW (37 EUR) has been completed. Is there anything else I can assist you with?", 'AI_GENIE_4', chatArea);
-            await new Promise(resolve => setTimeout(resolve, 1000));
+			// AI 최종 응답 추가
+			await createAndPlayMessage(true, "Understood. The change to the \"5G Slim\" plan at 55,000 KRW (37 EUR) has been completed. Is there anything else I can assist you with?", 'AI_GENIE_4', chatArea);
+			await new Promise(resolve => setTimeout(resolve, 1000));
 
-            // 고객 마지막 응답
-            await createAndPlayMessage(false, "No, there isn't anything else.", 'CUSTOMER_4', chatArea);
-            await new Promise(resolve => setTimeout(resolve, 1000));
+			// 고객 마지막 응답
+			await createAndPlayMessage(false, "No, there isn't anything else.", 'CUSTOMER_4', chatArea);
+			await new Promise(resolve => setTimeout(resolve, 1000));
 
-            // AI 마지막 인사
-            await createAndPlayMessage(true, "Yes, thank you. This was AI GENIE from KT. Have a great day!", 'AI_GENIE_5', chatArea);
-            
-            // 상담 종료 버튼 깜빡임 효과
-            const finishBtn = document.querySelector('.btn_finish');
-            finishBtn.classList.add('focusing');
-            
-            // 답변하기 버튼 깜빡임 효과 제거
-            this.classList.remove('focusing');
-            
-            // 추천 지식 버튼들 표시
-            const knowledgeButtons = document.querySelectorAll('.btn_knowledge');
-            knowledgeButtons.forEach(btn => {
-                btn.style.display = 'inline-block';
-            });
+			// AI 마지막 인사
+			await createAndPlayMessage(true, "Yes, thank you. This was AI GENIE from KT. Have a great day!", 'AI_GENIE_5', chatArea);
+			
+			// End Consultation 버튼 깜빡임 효과
+			const finishBtn = document.querySelector('.btn_finish');
+			setTimeout(() => {
+				createClickGuide(
+					finishBtn,
+					'Please click the button to summarize the consultation',
+					null,
+					'top-left'
+				);
+			}, 1000);
+			
+			// 추천 지식 버튼들 표시
+			const knowledgeButtons = document.querySelectorAll('.btn_knowledge');
+			knowledgeButtons.forEach(btn => {
+				btn.style.display = 'inline-block';
+			});
 
-        } catch (error) {
-            console.error('Error:', error);
-        }
-    });
+		} catch (error) {
+			console.error('Error:', error);
+		}
+	});
 }
 
 // 상담 종료 버튼 클릭 이벤트
 const finishBtn = document.querySelector('.btn_finish');
 if (finishBtn) {
-    finishBtn.addEventListener('click', async function() {
-        // 대화 시나리오 완료 여부 확인
-        const lastStaffMessage = document.querySelector('.chat_area').lastElementChild;
-        const isComplete = lastStaffMessage && 
-                         lastStaffMessage.classList.contains('chat_area_staff') &&
-                         lastStaffMessage.querySelector('.staff_comment p').textContent.includes('Have a great day');
-        
-        if (!isComplete) {
-            showAlert('Cannot end consultation while in conversation with customer');
-            return;
-        }
+	finishBtn.addEventListener('click', async function() {
+		// 대화 시나리오 완료 여부 확인
+		const lastStaffMessage = document.querySelector('.chat_area').lastElementChild;
+		const isComplete = lastStaffMessage && 
+						 lastStaffMessage.classList.contains('chat_area_staff') &&
+						 lastStaffMessage.querySelector('.staff_comment p').textContent.includes('Have a great day');
+		
+		if (!isComplete) {
+			showAlert('Cannot end consultation while in conversation with customer');
+			return;
+		}
 
-        // Generate Answer 버튼 비활성화
-        const answerMakerBtn = document.querySelector('.btn_answerMaker');
-        if (answerMakerBtn) {
-            answerMakerBtn.disabled = true;
-            answerMakerBtn.style.opacity = '0.5';
-            answerMakerBtn.style.cursor = 'default';
-        }
+		// Generate Answer 버튼 비활성화
+		const answerMakerBtn = document.querySelector('.btn_answerMaker');
+		if (answerMakerBtn) {
+			answerMakerBtn.disabled = true;
+			answerMakerBtn.style.opacity = '0.5';
+			answerMakerBtn.style.cursor = 'default';
+		}
 
-        // 로딩 표시 추가
-        const loadingBar = document.createElement('div');
-        loadingBar.className = 'loading_bar';
-        loadingBar.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        `;
-        
-        loadingBar.innerHTML = `
-            <div class="loading_wrap" style="text-align: center;">
-                <div class="loading" style="
-                    width: 50px;
-                    height: 50px;
-                    border: 5px solid #f3f3f3;
-                    border-top: 5px solid #526d82;
-                    border-radius: 50%;
-                    margin: 0 auto 20px;
-                    animation: spin 1s linear infinite;
-                "></div>
-                <p style="color: white; font-size: 18px;">Saving consultation history...</p>
-            </div>
-        `;
-        
-        // 애니메이션 스타일 추가
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-            }
-        `;
-        document.head.appendChild(style);
-        
-        document.body.appendChild(loadingBar);
-        
-        // 깜빡임 효과 제거
-        this.classList.remove('focusing');
-        
-        // 버튼 비활성화
-        this.disabled = true;
-        this.style.opacity = '0.5';
-        this.style.cursor = 'default';
+		// 로딩 표시 추가
+		const loadingBar = document.createElement('div');
+		loadingBar.className = 'loading_bar';
+		loadingBar.style.cssText = `
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.7);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			z-index: 9999;
+	 `;
+		
+		loadingBar.innerHTML = `
+			<div class="loading_wrap" style="text-align: center;">
+				<div class="loading" style="
+					width: 50px;
+					height: 50px;
+					border: 5px solid #f3f3f3;
+					border-top: 5px solid #526d82;
+					border-radius: 50%;
+					margin: 0 auto 20px;
+					animation: spin 1s linear infinite;
+			 "></div>
+				<p style="color: white; font-size: 18px;">Saving consultation history...</p>
+			</div>
+	 `;
+		
+		// 애니메이션 스타일 추가
+		const style = document.createElement('style');
+		style.textContent = `
+			@keyframes spin {
+				0% { transform: rotate(0deg); }
+				100% { transform: rotate(360deg); }
+			}
+	 `;
+		document.head.appendChild(style);
+		
+		document.body.appendChild(loadingBar);
+		
+		// 깜빡임 효과 제거
+		this.classList.remove('focusing');
+		
+		// 버튼 비활성화
+		this.disabled = true;
+		this.style.opacity = '0.5';
+		this.style.cursor = 'default';
 
-        // Summary 업데이트 전에 2초 대기
-        await new Promise(resolve => setTimeout(resolve, 2000));
+		// Summary 업데이트 전에 2초 대기
+		await new Promise(resolve => setTimeout(resolve, 2000));
 
-        // Summary 업데이트
-        const summaryArea = document.querySelector('.summary_wrap .context');
-        if (summaryArea) {
-            // 상담 시간 계산
-            const endTime = new Date();
-            const timeDiff = Math.floor((endTime - window.chatStartTime) / 1000); // 초 단위
-            const minutes = Math.floor(timeDiff / 60);
-            const seconds = timeDiff % 60;
-            const consultationTime = `${minutes}m ${seconds}s`;
+		// Summary 업데이트
+		const summaryArea = document.querySelector('.summary_wrap .context');
+		if (summaryArea) {
+			// 상담 시간 계산
+			const endTime = new Date();
+			const timeDiff = Math.floor((endTime - window.chatStartTime) / 1000); // 초 단위
+			const minutes = Math.floor(timeDiff / 60);
+			const seconds = timeDiff % 60;
+			const consultationTime = `${minutes}m ${seconds}s`;
 
-            // Summary 내용 설정
-            const summaryContent = `Customer inquired about changing their mobile plan. After reviewing available options, they chose the 5G Slim plan (55,000 KRW/37 EUR) which includes unlimited calls/texts and 14GB data. The plan change was successfully processed.`;
+			// Summary 내용 설정
+			const summaryContent = `Customer inquired about changing their mobile plan. After reviewing available options, they chose the 5G Slim plan (55,000 KRW/37 EUR) which includes unlimited calls/texts and 14GB data. The plan change was successfully processed.`;
 
-            // Summary 영역 업데이트
-            summaryArea.innerHTML = `
-                <h3>Summary of Conversation</h3>
-                <ul>
-                    <li>
-                        <p class="label"><strong>Duration</strong></p>
-                        <p>${consultationTime}</p>
-                    </li>
-                    <li>
-                        <p class="label"><strong>Category</strong></p>
-                        <p>Mobile Plan</p>
-                    </li>
-                    <li>
-                        <p class="label"><strong>Inquiry</strong></p>
-                        <p>Change of Plan</p>
-                    </li>
-                    <li>
-                        <p class="label"><strong>Summary</strong></p>
-                        <p>${summaryContent}</p>
-                    </li>
-                </ul>
-            `;
-        }
-        
-        // 로딩 표시 제거
-        loadingBar.remove();
-        style.remove();
-        
-        // 저장 버튼 깜빡임 효과
-        const saveBtn = document.querySelector('.history_wrap .btn_red');
-        saveBtn.classList.add('focusing');
-    });
+			// Summary 영역 업데이트
+			summaryArea.innerHTML = `
+				<h3>Summary of Conversation</h3>
+				<ul>
+					<li>
+						<p class="label"><strong>Duration</strong></p>
+						<p>${consultationTime}</p>
+					</li>
+					<li>
+						<p class="label"><strong>Category</strong></p>
+						<p>Mobile Plan</p>
+					</li>
+					<li>
+						<p class="label"><strong>Inquiry</strong></p>
+						<p>Change of Plan</p>
+					</li>
+					<li>
+						<p class="label"><strong>Summary</strong></p>
+						<p>${summaryContent}</p>
+					</li>
+				</ul>
+			`;
+		}
+		
+		// 로딩 표시 제거
+		loadingBar.remove();
+		style.remove();
+		
+		// 저장 버튼 깜빡임 효과
+		const saveBtn = document.querySelector('.history_wrap .btn_red');
+		setTimeout(() => {
+			createClickGuide(
+				saveBtn,
+				'Please click the button to save the history',
+				null,
+				'top-left'
+			);
+		}, 500);
+	});
 }
 
 // 페이지 로드 시 Knowledge 버튼 숨김 처리 (showKnowledgeButtons 함수 제거)
 document.addEventListener('DOMContentLoaded', function() {
-    const knowledgeButtons = document.querySelectorAll('.btn_knowledge');
-    knowledgeButtons.forEach(btn => {
-        btn.style.display = 'none';
-    });
+	const knowledgeButtons = document.querySelectorAll('.btn_knowledge');
+	knowledgeButtons.forEach(btn => {
+		btn.style.display = 'none';
+	});
 });
 
 // Save 버튼 클릭 이벤트 추가
 const saveBtn = document.querySelector('.history_wrap .btn_red');
+
 if (saveBtn) {
-    saveBtn.addEventListener('click', async function() {
-        // 로딩 표시
-        const loadingBar = document.createElement('div');
-        loadingBar.className = 'loading_bar';
-        loadingBar.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        `;
-        
-        loadingBar.innerHTML = `
-            <div class="loading_wrap" style="text-align: center;">
-                <div class="loading" style="
-                    width: 50px;
-                    height: 50px;
-                    border: 5px solid #f3f3f3;
-                    border-top: 5px solid #526d82;
-                    border-radius: 50%;
-                    margin: 0 auto 20px;
-                    animation: spin 1s linear infinite;
-                "></div>
-                <p style="color: white; font-size: 18px;">Saving...</p>
-            </div>
-        `;
-        
-        document.body.appendChild(loadingBar);
-        
-        // 2초 대기
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // 로딩 제거
-        loadingBar.remove();
-        
-        // 완료 팝업 생성
-        const completionPopup = document.createElement('div');
-        completionPopup.className = 'completion_popup';
-        completionPopup.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            text-align: center;
-            z-index: 10000;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        `;
-        
-        completionPopup.innerHTML = `
-            <h2 style="margin-bottom: 20px; color: #526d82; font-size: 24px;">Consultation Saved</h2>
-            <div style="display: flex; justify-content: center; gap: 20px;">
-                <button class="btn_home_popup" style="
-                    padding: 10px 20px;
-                    background: #526d82;
-                    color: white;
-                    border: none;
-                    border-radius: 5px;
-                    cursor: pointer;
-                ">Home</button>
-                <button class="btn_scenario_popup" style="
-                    padding: 10px 20px;
-                    background: #526d82;
-                    color: white;
-                    border: none;
-                    border-radius: 5px;
-                    cursor: pointer;
-                ">Another Scenario</button>
-            </div>
-        `;
-        
-        document.body.appendChild(completionPopup);
-        
-        // 버튼 이벤트 추가
-        completionPopup.querySelector('.btn_home_popup').addEventListener('click', () => {
-            window.location.href = '/';
-        });
-        
-        completionPopup.querySelector('.btn_scenario_popup').addEventListener('click', () => {
-            window.location.href = '/scenario';
-        });
-    });
+	saveBtn.addEventListener('click', async function() {
+        // 상담 종료 여부 확인
+		const finishBtn = document.querySelector('.btn_finish');
+		if (!finishBtn.disabled) {
+			showAlert('Consultation has not been ended');
+			return;
+		}
+		// 로딩 표시
+		const loadingBar = document.createElement('div');
+		loadingBar.className = 'loading_bar';
+		loadingBar.style.cssText = `
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.7);
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			z-index: 9999;
+	 `;
+		
+		loadingBar.innerHTML = `
+			<div class="loading_wrap" style="text-align: center;">
+				<div class="loading" style="
+					width: 50px;
+					height: 50px;
+					border: 5px solid #f3f3f3;
+					border-top: 5px solid #526d82;
+					border-radius: 50%;
+					margin: 0 auto 20px;
+					animation: spin 1s linear infinite;
+			 "></div>
+				<p style="color: white; font-size: 18px;">Saving...</p>
+			</div>
+	 `;
+		
+		document.body.appendChild(loadingBar);
+		
+		// 2초 대기
+		await new Promise(resolve => setTimeout(resolve, 2000));
+		
+		// 로딩 제거
+		loadingBar.remove();
+			
+			// 깜빡임 효과 제거
+			this.classList.remove('focusing');
+			
+			// 버튼 비활성화
+			this.disabled = true;
+			this.style.opacity = '0.5';
+			this.style.cursor = 'default';
+			
+			// Summary 내용 가져오기
+			const summaryContent = {
+				time: document.querySelector('.summary_wrap .context li:nth-child(1) p:not(.label)').textContent,
+				category: document.querySelector('.summary_wrap .context li:nth-child(2) p:not(.label)').textContent,
+				inquiry: document.querySelector('.summary_wrap .context li:nth-child(3) p:not(.label)').textContent,
+				summary: document.querySelector('.summary_wrap .context li:nth-child(4) p:not(.label)').textContent
+			};
+			
+			// 현재 상담 내용을 히스토리에 저장
+			const historyList = document.querySelector('.history_wrap .context ul');
+			const newHistoryItem = document.createElement('li');
+			newHistoryItem.innerHTML = `
+				<p class="num">002</p>
+				<p class="tit">Danny -Change Mobile Plan</p>
+				<p class="date">2025.03.04</p>
+			`;
+			
+			// 클릭 이벤트 수정
+			newHistoryItem.addEventListener('click', function() {
+				// focusing 효과 제거
+				this.classList.remove('focusing');
+				
+				const historyPopup = document.querySelector('.history_popup');
+				
+				// 팝업 내용 업데이트
+				const popupContent = historyPopup.querySelector('.summary_detail ul');
+				popupContent.innerHTML = `
+					<li>
+						<p class="label"><strong>Consultation Time</strong></p>
+						<p>${summaryContent.time}</p>
+					</li>
+					<li>
+						<p class="label"><strong>Category</strong></p>
+						<p>${summaryContent.category}</p>
+					</li>
+					<li>
+						<p class="label"><strong>Inquiry</strong></p>
+						<p>${summaryContent.inquiry}</p>
+					</li>
+					<li>
+						<p class="label"><strong>Summary</strong></p>
+						<p>${summaryContent.summary}</p>
+					</li>
+				`;
+				
+				historyPopup.classList.add('active');
+			});
+			
+			historyList.appendChild(newHistoryItem);
+			// 새로 추가된 항목에 focusing 효과 추가
+			newHistoryItem.classList.add('focusing');
+            createClickGuide(
+                newHistoryItem,
+                'Please click to check the saved history',
+                null,
+                'top-left'
+            );
+	});
 }
 
-// 클릭 가이드 함수 추가
-function createClickGuide(targetElement, guideText, onClickCallback) {
-    if (!targetElement) {
-        console.error('Target element is undefined');
-        return;
-    }
+// 클릭 가이드 함수 수정
+function createClickGuide(targetElement, guideText, onClickCallback, position = 'bottom') {
+	if (!targetElement) {
+		console.error('Target element is undefined');
+		return;
+	}
 
-    // 오버레이 생성
-    const overlay = document.createElement('div');
-    overlay.className = 'click-guide-overlay';
-    overlay.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.7);
-        z-index: 1000;
-    `;
-    document.body.appendChild(overlay);
+	// 원래 위치와 스타일 저장
+	const originalPosition = targetElement.style.position;
+	const originalZIndex = targetElement.style.zIndex;
+	const originalStyles = targetElement.style.cssText;
 
-    // 클릭 대상 요소에 스타일 추가
-    targetElement.classList.add('click-target');
-    const originalStyles = targetElement.style.cssText;
-    targetElement.style.cssText = `
-        position: relative;
-        z-index: 1001;
-        cursor: pointer;
-        user-select: none;
-        -webkit-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-    `;
-    
-    // 가이드 텍스트 추가
-    const guideTextElement = document.createElement('div');
-    guideTextElement.className = 'click-guide-text';
-    guideTextElement.textContent = guideText;
-    guideTextElement.style.cssText = `
-        position: absolute;
-        left: 50%;
-        transform: translateX(-50%);
-        bottom: -60px;
-        color: #fff;
-        font-size: 16px;
-        background: rgba(82, 109, 130, 0.9);
-        padding: 10px 20px;
-        border-radius: 5px;
-        white-space: nowrap;
-        pointer-events: none;
-        z-index: 1002;
-    `;
-    
-    // Knowledge 버튼인 경우 위치 추가 조정
-    if (targetElement.classList.contains('btn_knowledge')) {
-        guideTextElement.style.bottom = '-70px';
-    }
-    
-    targetElement.appendChild(guideTextElement);
+	// 오버레이 생성
+	const overlay = document.createElement('div');
+	overlay.className = 'click-guide-overlay';
+	overlay.style.cssText = `
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.7);
+		z-index: 1000;
+	`;
+	document.body.appendChild(overlay);
 
-    // 이벤트 리스너 추가
-    const handleClick = function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        // 클릭 가이드 제거
-        removeClickGuide();
-        
-        // 콜백 실행
-        if (onClickCallback) {
-            onClickCallback(e);
-        }
-    };
-    
-    // 클릭 가이드 제거 함수
-    function removeClickGuide() {
-        overlay.remove();
-        guideTextElement.remove();
-        targetElement.classList.remove('click-target');
-        targetElement.style.cssText = originalStyles; // 원래 스타일로 복원
-        targetElement.removeEventListener('click', handleClick);
-        targetElement.removeEventListener('mousedown', preventDrag);
-        overlay.removeEventListener('click', preventClick);
-    }
-    
-    // 드래그 방지
-    const preventDrag = function(e) {
-        e.preventDefault();
-    };
-    
-    // 다른 영역 클릭 방지
-    const preventClick = function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-    };
-    
-    // 이벤트 리스너 등록
-    targetElement.addEventListener('click', handleClick);
-    targetElement.addEventListener('mousedown', preventDrag);
-    overlay.addEventListener('click', preventClick);
-    
-    // 제거 함수 반환 (필요한 경우 외부에서 수동으로 제거할 수 있도록)
-    return removeClickGuide;
+	// 클릭 대상 요소의 스타일 설정
+	targetElement.classList.add('click-target');
+	
+	// position이 static인 경우에만 relative로 변경
+	const computedStyle = window.getComputedStyle(targetElement);
+	if (computedStyle.position === 'static') {
+		targetElement.style.position = 'relative';
+	}
+	targetElement.style.zIndex = '1001';
+	
+	// 가이드 텍스트를 body에 직접 추가
+	const guideTextElement = document.createElement('div');
+	guideTextElement.className = 'click-guide-text';
+	guideTextElement.textContent = guideText;
+
+	// 버튼의 전역 위치 계산
+	const rect = targetElement.getBoundingClientRect();
+	const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+	const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+
+	// position 값에 따른 위치 계산 함수
+	const calculatePosition = (pos) => {
+		const positions = {
+			'top': {
+				top: rect.top - 70,
+				left: rect.left + (rect.width / 2),
+				transform: 'translateX(-50%)'
+			},
+			'bottom': {
+				top: rect.bottom + 10,
+				left: rect.left + (rect.width / 2),
+				transform: 'translateX(-50%)'
+			},
+			'left': {
+				top: rect.top + (rect.height / 2),
+				left: rect.left - 20,
+				transform: 'translate(-100%, -50%)'
+			},
+			'right': {
+				top: rect.top + (rect.height / 2),
+				left: rect.right + 20,
+				transform: 'translateY(-50%)'
+			},
+			'top-left': {
+				top: rect.top - 70,
+				left: rect.left - 330
+			},
+			'top-right': {
+				top: rect.top - 70,
+				left: rect.right + 20
+			},
+			'bottom-left': {
+				top: rect.bottom + 10,
+				left: rect.left - 330
+			},
+			'bottom-right': {
+				top: rect.bottom + 10,
+				left: rect.right + 20
+			}
+		};
+		return positions[pos] || positions['bottom'];
+	};
+	
+	const pos = calculatePosition(position);
+	
+	guideTextElement.style.cssText = `
+		position: fixed;
+		top: ${pos.top}px;
+		left: ${pos.left}px;
+		transform: ${pos.transform || 'none'};
+		color: #fff;
+		font-size: 16px;
+		background: rgba(82, 109, 130, 0.9);
+		padding: 10px 20px;
+		border-radius: 5px;
+		white-space: nowrap;
+		pointer-events: none;
+		z-index: 1002;
+		width: fit-content;
+		height: fit-content;
+		display: block;
+		box-sizing: border-box;
+	`;
+
+	// 가이드 텍스트를 body에 추가
+	document.body.appendChild(guideTextElement);
+
+	// 클릭 가이드 제거 함수 수정
+	function removeClickGuide() {
+		overlay.remove();
+		guideTextElement.remove();  // body에서 제거
+		targetElement.classList.remove('click-target');
+		
+		// 원래 스타일로 복원
+		if (computedStyle.position === 'static') {
+			targetElement.style.position = originalPosition;
+		}
+		targetElement.style.zIndex = originalZIndex;
+		
+		targetElement.removeEventListener('click', handleClick);
+		targetElement.removeEventListener('mousedown', preventDrag);
+		overlay.removeEventListener('click', preventClick);
+	}
+
+	// 클릭 이벤트 핸들러 정의
+	const handleClick = function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		
+		// 클릭 가이드 제거
+		removeClickGuide();
+		
+		// 콜백 실행
+		if (onClickCallback) {
+			onClickCallback(e);
+		}
+	};
+
+	// 드래그 방지
+	const preventDrag = function(e) {
+		e.preventDefault();
+	};
+	
+	// 다른 영역 클릭 방지
+	const preventClick = function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+	};
+	
+	// 이벤트 리스너 등록
+	targetElement.addEventListener('click', handleClick);
+	targetElement.addEventListener('mousedown', preventDrag);
+	overlay.addEventListener('click', preventClick);
+	
+	// 제거 함수 반환 (필요한 경우 외부에서 수동으로 제거할 수 있도록)
+	return removeClickGuide;
 }
 
 // streamMessages 함수 내에서 사용 예시
 async function streamMessages() {
-    try {
-        const response = await fetch('/api/stream_message');
-        const data = await response.json();
-        const chatArea = document.querySelector('.chat_area');
-        
-        // 각 메시지 쌍을 순차적으로 처리
-        const messagePairs = [
-            {
-                staff: { text: data.messages[0], audio: 'AI_GENIE_1' },
-                customer: { text: data.messages[1], audio: 'CUSTOMER_1' }
-            },
-            {
-                staff: { text: data.messages[2], audio: 'AI_GENIE_2' },
-                customer: { text: data.messages[3], audio: 'CUSTOMER_2' }
-            }
-        ];
+	try {
+		const response = await fetch('/api/stream_message');
+		const data = await response.json();
+		const chatArea = document.querySelector('.chat_area');
+		
+		// 각 메시지 쌍을 순차적으로 처리
+		const messagePairs = [
+			{
+				staff: { text: data.messages[0], audio: 'AI_GENIE_1' },
+				customer: { text: data.messages[1], audio: 'CUSTOMER_1' }
+			},
+			{
+				staff: { text: data.messages[2], audio: 'AI_GENIE_2' },
+				customer: { text: data.messages[3], audio: 'CUSTOMER_2' }
+			}
+		];
 
-        for (const [index, pair] of messagePairs.entries()) {
-            const staffMessage = await createAndPlayMessage(true, pair.staff.text, pair.staff.audio, chatArea);
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            
-            const customerMessage = await createAndPlayMessage(false, pair.customer.text, pair.customer.audio, chatArea);
-            
-            // 두 번째 고객 응답(index === 1) 후 클릭 가이드 추가
-            if (index === 1 && customerMessage) {
-                const customerComment = customerMessage.querySelector('.customer_comment');
-                if (customerComment) {
-                    createClickGuide(
-                        customerComment,
-                        'Please click the button for search knowledge',
-                        () => {
-                            const text = customerComment.querySelector('p').textContent;
-                            document.querySelector('.box_area.customer_focusing .comment').textContent = text;
-                            
-                            // Generate Answer 버튼에 가이드 추가
-                            const answerMakerBtn = document.querySelector('.btn_answerMaker');
-                            if (answerMakerBtn) {
-                                setTimeout(() => {
-                                    createClickGuide(
-                                        answerMakerBtn,
-                                        'Please click the button to see the recommended knowledge',
-                                        null
-                                    );
-                                }, 500); // 0.5초 후에 가이드 표시
-                            }
-                        }
-                    );
-                }
-            }
-            
-            await new Promise(resolve => setTimeout(resolve, 1000));
-        }
-        
-    } catch (error) {
-        console.error('Error:', error);
-    }
+		for (const [index, pair] of messagePairs.entries()) {
+			const staffMessage = await createAndPlayMessage(true, pair.staff.text, pair.staff.audio, chatArea);
+			await new Promise(resolve => setTimeout(resolve, 1000));
+			
+			const customerMessage = await createAndPlayMessage(false, pair.customer.text, pair.customer.audio, chatArea);
+			
+			// 두 번째 고객 응답(index === 1) 후 클릭 가이드 추가
+			if (index === 1 && customerMessage) {
+				const customerComment = customerMessage.querySelector('.customer_comment');
+				if (customerComment) {
+					createClickGuide(
+						customerComment,
+						'Please click the button for search knowledge',
+						() => {
+							const text = customerComment.querySelector('p').textContent;
+							document.querySelector('.box_area.customer_focusing .comment').textContent = text;
+							
+							// Generate Answer 버튼에 가이드 추가
+							const answerMakerBtn = document.querySelector('.btn_answerMaker');
+							if (answerMakerBtn) {
+								setTimeout(() => {
+									createClickGuide(
+										answerMakerBtn,
+										'Please click the button to see the recommended knowledge',
+										null,
+										'top-left'
+									);
+								}, 1000);
+							}
+						}
+					);
+				}
+			}
+			
+			await new Promise(resolve => setTimeout(resolve, 1000));
+		}
+		
+	} catch (error) {
+		console.error('Error:', error);
+	}
 }
 
 // 다른 곳에서 사용 예시
 function someOtherFunction() {
-    const targetElement = document.querySelector('.some-element');
-    createClickGuide(
-        targetElement,
-        'Click here to continue',
-        () => {
-            console.log('Element clicked!');
-            // 추가 동작 실행
-        }
-    );
+	const targetElement = document.querySelector('.some-element');
+	createClickGuide(
+		targetElement,
+		'Click here to continue',
+		() => {
+			console.log('Element clicked!');
+			// 추가 동작 실행
+		}
+	);
 }
