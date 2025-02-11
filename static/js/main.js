@@ -282,6 +282,18 @@ function createStaffMessage(text) {
 			<h3 class="staff_name">AI GENIE</h3>
 		</div>
 		<div class="staff_comment">
+			<div class="skip_btn" style="
+				position: absolute;
+				top: -30px;
+				right: 0;
+				background: #526d82;
+				color: white;
+				padding: 5px 15px;
+				border-radius: 15px;
+				cursor: pointer;
+				font-size: 14px;
+				display: none;
+			">Skip</div>
 			<p></p>
 		</div>
 	`;
@@ -406,16 +418,61 @@ document.addEventListener('DOMContentLoaded', function() {
 	
 	// 히스토리 팝업 닫기 버튼 이벤트 수정
 	const historyPopupCloseBtn = historyPopup.querySelector('.btn_close');
-	historyPopupCloseBtn.addEventListener('click', async function() {
-		// 팝업 닫기
-		historyPopup.classList.remove('active');
-		
-		// 2초 대기 후 초기화면으로 이동
-		await new Promise(resolve => setTimeout(resolve, 2000));
-		
-		// 페이지 새로고침 대신 초기화면으로 이동
-		window.location.href = '/';
-	});
+	if (historyPopupCloseBtn) {
+		historyPopupCloseBtn.addEventListener('click', function() {
+			historyPopup.classList.remove('active');
+			
+			// 완료 팝업 생성
+			const completionPopup = document.createElement('div');
+			completionPopup.className = 'completion_popup';
+			completionPopup.style.cssText = `
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				background: rgba(82, 109, 130, 0.95);
+				padding: 30px;
+				border-radius: 10px;
+				text-align: center;
+				z-index: 9999;
+		 `;
+			
+			completionPopup.innerHTML = `
+				<h2 style="color: white; font-size: 24px; margin-bottom: 20px;">Consultation Completed!</h2>
+				<div style="display: flex; gap: 20px; justify-content: center;">
+					<button class="btn_home_popup" style="
+						padding: 10px 30px;
+						background: #2e4455;
+						color: white;
+						border: none;
+						border-radius: 5px;
+						cursor: pointer;
+						font-size: 16px;
+					">Home</button>
+					<button class="btn_scenario_popup" style="
+						padding: 10px 30px;
+						background: #2e4455;
+						color: white;
+						border: none;
+						border-radius: 5px;
+						cursor: pointer;
+						font-size: 16px;
+					">Select Scenario</button>
+				</div>
+			`;
+			
+			document.body.appendChild(completionPopup);
+			
+			// 버튼 이벤트 추가
+			completionPopup.querySelector('.btn_home_popup').addEventListener('click', () => {
+				window.location.href = '/';
+			});
+			
+			completionPopup.querySelector('.btn_scenario_popup').addEventListener('click', () => {
+				window.location.href = '/scenario';
+			});
+		});
+	}
 });
 
 // CSS 스타일 추가를 위한 스타일 태그 수정
@@ -623,10 +680,10 @@ if (optionsGptArea) {
 let isGeneratingAnswer = false;
 
 // 답변 생성하기 버튼 클릭 이벤트 수정
-const answerMakerBtn = document.querySelector('.btn_answerMaker');
-if (answerMakerBtn) {
-	answerMakerBtn.addEventListener('click', async function() {
-		try {
+		const answerMakerBtn = document.querySelector('.btn_answerMaker');
+		if (answerMakerBtn) {
+			answerMakerBtn.addEventListener('click', async function() {
+				try {
 			// 답변 생성 중인 경우 처리
 			if (isGeneratingAnswer) {
 				showAlert('Generating answer in progress');
@@ -703,7 +760,7 @@ if (answerMakerBtn) {
 			await typeWriter(tab2, answers.answer2, 10);
 			
 			// 답변 생성 완료 후 Knowledge 버튼 표시
-			const knowledgeButtons = document.querySelectorAll('.btn_knowledge');
+					const knowledgeButtons = document.querySelectorAll('.btn_knowledge');
 			knowledgeButtons.forEach(btn => {
 				btn.style.display = 'inline-block';
 			});
@@ -723,19 +780,19 @@ if (answerMakerBtn) {
 			
 			// 답변 생성 상태 초기화
 			isGeneratingAnswer = false;
-			
-		} catch (error) {
-			console.error('Error:', error);
+					
+				} catch (error) {
+					console.error('Error:', error);
 			isGeneratingAnswer = false;
+				}
+			});
 		}
-	});
-}
 
 // 답변하기 버튼 클릭 이벤트 수정
-const answerBtn = document.querySelector('.btn_answer');
-if (answerBtn) {
-	answerBtn.addEventListener('click', async function() {
-		try {
+		const answerBtn = document.querySelector('.btn_answer');
+		if (answerBtn) {
+			answerBtn.addEventListener('click', async function() {
+				try {
 			// 답변 생성 중인지 확인
 			if (isGeneratingAnswer) {
 				showAlert('Generating answer in progress');
@@ -748,7 +805,7 @@ if (answerBtn) {
 			this.style.cursor = 'default';
 			
 			// 답변 생성 여부 확인
-			const selectedTab = document.querySelector('.tab_menu .list li.active a').getAttribute('href');
+					const selectedTab = document.querySelector('.tab_menu .list li.active a').getAttribute('href');
 			const selectedAnswer = document.querySelector(selectedTab);
 			
 			if (!selectedAnswer || !selectedAnswer.textContent.trim()) {
@@ -760,7 +817,7 @@ if (answerBtn) {
 				return;
 			}
 
-			const chatArea = document.querySelector('.chat_area');
+					const chatArea = document.querySelector('.chat_area');
 			
 			// AI 답변을 채팅창에 추가
 			await createAndPlayMessage(true, selectedAnswer.textContent, 'AI_GENIE_3', chatArea);
@@ -797,16 +854,16 @@ if (answerBtn) {
 			knowledgeButtons.forEach(btn => {
 				btn.style.display = 'inline-block';
 			});
-
-		} catch (error) {
-			console.error('Error:', error);
+					
+				} catch (error) {
+					console.error('Error:', error);
+				}
+			});
 		}
-	});
-}
 
 // 상담 종료 버튼 클릭 이벤트
-const finishBtn = document.querySelector('.btn_finish');
-if (finishBtn) {
+		const finishBtn = document.querySelector('.btn_finish');
+		if (finishBtn) {
 	finishBtn.addEventListener('click', async function() {
 		// 대화 시나리오 완료 여부 확인
 		const lastStaffMessage = document.querySelector('.chat_area').lastElementChild;
@@ -882,7 +939,7 @@ if (finishBtn) {
 		await new Promise(resolve => setTimeout(resolve, 2000));
 
 		// Summary 업데이트
-		const summaryArea = document.querySelector('.summary_wrap .context');
+				const summaryArea = document.querySelector('.summary_wrap .context');
 		if (summaryArea) {
 			// 상담 시간 계산
 			const endTime = new Date();
@@ -895,7 +952,7 @@ if (finishBtn) {
 			const summaryContent = `Customer inquired about changing their mobile plan. After reviewing available options, they chose the 5G Slim plan (55,000 KRW/37 EUR) which includes unlimited calls/texts and 14GB data. The plan change was successfully processed.`;
 
 			// Summary 영역 업데이트
-			summaryArea.innerHTML = `
+				summaryArea.innerHTML = `
 				<h3>Summary of Conversation</h3>
 				<ul>
 					<li>
@@ -914,7 +971,7 @@ if (finishBtn) {
 						<p class="label"><strong>Summary</strong></p>
 						<p>${summaryContent}</p>
 					</li>
-				</ul>
+					</ul>
 			`;
 		}
 		
