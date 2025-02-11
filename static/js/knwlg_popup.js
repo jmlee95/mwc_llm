@@ -18,6 +18,12 @@ function initKnowledgePopup() {
             const tabContent = document.querySelector('.popup #tab1');
             if (tabContent) {
                 tabContent.innerHTML = html;
+                // 검색 기능 초기화
+                initSearchFunction();
+                // 네비게이션 텍스트 업데이트
+                updateNavigationText();
+                // TOP 버튼 이벤트 초기화
+                initTopButton();
             }
             
         } catch (error) {
@@ -25,6 +31,152 @@ function initKnowledgePopup() {
             // 에러 발생 시 기본 내용 표시
             document.querySelector('.popup #tab1').innerHTML = '내용을 불러오는 중 오류가 발생했습니다.';
         }
+    }
+
+    // 검색 기능 초기화
+    function initSearchFunction() {
+        const searchInput = document.querySelector('.search_area .search');
+        const searchButton = document.querySelector('.search_area .btn_search');
+
+        if (searchInput && searchButton) {
+            // 검색 버튼 클릭 이벤트
+            searchButton.addEventListener('click', () => performSearch());
+            
+            // Enter 키 이벤트
+            searchInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+        }
+    }
+
+    // 검색 실행 함수
+    function performSearch() {
+        const searchInput = document.querySelector('.search_area .search');
+        const searchText = searchInput.value.trim().toLowerCase();
+        const content = document.querySelector('.popup #tab1');
+
+        if (!searchText) return;
+
+        // 이전 하이라이트 제거
+        removeHighlights(content);
+
+        const textNodes = [];
+        findTextNodes(content, textNodes);
+
+        let firstMatch = null;
+
+        textNodes.forEach(node => {
+            const text = node.textContent.toLowerCase();
+            if (text.includes(searchText)) {
+                const highlightedNode = highlightText(node, searchText);
+                if (!firstMatch) firstMatch = highlightedNode;
+            }
+        });
+
+        // 첫 번째 매칭된 요소로 스크롤
+        if (firstMatch) {
+            firstMatch.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+        }
+    }
+
+    // 텍스트 노드 찾기
+    function findTextNodes(node, textNodes) {
+        if (node.nodeType === Node.TEXT_NODE) {
+            const text = node.textContent.trim();
+            if (text) textNodes.push(node);
+        } else {
+            node.childNodes.forEach(child => findTextNodes(child, textNodes));
+        }
+    }
+
+    // 텍스트 하이라이트
+    function highlightText(node, searchText) {
+        const text = node.textContent;
+        const parent = node.parentNode;
+        const wrapper = document.createElement('span');
+        
+        const parts = text.split(new RegExp(`(${searchText})`, 'gi'));
+        parts.forEach(part => {
+            if (part.toLowerCase() === searchText.toLowerCase()) {
+                const highlight = document.createElement('span');
+                highlight.className = 'search-highlight';
+                highlight.style.backgroundColor = '#ffeb3b';
+                highlight.textContent = part;
+                wrapper.appendChild(highlight);
+            } else {
+                wrapper.appendChild(document.createTextNode(part));
+            }
+        });
+        
+        parent.replaceChild(wrapper, node);
+        return wrapper.querySelector('.search-highlight');
+    }
+
+    // 하이라이트 제거
+    function removeHighlights(container) {
+        const highlights = container.querySelectorAll('.search-highlight');
+        highlights.forEach(highlight => {
+            const parent = highlight.parentNode;
+            const text = document.createTextNode(highlight.textContent);
+            parent.replaceChild(text, highlight);
+        });
+    }
+
+    // 네비게이션 텍스트 업데이트 함수
+    function updateNavigationText() {
+        const naviLinks = document.querySelectorAll('.navi_link');
+        if (!naviLinks || naviLinks.length < 2) return;
+
+        // 현재 활성화된 버튼의 ID 가져오기
+        const activeButton = document.querySelector('.btn_scenario.active');
+        if (!activeButton) return;
+
+        const buttonId = activeButton.id;
+        let navigationText = '';
+
+        switch (buttonId) {
+            case 'ic_change':
+                navigationText = 'Change Mobile Plan';
+                break;
+            case 'ic_combine':
+                navigationText = 'Combine Service';
+                break;
+            case 'ic_membership':
+                navigationText = 'Membership Benefit';
+                break;
+            case 'ic_roaming':
+                navigationText = 'Roaming Service';
+                break;
+            default:
+                navigationText = 'Internet';
+        }
+
+        // 첫 번째 네비게이션 링크의 텍스트 업데이트 (홈 아이콘 유지)
+        const firstNaviLink = naviLinks[0].querySelector('a');
+        firstNaviLink.innerHTML = `<span class="ic_home"><img src="/static/images/ic_home.png" alt="홈으로"></span> ${navigationText}`;
+
+        // 두 번째 네비게이션 링크는 'Product(Plan)'으로 고정
+        naviLinks[1].querySelector('a').textContent = 'Product(Plan)';
+    }
+
+    // 시나리오 버튼 클릭 이벤트 추가
+    function initScenarioButtons() {
+        const scenarioButtons = document.querySelectorAll('.btn_scenario');
+        scenarioButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // 기존 활성화된 버튼의 클래스 제거
+                document.querySelector('.btn_scenario.active')?.classList.remove('active');
+                // 클릭된 버튼 활성화
+                this.classList.add('active');
+                // 네비게이션 텍스트 업데이트
+                updateNavigationText();
+            });
+        });
     }
 
     // 기본 지식버튼 클릭 이벤트
@@ -97,9 +249,28 @@ function initKnowledgePopup() {
             });
         }
     }
+
+    // TOP 버튼 초기화 함수
+    function initTopButton() {
+        const btnTop = document.querySelector('#btn_top');
+        if (btnTop) {
+            btnTop.addEventListener('click', function() {
+                // tab1 컨텐츠의 첫 번째 요소를 찾아서 스크롤
+                const tabContent = document.querySelector('.popup #tab1');
+                if (tabContent && tabContent.firstElementChild) {
+                    tabContent.firstElementChild.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        }
+    }
 }
 
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
     initKnowledgePopup();
+    initScenarioButtons();
+    initTopButton();
 });

@@ -246,6 +246,9 @@
       profile_icon: "{{ url_for('static', filename='images/ic_profile.png') }}",
       arrow_icon: "{{ url_for('static', filename='images/ic_arrow_u_w.png') }}"
     };
+    
+    // 시나리오 정보 설정
+    window.SCENARIO = "{{ scenario }}";
   </script>
   <script src="{{ url_for('static', filename='js/sliders.js') }}"></script>
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
