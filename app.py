@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, url_for, send_from_directory
+from flask import Flask, render_template, jsonify, url_for, send_from_directory, request
 import time
 import os
 import webbrowser
@@ -41,7 +41,8 @@ def scenario():
 
 @app.route('/main')
 def main():
-    return render_template('main.html')
+    scenario = request.args.get('scenario', 'sc_change')  # 기본값은 sc_change
+    return render_template('main.html', scenario=scenario)
 
 @app.route('/api/stream_message')
 def stream_message():

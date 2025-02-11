@@ -7,10 +7,14 @@
             </div>
             <div class="container">
                 <div class="navi">
-                    <p class="navi_link"><a href="#"><span class="ic_home"><img src="{{ url_for('static', filename='images/ic_home.png') }}" alt="홈으로"></span> Internet</a></p>
+                    <p class="navi_link">
+                        <a href="#">
+                            <span class="ic_home"><img src="{{ url_for('static', filename='images/ic_home.png') }}" alt="홈으로"></span> Internet
+                        </a>
+                    </p>
                     <p class="navi_link"><a href="#">Product(Plan)</a></p>
                 </div>
-                <div class="search_area">
+                <div class="search_area">   
                     <div class="searches">
                         <input type="search" name="search" id="search" class="search" placeholder="Search">
                         <button type="submit" class="btn_search"><img src="{{ url_for('static', filename='images/ic_search.png') }}" alt="search"></button>
@@ -55,9 +59,15 @@
                             <li>Fee</li>
                         </ul>
                         <div class="btns">
+<<<<<<< Updated upstream
                             <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_history.png') }}" alt="knowledge history"> knowledge History</button>
                             <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_history.png') }}" alt="knowledge provider history"> Provider History</button>
                             <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_top.png') }}" alt="top"> TOP</button>
+=======
+                            <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_history.png') }}" alt="knowledge history"> Knowledge History</button>
+                            <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_history.png') }}" alt="knowledge provider history"> Knowledge Provider History</button>
+                            <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_download.png') }}" alt="knowledge html download"> Knowledge HTML Download</button>
+                             <button type="button" class="btn_red"><img src="{{ url_for('static', filename='images/ic_top.png') }}" alt="top"> TOP</button>
                         </div>
                     </div>
                 </div>

@@ -30,19 +30,19 @@
         </div>
       </div>
       <div class="btn_wrap_scenario">
-        <button class="btn btn_scenario" onclick="location.href='/main'">
+        <button class="btn btn_scenario" id="ic_change" onclick="location.href='/main?scenario=sc_change'">
           <span class="pic"><img src="{{ url_for('static', filename='images/ic_change.png') }}" alt="아이콘"></span>
           Change Mobile plan
         </button>
-        <button class="btn btn_scenario">
+        <button class="btn btn_scenario" id="ic_combine" onclick="location.href='/main?scenario=sc_combine'">
           <span class="pic"><img src="{{ url_for('static', filename='images/ic_combine.png') }}" alt="아이콘"></span>
           Combine Service
         </button>
-        <button class="btn btn_scenario">
+        <button class="btn btn_scenario" id="ic_membership" onclick="location.href='/main?scenario=sc_membership'">
           <span class="pic"><img src="{{ url_for('static', filename='images/ic_membership.png') }}" alt="아이콘"></span>
           Membership Benefit
         </button>
-        <button class="btn btn_scenario">
+        <button class="btn btn_scenario" id="ic_roaming" onclick="location.href='/main?scenario=sc_roaming'">
           <span class="pic"><img src="{{ url_for('static', filename='images/ic_roaming.png') }}" alt="아이콘"></span>
           Roaming Service
         </button>
