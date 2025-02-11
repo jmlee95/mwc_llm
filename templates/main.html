@@ -247,8 +247,26 @@
       arrow_icon: "{{ url_for('static', filename='images/ic_arrow_u_w.png') }}"
     };
     
-    // 시나리오 정보 설정
-    window.SCENARIO = "{{ scenario }}";
+    // sessionStorage에서 저장된 값들을 가져옴
+    window.SCENARIO = sessionStorage.getItem('selectedScenario') || 'sc_change';
+    window.CONSULTANT = sessionStorage.getItem('selectedGender') || 'male';
+    window.CONSULTANT_NAME = sessionStorage.getItem('consultantName') || 'AI GENIE';
+
+    // staff_name 업데이트
+    document.addEventListener('DOMContentLoaded', function() {
+        // 모든 staff_name 클래스를 가진 요소 업데이트
+        const staffNameElements = document.querySelectorAll('.staff_name');
+        staffNameElements.forEach(element => {
+            element.textContent = window.CONSULTANT_NAME;
+        });
+    });
+
+    // 페이지 로드 완료 후 sessionStorage 초기화 (선택사항)
+    window.addEventListener('load', function() {
+        sessionStorage.removeItem('selectedScenario');
+        sessionStorage.removeItem('selectedGender');
+        sessionStorage.removeItem('consultantName');
+    });
   </script>
   <script src="{{ url_for('static', filename='js/sliders.js') }}"></script>
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>
