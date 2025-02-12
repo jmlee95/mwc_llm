@@ -805,7 +805,7 @@ let isGeneratingAnswer = false;
 			this.style.cursor = 'default';
 			
 			// 답변 생성 여부 확인
-					const selectedTab = document.querySelector('.tab_menu .list li.active a').getAttribute('href');
+			const selectedTab = document.querySelector('.tab_menu .list li.active a').getAttribute('href');
 			const selectedAnswer = document.querySelector(selectedTab);
 			
 			if (!selectedAnswer || !selectedAnswer.textContent.trim()) {
