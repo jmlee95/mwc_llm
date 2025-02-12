@@ -279,7 +279,7 @@ function createStaffMessage(text) {
 			<div class="pic ic_staff">
 				<img src="${window.STATIC_URLS.staff_icon}" alt="아이콘">
 			</div>
-			<h3 class="staff_name">AI GENIE</h3>
+			<h3 class="staff_name">${window.CONSULTANT_NAME}</h3>
 		</div>
 		<div class="staff_comment">
 			<div class="skip_btn" style="
@@ -836,7 +836,9 @@ let isGeneratingAnswer = false;
 			await new Promise(resolve => setTimeout(resolve, 1000));
 
 			// AI 마지막 인사
-			await createAndPlayMessage(true, "Yes, thank you. This was AI GENIE from KT. Have a great day!", 'AI_GENIE_5', chatArea);
+			//await createAndPlayMessage(true, "Yes, thank you. This was AI GENIE from KT. Have a great day!", 'AI_GENIE_5', chatArea);
+			const finalMessage = `Yes, thank you. This was ${window.CONSULTANT_NAME} from KT. Have a great day!`;
+			await createAndPlayMessage(true, finalMessage, 'AI_GENIE_5', chatArea);
 			
 			// End Consultation 버튼 깜빡임 효과
 			const finishBtn = document.querySelector('.btn_finish');
@@ -1282,22 +1284,27 @@ function createClickGuide(targetElement, guideText, onClickCallback, position = 
 	return removeClickGuide;
 }
 
-// streamMessages 함수 내에서 사용 예시
+// streamMessages 함수 수정
 async function streamMessages() {
 	try {
 		const response = await fetch('/api/stream_message');
 		const data = await response.json();
 		const chatArea = document.querySelector('.chat_area');
 		
+		// 메시지에서 {consultant_name} 치환
+		const messages = data.messages.map(msg => 
+			msg.replace('{consultant_name}', window.CONSULTANT_NAME)
+		);
+		
 		// 각 메시지 쌍을 순차적으로 처리
 		const messagePairs = [
 			{
-				staff: { text: data.messages[0], audio: 'AI_GENIE_1' },
-				customer: { text: data.messages[1], audio: 'CUSTOMER_1' }
+				staff: { text: messages[0], audio: 'AI_GENIE_1' },
+				customer: { text: messages[1], audio: 'CUSTOMER_1' }
 			},
 			{
-				staff: { text: data.messages[2], audio: 'AI_GENIE_2' },
-				customer: { text: data.messages[3], audio: 'CUSTOMER_2' }
+				staff: { text: messages[2], audio: 'AI_GENIE_2' },
+				customer: { text: messages[3], audio: 'CUSTOMER_2' }
 			}
 		];
 

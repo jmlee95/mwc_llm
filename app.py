@@ -35,26 +35,29 @@ In addition, there are various options for 5G plans, so you can choose according
 def start():
     return render_template('start.html')
 
+@app.route('/consultant_gender')
+def consultant_gender():
+    return render_template('consultant_gender.html')
+
 @app.route('/scenario')
 def scenario():
     return render_template('scenario_btn4.html')
 
 @app.route('/main')
 def main():
-    scenario = request.args.get('scenario', 'sc_change')  # 기본값은 sc_change
-    return render_template('main.html', scenario=scenario)
+    return render_template('main.html')
 
 @app.route('/api/stream_message')
 def stream_message():
     messages = [
-        "Hello, this is AI GENIE from KT. How can I help you?",
+        "Hello, this is {consultant_name} from KT. How can I help you?",
         "Hello. I would like to change my plan.",
         "Ah, I see. Which plan would you like to change to?",
         "I would like to use a plan that costs around 60,000 KRW(40 EUR)",
         "Yes, please change my plan to the \"5G Slim\" plan.",
         "Understood. The change to the \"5G Slim\" plan at 55,000 KRW (37 EUR) has been completed. Is there anything else I can assist you with?",
         "No, there isn't anything else.",
-        "Yes, thank you. This was AI GENIE from KT. Have a great day!"
+        "Yes, thank you. This was {consultant_name} from KT. Have a great day!"
     ]
     return jsonify({"messages": messages})
 
