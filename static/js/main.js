@@ -1377,14 +1377,14 @@ function someOtherFunction() {
 	);
 }
 
-// 가이드 메시지 표시 함수 추가
+// 가이드 메시지 표시 함수 수정
 function showGuideMessage(text, duration = 2000) {
     const guideMessage = document.createElement('div');
     guideMessage.className = 'guide-message';
     guideMessage.textContent = text;
     guideMessage.style.cssText = `
         position: fixed;
-        top: 60%;
+        top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
         background: rgba(82, 109, 130, 0.9);
@@ -1393,12 +1393,22 @@ function showGuideMessage(text, duration = 2000) {
         border-radius: 5px;
         font-size: 16px;
         z-index: 1000;
-        animation: fadeIn 2000ms ease-in-out, blink 2000ms ease-in-out 2000ms, fadeOut 2000ms ease-in-out 22000ms; // 깜빡임 추가
+        opacity: 0;
+        transition: opacity 0.3s ease-in-out;
+        pointer-events: none;
     `;
     
     document.body.appendChild(guideMessage);
     
+    // DOM에 추가된 후 opacity 변경
+    requestAnimationFrame(() => {
+        guideMessage.style.opacity = '1';
+    });
+
     setTimeout(() => {
-        guideMessage.remove();
+        guideMessage.style.opacity = '0';
+        setTimeout(() => {
+            guideMessage.remove();
+        }, 300);
     }, duration);
 }
