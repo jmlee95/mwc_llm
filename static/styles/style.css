@@ -12,16 +12,17 @@
 	width: 100%;
 	min-width: 540px;
 	height: 100vh;
-	background-color: #F4F4F4;
+	background-image: url('../images/background.png'); /* 기존 : background-color: #526d82; */
+	background-size: cover;
+	background-position: center;
+	background-repeat: no-repeat;
 	overflow: hidden;
 }
 .logo {
 	position: absolute;
-	width: 39px;
-	height: 32px;
-	top: 1012px;
-	left: 60px;
-	
+	top: 1012px; /* 기존 : 25px; */
+	left: 60px; /* 기존 : 35px; */
+	height: 40px;/* 기존 : 40px; */
 }
 .logo a img {
 	width: auto;
@@ -31,23 +32,43 @@
 }
 .btn_home {
 	position: absolute;
-	top: 25px;
-	right: 35px;
-	width: 40px;
-	height: 40px;
+	top: 45px;	/* 기존 : 25px; */
+	left: 60px;	/* 기존 : right: 35px; */
+	width: 36px; /* 기존 : 40px; */
+	height: 36px; /* 기존 : 40px; */
 	border-radius: 50%;
-	background-color: #5E5EDF;
+	/*background-color: #2e4455;*/
 	z-index: 5;
 }
 .btn_home:hover {
-	background-color: #4A4ACD;
+	/*background-color: #172937;*/
+	background-color: #ffffff80; /* #ffffff(흰색) + b3(70% 불투명) */
 }
 .btn_home > img {
-	width: 20px;
+	width: 40px;
 	height: auto;
 	-o-object-fit: cover;
 	object-fit: cover;
 	margin: 0 auto;
+}
+.btn_home_txt {
+	position: absolute;
+	top: 45px;  /* btn_home과 같은 높이에 위치 */
+	left: 116px;  /* btn_home(60px) + 간격(20px) + 왼쪽 여백(36px) */
+	height: 36px;  /* btn_home과 동일한 높이 */
+	display: flex;
+	align-items: center;
+}
+
+.btn_home_txt p {
+	color: #FFFFFF;
+	font-size: 30px;
+	line-height: 1.2;
+	white-space: nowrap;  /* 텍스트가 한 줄로 유지되도록 */
+}
+
+.btn_home_txt p strong {
+	font-weight: 600;
 }
 
 /* ====== start ======= */
@@ -144,25 +165,31 @@
 	height: -moz-fit-content;
 	height: fit-content;
 	border-radius: 80px;
-	color: #fff;
+	color: #5E5EDF; /*기존  #fff */;
 	font-size: 3em;
 	text-transform: uppercase;
-	background-color: #5E5EDF;
-	-webkit-box-shadow: 10px 10px 0 rgba(255, 255, 255, 1);
-	box-shadow: 10px 10px 0 rgba(255, 255, 255, 1);
-	border: 6px solid #fff;
+	background-color: #fff; /* 기존 #2e4455; */
+	/*-webkit-box-shadow: 10px 10px 0 rgba(255, 255, 255, 1);
+	box-shadow: 10px 10px 0 rgba(255, 255, 255, 1);*/
+	border: 2px solid #A795FF40; /* 기존	6px solid #fff; */
 	padding: 20px;
 	-webkit-transition: all 0.2s ease-in-out;
 	-o-transition: all 0.2s ease-in-out;
 	transition: all 0.2s ease-in-out;
 }
 .btn_start:hover {
+	background: linear-gradient(159.21deg, #C4ACF1 0%, #78A9FF 50.96%, #C4ACF1 102.72%);
+	box-shadow: 4px 4px 4px 0px #5A5A5A40;
+	color: #FFFFFF;
+	transform: translateY(-2px);
+	/*기존
 	-webkit-box-shadow: 0 0 0 0;
 	box-shadow: 0 0 0 0;
 	background-color: #4A4ACD;
 	-webkit-transform: translate(10px, 10px);
 	-ms-transform: translate(10px, 10px);
 	transform: translate(10px, 10px);
+	*/
 }
 
 /* ====== scenario ======= */
@@ -199,11 +226,11 @@
 	margin-bottom: 50px;
 }
 .scenario > .top .pic {
-	width: 200px;
-	min-width: 200px;
-	height: 200px;
-	border-radius: 50%;
-	background-color: #f5f5f5;
+	width: 100px;
+	min-width: 100px;
+	height: 100px;
+	/*border-radius: 50%;*/
+	/*background-color: #f5f5f5;*/
 	margin-right: 50px;
 	overflow: hidden;
 }
@@ -290,24 +317,31 @@
 	max-width: 220px;
 	height: 320px;
 	font-size: 1.5em;
-	color: #4d6e91;
+	color: #5E5EDF;
 	font-weight: bold;
 	word-break: keep-all;
 	padding: 0 40px;
 	margin-right: 20px;
-	border: 5px solid #5E5EDF;
-	background-color: #5E5EDF;
+	border: 2px solid #A795FF40; /*	5px solid #2e4455; */
+	background-color: #fff;
 	border-radius: 30px;
-	-webkit-box-shadow: 10px 10px 0 #2e4455;
-	box-shadow: 10px 10px 0 #2e4455;
+	/*	기존  -webkit-box-shadow: 10px 10px 0 #2e4455; */
+	/* 기존 box-shadow: 10px 10px 0 #2e4455;*/
+	box-shadow: 4px 4px 4px 0px #A795FF40;
+	transition: all 0.3s ease-in-out;
 }
 .btn_wrap_scenario > button:hover {
+	background: linear-gradient(159.21deg, #C4ACF1 0%, #78A9FF 50.96%, #C4ACF1 102.72%);
+	box-shadow: 4px 4px 4px 0px #5A5A5A40;
+	color: #FFFFFF;
+	transform: translateY(-2px);
+	/*기존 
 	-webkit-box-shadow: 0 0 0 0;
-	box-shadow: 0 0 0 0;
-	-webkit-transform: translate(10px, 10px);
-	-ms-transform: translate(10px, 10px);
-	transform: translate(10px, 10px);
-	background-color: #4A4ACD;
+    box-shadow: 0 0 0 0;
+    -webkit-transform: translate(10px, 10px);
+    -ms-transform: translate(10px, 10px);
+    transform: translate(10px, 10px);
+	*/
 }
 .btn_wrap_scenario > button:last-child {
 	margin-right: 0;

@@ -12,13 +12,19 @@
 
 <body>
   <div class="wrap">
+
     <!-- 로고 -->
     <h1 class="logo">
       <a href="#"><img src="{{ url_for('static', filename='images/kt_logo_w.png') }}" alt="로고"></a>
     </h1>
 
     <!-- 처음으로 돌아가기 버튼 -->
-    <button type="button" class="btn_home" onclick="location.href='/'"><img src="{{ url_for('static', filename='images/ic_home.png') }}" alt="처음으로"></button>
+    <button type="button" class="btn_home" onclick="location.href='/'">
+      <img src="{{ url_for('static', filename='images/ic_home.png') }}" alt="처음으로">  
+    </button>
+    <div class="btn_home_txt"> 
+      <p><strong>Customer Service Consultant Assist Agent</strong></p>
+    </div>
 
     <!-- 시나리오 선택 / 4개 버튼 -->
     <div class="scenario">
