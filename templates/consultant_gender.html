@@ -19,7 +19,9 @@
 
     <!-- 처음으로 돌아가기 버튼 -->
     <button type="button" class="btn_home" onclick="location.href='/'"><img src="{{ url_for('static', filename='images/ic_home.png') }}" alt="처음으로"></button>
-
+    <div class="btn_home_txt"> 
+      <p><strong>Customer Service Consultant Assist Agent</strong></p>
+    </div>
     <!-- 시나리오 선택 / 4개 버튼 -->
     <div class="scenario">
       <div class="top">
@@ -31,11 +33,11 @@
       </div>
       <div class="btn_wrap_scenario">
         <button class="btn btn_scenario" id="male" onclick="selectGender('male')">
-          <span class="pic"><img src="{{ url_for('static', filename='images/ic_change.png') }}" alt="아이콘"></span>
+          <span class="pic"><img src="{{ url_for('static', filename='images/ic_man.png') }}" alt="아이콘1"></span>
           David
         </button>
         <button class="btn btn_scenario" id="female" onclick="selectGender('female')">
-          <span class="pic"><img src="{{ url_for('static', filename='images/ic_combine.png') }}" alt="아이콘"></span>
+          <span class="pic"><img src="{{ url_for('static', filename='images/ic_woman.png') }}" alt="아이콘"></span>
           Ashely
         </button>
       </div>
