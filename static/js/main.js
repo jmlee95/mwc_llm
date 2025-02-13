@@ -1155,7 +1155,7 @@ function createClickGuide(targetElement, guideText, onClickCallback, position = 
 		left: 0;
 		width: 100%;
 		height: 100%;
-		background: rgba(0, 0, 0, 0.7);
+		background: rgba(0, 0, 0, 0.4);
 		z-index: 1000;
 	`;
 	document.body.appendChild(overlay);

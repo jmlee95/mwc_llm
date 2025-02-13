@@ -19,10 +19,10 @@
 	overflow: hidden;
 }
 .logo {
-	position: absolute;
-	top: 1012px; /* 기존 : 25px; */
-	left: 60px; /* 기존 : 35px; */
-	height: 40px;/* 기존 : 40px; */
+	position: fixed;
+	bottom: 20px;
+	left: 20px;
+	height: 40px;
 }
 .logo a img {
 	width: auto;
@@ -372,11 +372,11 @@
 }
 .inner > section.customer {
 	width: 320px;
-	padding: 74px 10px 0 35px;
+	padding: 100px 10px 0 35px;
 }
 .inner > section.chat {
 	width: calc(50% - 160px);
-	padding: 0 15px;
+	padding: 100px 10px 0 15px;
 }
 .inner > section.options {
 	width: calc(50% - 160px);
@@ -480,7 +480,8 @@ p.customer_name {
 }
 .chat_wrap {
 	position: relative;
-	height: calc(100vh - 74px - 20px);
+	height: calc(100vh - 100px - 20px);
+	margin-bottom: 10px;
 	border-radius: 20px;
 	background: #fff;
 	-webkit-box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -673,8 +674,9 @@ h3.staff_name {
 	margin-right: 5px;
 }
 .options_wrap {
-	height: calc(100vh - 74px - 20px);
-	margin-top: 74px;
+	height: calc(100vh - 100px - 20px);
+	margin-top: 100px;
+	margin-bottom: 10px;
 	display: -webkit-box;
 	display: -ms-flexbox;
 	display: flex;
@@ -985,7 +987,7 @@ h3.staff_name {
 	font-size: 0.8em;
 	font-weight: bold;
 	text-align: center;
-	background-color: #dee9f5;
+	background: #BFBFF2;
 	margin-right: 10px;
 	padding: 5px 10px;
 }
@@ -2067,7 +2069,7 @@ h3.staff_name {
 /* chat_area 영역 수정 - End Consultation 버튼을 위한 여백 확보 */
 .chat_area {
 	padding-bottom: 70px;
-	height: calc(100% - 80px);
+	height: calc(100% - 130px);
 	padding: 0 20px 20px 20px;
 	overflow-y: auto;
 }
