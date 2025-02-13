@@ -15,7 +15,7 @@
   <div class="wrap">
     <!-- 로고 -->
     <h1 class="logo">
-      <a href="#"><img src="{{ url_for('static', filename='images/kt_logo_w.png') }}" alt="로고"></a>
+      <a href="#"><img src="{{ url_for('static', filename='images/kt_logo_w_new.png') }}" alt="로고"></a>
     </h1>
 
     <!-- 처음으로 돌아가기 버튼 -->
@@ -57,7 +57,7 @@
 
       <!-- 채팅 -->
       <section class="chat">
-        <h2>Experience KT Customer Service AI Agent</h2>
+        <h2>Customer Service Consultant Assist Agent</h2>
         <div class="chat_wrap">
           <div class="top">
             <button class="btn_speaker">
@@ -92,20 +92,14 @@
                     <div class="tab_menu">
                       <ul class="list">
                         <li class="active">
-                          <a href="#tab_ai_1" class="btn active">Answer 1</a>
-                        </li>
-                        <li>
-                          <a href="#tab_ai_2" class="btn">Answer 2</a>
+                          <a href="#tab_ai_1" class="btn active">Generated Answer</a>
                         </li>
                       </ul>
-
                       <div class="cont_area">
                         <div id="tab_ai_1" class="cont" style="display:block;">
                           <!-- AI 답변 1이 여기에 들어갑니다 -->
                         </div>
-                        <div id="tab_ai_2" class="cont">
-                          <!-- AI 답변 2가 여기에 들어갑니다 -->
-                        </div>
+
                       </div>
                     </div>
                   </div>
@@ -242,7 +236,7 @@
   <script>
     // 이미지 경로를 전역 변수로 설정
     window.STATIC_URLS = {
-      staff_icon: "{{ url_for('static', filename='images/ic_staff.png') }}",
+      staff_icon: "{{ url_for('static', filename='images/ic_staff_new.png') }}",
       profile_icon: "{{ url_for('static', filename='images/ic_profile.png') }}",
       arrow_icon: "{{ url_for('static', filename='images/ic_arrow_u_w.png') }}"
     };

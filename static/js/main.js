@@ -234,14 +234,14 @@ async function typeWriter(element, text, speed = 50) {
 		lineDiv.style.wordBreak = 'break-word';
 		
 		// 채팅 영역일 경우 추가 스타일 적용
-		if (isChatArea) {
-			if (line.startsWith('- ')) {
-				lineDiv.style.paddingLeft = '1em';
-			} else if (/^\d+\./.test(line)) {
-				lineDiv.style.fontWeight = 'bold';
-				lineDiv.style.marginTop = '0.5em';
-			}
-		}
+		// if (isChatArea) {
+		// 	if (line.startsWith('- ')) {
+		// 		lineDiv.style.paddingLeft = '1em';
+		// 	} else if (/^\d+\./.test(line)) {
+		// 		lineDiv.style.fontWeight = 'bold';
+		// 		lineDiv.style.marginTop = '0.5em';
+		// 	}
+		// }
 		
 		element.appendChild(lineDiv);
 		
@@ -259,14 +259,14 @@ async function typeWriter(element, text, speed = 50) {
 		}
 		
 		// 줄간격 조정
-		if (line !== lines[lines.length - 1]) {
-			// 빈 줄이면 더 큰 간격 추가
-			if (line.trim() === '') {
-				lineDiv.style.marginBottom = '1em';
-			} else {
-				lineDiv.style.marginBottom = '0.5em';
-			}
-		}
+		// if (line !== lines[lines.length - 1]) {
+		// 	// 빈 줄이면 더 큰 간격 추가
+		// 	if (line.trim() === '') {
+		// 		lineDiv.style.marginBottom = '1em';
+		// 	} else {
+		// 		lineDiv.style.marginBottom = '0.5em';
+		// 	}
+		// }
 	}
 }
 
@@ -523,9 +523,8 @@ style.textContent = `
 
 	/* 깜빡이는 버튼 효과 */
 	@keyframes blink {
-		0% { opacity: 1; }
+		0%, 100% { opacity: 1; }
 		50% { opacity: 0.5; }
-		100% { opacity: 1; }
 	}
 	.focusing {
 		animation: blink 1.5s infinite;
@@ -750,14 +749,13 @@ let isGeneratingAnswer = false;
 			
 			// AI 답변 가져오기
 			const response = await fetch('/api/get_answers');
-			const answers = await response.json();
-			
+			const answers = await response.json();            
 			// 각 탭에 답변 표시
 			const tab1 = document.querySelector('#tab_ai_1');
-			const tab2 = document.querySelector('#tab_ai_2');
+			//const tab2 = document.querySelector('#tab_ai_2');
 			
 			await typeWriter(tab1, answers.answer1, 10);
-			await typeWriter(tab2, answers.answer2, 10);
+			//await typeWriter(tab2, answers.answer2, 10);
 			
 			// 답변 생성 완료 후 Knowledge 버튼 표시
 					const knowledgeButtons = document.querySelectorAll('.btn_knowledge');
@@ -805,7 +803,7 @@ let isGeneratingAnswer = false;
 			this.style.cursor = 'default';
 			
 			// 답변 생성 여부 확인
-			const selectedTab = document.querySelector('.tab_menu .list li.active a').getAttribute('href');
+					const selectedTab = document.querySelector('.tab_menu .list li.active a').getAttribute('href');
 			const selectedAnswer = document.querySelector(selectedTab);
 			
 			if (!selectedAnswer || !selectedAnswer.textContent.trim()) {
@@ -817,10 +815,26 @@ let isGeneratingAnswer = false;
 				return;
 			}
 
-					const chatArea = document.querySelector('.chat_area');
+			const chatArea = document.querySelector('.chat_area');
 			
+             // AI 답변 가이드 메시지 표시
+            showGuideMessage('AI is Answering', 20000);
 			// AI 답변을 채팅창에 추가
-			await createAndPlayMessage(true, selectedAnswer.textContent, 'AI_GENIE_3', chatArea);
+            const llm_answer = 
+            `The 5G plans in the range of 60,000 KRW(40 EUR) are as follows:
+            1. **5G Slim**
+             - Monthly Fee: 55,000 KRW(37 EUR)
+             - Unlimited voice calls and texts
+             - 300 minutes for video calls and additional calls
+             - Basic Data: 14GB (after consumption, speed is limited to a maximum of 1Mbps)
+            2. **5G Simple**
+             - Monthly Fee: 61,000 KRW(41 EUR)
+             - Unlimited voice calls and texts
+             - 300 minutes for video calls and additional calls
+             - Basic Data: 30GB (after consumption, speed is limited to a maximum of 1Mbps).
+            In addition, there are various options for 5G plans, so you can choose according to your needs.`;
+
+			await createAndPlayMessage(true, llm_answer, 'AI_GENIE_3', chatArea);
 			await new Promise(resolve => setTimeout(resolve, 1000));
 
 			// 고객 응답 추가
@@ -1361,4 +1375,30 @@ function someOtherFunction() {
 			// 추가 동작 실행
 		}
 	);
+}
+
+// 가이드 메시지 표시 함수 추가
+function showGuideMessage(text, duration = 2000) {
+    const guideMessage = document.createElement('div');
+    guideMessage.className = 'guide-message';
+    guideMessage.textContent = text;
+    guideMessage.style.cssText = `
+        position: fixed;
+        top: 60%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(82, 109, 130, 0.9);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        z-index: 1000;
+        animation: fadeIn 2000ms ease-in-out, blink 2000ms ease-in-out 2000ms, fadeOut 2000ms ease-in-out 22000ms; // 깜빡임 추가
+    `;
+    
+    document.body.appendChild(guideMessage);
+    
+    setTimeout(() => {
+        guideMessage.remove();
+    }, duration);
 }

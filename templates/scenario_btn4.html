@@ -54,7 +54,8 @@
     function selectScenario(scenarioType) {
         // sessionStorage에 선택된 시나리오 타입 저장
         sessionStorage.setItem('selectedScenario', scenarioType);
-        // 다음 페이지로 이동
+
+        // 시나리오 타입별 페이지 분기처리
         window.location.href = '/main';
     }
   </script>
