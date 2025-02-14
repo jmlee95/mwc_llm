@@ -15,12 +15,14 @@
   <div class="wrap">
     <!-- 로고 -->
     <h1 class="logo">
-      <a href="#"><img src="{{ url_for('static', filename='images/kt_logo_w.png') }}" alt="로고"></a>
+      <a href="#"><img src="{{ url_for('static', filename='images/kt_logo_w_new.png') }}" alt="로고"></a>
     </h1>
 
     <!-- 처음으로 돌아가기 버튼 -->
     <button type="button" class="btn_home" onclick="location.href='/'"><img src="{{ url_for('static', filename='images/ic_home.png') }}" alt="처음으로"></button>
-
+    <div class="btn_home_txt"> 
+      <p><strong>Customer Service Consultant Assist Agent</strong></p>
+    </div>
     <!-- 내용 -->
     <div class="inner">
       <!-- 리스트 -->
@@ -57,15 +59,17 @@
 
       <!-- 채팅 -->
       <section class="chat">
-        <h2>체험하기</h2>
         <div class="chat_wrap">
           <div class="top">
-            <button class="btn_speaker"><img src="{{ url_for('static', filename='images/ic_speakerOn.png') }}" alt=""></button>
+            <button class="btn_speaker">
+              <img src="{{ url_for('static', filename='images/ic_speakerOn.png') }}" alt="">
+            </button>
             <p class="date">2025.03.04</p>
           </div>
-          <div class="chat_area">
+          <div class="chat_area" style="max-height: calc(100vh - 230px); overflow-y: auto;">
             <!-- 채팅 내용은 JavaScript로 동적 생성됨 -->
           </div>
+          <button type="button" class="btn_red btn_finish" style="float: right; margin-right: 20px;">End Consultation</button>
         </div>
       </section>
 
@@ -74,39 +78,33 @@
         <div class="options_wrap">
           <div class="options_answer">
             <div class="box_area customer_focusing">
+              <div class="top">
+                <h2>Customer Inquiry</h2>
+              </div>
               <div class="comment">
                 <!-- 고객 문의 내용이 여기에 동적으로 들어갑니다 -->
               </div>
             </div>
             <div class="aiAnswer_wrap">
-              <div class="top">
-                <h2>AI answer</h2>
-                <div class="btn_wrap">
-                  <!--<button type="button" class="btn_red btn_answerMaker btn_blink">답변 생성하기</button>-->
-                  <button type="button" class="btn_red btn_answerMaker">Generate Answer</button>
-                  <button type="button" class="btn_red btn_answer">Answer</button>
-                </div>
-              </div>
+
               <div class="box_area">
+                <div class="top">
+                  <h2>AI answer</h2>
+                  <button type="button" class="btn_red btn_answerMaker">Generate Answer</button>
+                </div>
                 <div class="context">
                   <div class="tab_wrap">
                     <div class="tab_menu">
                       <ul class="list">
                         <li class="active">
-                          <a href="#tab_ai_1" class="btn active">Answer 1</a>
-                        </li>
-                        <li>
-                          <a href="#tab_ai_2" class="btn">Answer 2</a>
+                          <a href="#tab_ai_1" class="btn active">Generated Answer</a>
                         </li>
                       </ul>
-
                       <div class="cont_area">
                         <div id="tab_ai_1" class="cont" style="display:block;">
                           <!-- AI 답변 1이 여기에 들어갑니다 -->
                         </div>
-                        <div id="tab_ai_2" class="cont">
-                          <!-- AI 답변 2가 여기에 들어갑니다 -->
-                        </div>
+
                       </div>
                     </div>
                   </div>
@@ -151,13 +149,13 @@
             </ul>
           </div>
           <div class="summary_wrap">
-            <div class="top">
-              <h2>summary</h2>
-              <button type="button" class="btn_red btn_finish">End Consultation</button>
-            </div>
             <div class="box_area">
+              <div class="top">
+                <h2>summary</h2>
+                <button type="button" class="btn_red btn_answer">Answer</button>
+              </div>
               <div class="context">
-                <h3>Consultation Summary</h3>
+                <h3></h3>
                 <ul>
                   <li>
                     <p class="label"><strong>Duration</strong></p>
@@ -243,10 +241,31 @@
   <script>
     // 이미지 경로를 전역 변수로 설정
     window.STATIC_URLS = {
-      staff_icon: "{{ url_for('static', filename='images/ic_staff.png') }}",
+      staff_icon: "{{ url_for('static', filename='images/ic_staff_new.png') }}",
       profile_icon: "{{ url_for('static', filename='images/ic_profile.png') }}",
       arrow_icon: "{{ url_for('static', filename='images/ic_arrow_u_w.png') }}"
     };
+    
+    // sessionStorage에서 저장된 값들을 가져옴
+    window.SCENARIO = sessionStorage.getItem('selectedScenario') || 'sc_change';
+    window.CONSULTANT = sessionStorage.getItem('selectedGender') || 'male';
+    window.CONSULTANT_NAME = sessionStorage.getItem('consultantName') || 'AI GENIE';
+
+    // staff_name 업데이트
+    document.addEventListener('DOMContentLoaded', function() {
+        // 모든 staff_name 클래스를 가진 요소 업데이트
+        const staffNameElements = document.querySelectorAll('.staff_name');
+        staffNameElements.forEach(element => {
+            element.textContent = window.CONSULTANT_NAME;
+        });
+    });
+
+    // 페이지 로드 완료 후 sessionStorage 초기화 (선택사항)
+    window.addEventListener('load', function() {
+        sessionStorage.removeItem('selectedScenario');
+        sessionStorage.removeItem('selectedGender');
+        sessionStorage.removeItem('consultantName');
+    });
   </script>
   <script src="{{ url_for('static', filename='js/sliders.js') }}"></script>
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>

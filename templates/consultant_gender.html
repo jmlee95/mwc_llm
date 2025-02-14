@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KT MWC-scenario</title>
+
+  <!-- 스타일 -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/reset.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+</head>
+
+<body>
+  <div class="wrap">
+    <!-- 로고 -->
+    <h1 class="logo">
+      <a href="#"><img src="{{ url_for('static', filename='images/kt_logo_w.png') }}" alt="로고"></a>
+    </h1>
+
+    <!-- 처음으로 돌아가기 버튼 -->
+    <button type="button" class="btn_home" onclick="location.href='/'"><img src="{{ url_for('static', filename='images/ic_home.png') }}" alt="처음으로"></button>
+    <div class="btn_home_txt"> 
+      <p><strong>Customer Service Consultant Assist Agent</strong></p>
+    </div>
+    <!-- 시나리오 선택 / 4개 버튼 -->
+    <div class="scenario">
+      <div class="top">
+        <div class="pic"><img src="{{ url_for('static', filename='images/character.png') }}" alt="이미지"></div>
+        <div class="bubble">
+          <!--<p>원하는 컨설턴트를 <strong>선택</strong>하세요!</p>-->
+          <p><strong>Select</strong> consultant name you want.</p>
+        </div>
+      </div>
+      <div class="btn_wrap_scenario">
+        <button class="btn btn_scenario" id="male" onclick="selectGender('male')">
+          <span class="pic"><img src="{{ url_for('static', filename='images/ic_man.png') }}" alt="아이콘1"></span>
+          David
+        </button>
+        <button class="btn btn_scenario" id="female" onclick="selectGender('female')">
+          <span class="pic"><img src="{{ url_for('static', filename='images/ic_woman.png') }}" alt="아이콘"></span>
+          Ashely
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function selectGender(gender) {
+        // sessionStorage에 선택된 gender와 이름 저장
+        sessionStorage.setItem('selectedGender', gender);
+        // 선택된 gender에 따라 컨설턴트 이름 저장
+        const consultantName = gender === 'male' ? 'David Consultant' : 'Ashely Consultant';
+        sessionStorage.setItem('consultantName', consultantName);
+        // 다음 페이지로 이동
+        window.location.href = '/scenario';
+    }
+  </script>
+</body>
+</html> 
