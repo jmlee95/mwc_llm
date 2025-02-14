@@ -8,6 +8,13 @@
   <!-- 스타일 -->
   <link rel="stylesheet" href="{{ url_for('static', filename='styles/reset.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+  <style>
+    body {
+      background-image: url('../static/images/background.png'); /* 배경 이미지 설정 */
+      background-size: cover; /* 배경 이미지 크기 조정 */
+      background-position: center; /* 배경 이미지 위치 조정 */
+    }
+  </style>
 </head>
 
 <body>
@@ -23,7 +30,7 @@
       <img src="{{ url_for('static', filename='images/ic_home.png') }}" alt="처음으로">  
     </button>
     <div class="btn_home_txt"> 
-      <p><strong>Customer Service Consultant Assist Agent</strong></p>
+      <p><strong>Customer Service Consultant Support Agent</strong></p>
     </div>
 
     <!-- 시나리오 선택 / 4개 버튼 -->

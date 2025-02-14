@@ -200,7 +200,7 @@ async function createAndPlayMessage(isStaff, text, audioKey, chatArea) {
     try {
         if(isStaff){
             await Promise.all([
-                typeWriter(textElement, text, 65),
+                typeWriter(textElement, text, 44),
                 playAudio(audioKey)
             ]);
         }
@@ -430,7 +430,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				top: 50%;
 				left: 50%;
 				transform: translate(-50%, -50%);
-				background: rgba(82, 109, 130, 0.95);
+				background: #9797c5;
 				padding: 30px;
 				border-radius: 10px;
 				text-align: center;
@@ -440,35 +440,22 @@ document.addEventListener('DOMContentLoaded', function() {
 			completionPopup.innerHTML = `
 				<h2 style="color: white; font-size: 24px; margin-bottom: 20px;">Consultation Completed!</h2>
 				<div style="display: flex; gap: 20px; justify-content: center;">
-					<button class="btn_home_popup" style="
-						padding: 10px 30px;
-						background: #2e4455;
-						color: white;
-						border: none;
-						border-radius: 5px;
-						cursor: pointer;
-						font-size: 16px;
-					">Home</button>
-					<button class="btn_scenario_popup" style="
-						padding: 10px 30px;
-						background: #2e4455;
-						color: white;
-						border: none;
-						border-radius: 5px;
-						cursor: pointer;
-						font-size: 16px;
-					">Select Scenario</button>
+					<button type="button" class="btn_red" id="homeButton">Home</button>
+					<button type="button" class="btn_red" id="scenarioButton">Select Scenario</button>
 				</div>
 			`;
 			
 			document.body.appendChild(completionPopup);
 			
 			// 버튼 이벤트 추가
-			completionPopup.querySelector('.btn_home_popup').addEventListener('click', () => {
+			const homeButton = completionPopup.querySelector('#homeButton');
+			const scenarioButton = completionPopup.querySelector('#scenarioButton');
+			
+			homeButton.addEventListener('click', () => {
 				window.location.href = '/';
 			});
 			
-			completionPopup.querySelector('.btn_scenario_popup').addEventListener('click', () => {
+			scenarioButton.addEventListener('click', () => {
 				window.location.href = '/scenario';
 			});
 		});
@@ -1232,7 +1219,7 @@ function createClickGuide(targetElement, guideText, onClickCallback, position = 
 		transform: ${pos.transform || 'none'};
 		color: #fff;
 		font-size: 16px;
-		background: rgba(82, 109, 130, 0.9);
+		background: rgba(0, 0, 0, 0.4);
 		padding: 10px 20px;
 		border-radius: 5px;
 		white-space: nowrap;
@@ -1387,7 +1374,7 @@ function showGuideMessage(text, duration = 2000) {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background: rgba(82, 109, 130, 0.9);
+        background: rgba(0, 0, 0, 0.4);
         color: white;
         padding: 10px 20px;
         border-radius: 5px;

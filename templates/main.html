@@ -9,19 +9,24 @@
   <!-- 스타일 -->
   <link rel="stylesheet" href="{{ url_for('static', filename='styles/reset.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+  <style>
+    body {
+      background-color: #F4F4F4; /* 배경 색상 설정 */
+    }
+  </style>
 </head>
 
 <body>
   <div class="wrap">
     <!-- 로고 -->
     <h1 class="logo">
-      <a href="#"><img src="{{ url_for('static', filename='images/kt_logo_w_new.png') }}" alt="로고"></a>
+      <a href="#"><img src="{{ url_for('static', filename='images/kt_logo_w.png') }}" alt="로고"></a>
     </h1>
 
     <!-- 처음으로 돌아가기 버튼 -->
     <button type="button" class="btn_home" onclick="location.href='/'"><img src="{{ url_for('static', filename='images/ic_home.png') }}" alt="처음으로"></button>
     <div class="btn_home_txt"> 
-      <p><strong>Customer Service Consultant Assist Agent</strong></p>
+      <p><strong>Customer Service Consultant Support Agent</strong></p>
     </div>
     <!-- 내용 -->
     <div class="inner">
@@ -61,10 +66,7 @@
       <section class="chat">
         <div class="chat_wrap">
           <div class="top">
-            <button class="btn_speaker">
-              <img src="{{ url_for('static', filename='images/ic_speakerOn.png') }}" alt="">
-            </button>
-            <p class="date">2025.03.04</p>
+            <h2>CHAT</h2>
           </div>
           <div class="chat_area" style="max-height: calc(100vh - 230px); overflow-y: auto;">
             <!-- 채팅 내용은 JavaScript로 동적 생성됨 -->
@@ -89,7 +91,7 @@
 
               <div class="box_area">
                 <div class="top">
-                  <h2>AI answer</h2>
+                  <h2>Support Agent</h2>
                   <button type="button" class="btn_red btn_answerMaker">Generate Answer</button>
                 </div>
                 <div class="context">
@@ -108,11 +110,11 @@
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="btns">
-                  <button type="button" class="btn_knowledge" id="knowledge1" style="display: none;">Knowledge 1</button>
-                  <button type="button" class="btn_knowledge" id="knowledge2" style="display: none;">Knowledge 2</button>
-                  <button type="button" class="btn_knowledge" id="knowledge3" style="display: none;">Knowledge 3</button>
+                  <div class="btns">
+                    <button type="button" class="btn_knowledge" id="knowledge1" style="display: none;">Knowledge 1</button>
+                    <button type="button" class="btn_knowledge" id="knowledge2" style="display: none;">Knowledge 2</button>
+                    <button type="button" class="btn_knowledge" id="knowledge3" style="display: none;">Knowledge 3</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -178,11 +180,11 @@
             </div>
           </div>
           <div class="history_wrap">
-            <div class="top">
-              <h2>history</h2>
-              <button type="button" class="btn_red">Save</button>
-            </div>
             <div class="box_area">
+              <div class="top">
+                <h2>history</h2>
+                <button type="button" class="btn_red">Save</button>
+              </div>
               <div class="context">
                 <ul>
                   <li>
