@@ -38,7 +38,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Tools\mwc\mwc_llm\venv"
+VIRTUAL_ENV="C:\MWC\MWC시연_퍼블리싱_v0.1\venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
