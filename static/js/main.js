@@ -318,8 +318,26 @@ function createCustomerMessage(text) {
 	return div;
 }
 
+// 현재 날짜를 yyyy.mm.dd 형식으로 표시하는 함수
+function updateCurrentDate() {
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const formattedDate = `${year}.${month}.${day}`;
+    
+    // 모든 날짜 표시 요소 업데이트
+    const dateElements = document.querySelectorAll('.date');
+    dateElements.forEach(element => {
+        element.textContent = formattedDate;
+    });
+}
+
 // 페이지 로드 시 실행
 document.addEventListener('DOMContentLoaded', function() {
+	// 현재 날짜 표시 업데이트
+	updateCurrentDate();
+	
 	const chatArea = document.querySelector('.chat_area');
 	if (chatArea) {
 		// 오디오 컨텍스트 초기화
