@@ -25,6 +25,7 @@ function initKnowledgePopup() {
                 // TOP 버튼 이벤트 초기화
                 initTopButton();
             }
+
             
         } catch (error) {
             console.error('Error loading knowledge content:', error);
@@ -158,7 +159,7 @@ function initKnowledgePopup() {
 
         // 첫 번째 네비게이션 링크의 텍스트 업데이트 (홈 아이콘 유지)
         const firstNaviLink = naviLinks[0].querySelector('a');
-        firstNaviLink.innerHTML = `<span class="ic_home"><img src="/static/images/ic_home.png" alt="홈으로"></span> ${navigationText}`;
+        firstNaviLink.innerHTML = `<span class="ic_home"><img src="/static/images/ic_home_knwlg.png" alt="홈으로"></span> ${navigationText}`;
 
         // 두 번째 네비게이션 링크는 'Product(Plan)'으로 고정
         naviLinks[1].querySelector('a').textContent = 'Product(Plan)';
@@ -201,8 +202,8 @@ function initKnowledgePopup() {
             e.preventDefault();
             popup.classList.add('active');
             
-            // 5G 슬림 요금제 내용 로드
-            const filePath = '/knwlgFile/5G 슬림 요금제 ver.7/5G 슬림 요금제 ver.7.html';
+            // 5G 슬림 요금제 영문 내용 로드
+            const filePath = '/knwlgFile/01_mobile_plan/5G 슬림 요금제 ver.7 [24.03.22]`_eng.html';
             loadKnowledgeContent(filePath);
         });
     }
@@ -214,7 +215,7 @@ function initKnowledgePopup() {
             popup.classList.add('active');
             
             // 5G 슬림 요금제 영문 버전 내용 로드
-            const filePath = '/knwlgFile/5G 슬림 요금제 ver.7/5G 슬림 요금제 ver.7 [24.03.22]`_eng.html';
+            const filePath = '/knwlgFile/01_mobile_plan/5G 요금제 총정리(25.01.24 기준) ver.1 [25.01.24]`_eng.html';
             loadKnowledgeContent(filePath);
         });
     }
@@ -226,7 +227,7 @@ function initKnowledgePopup() {
             popup.classList.add('active');
             
             // 5G 요금제 총정리 내용 로드
-            const filePath = '/knwlgFile/5G 요금제 총정리(25.01.24 기준)/5G 요금제 총정리(25.01.24 기준) ver.1 [25.01.24]`_eng.html';
+            const filePath = '/knwlgFile/01_mobile_plan/5G 요금제 총정리(25.01.24 기준) ver.1 [25.01.24]`_eng.html';
             loadKnowledgeContent(filePath);
         });
     }
@@ -237,15 +238,58 @@ function initKnowledgePopup() {
     
     if (tabListPopup.length > 0 && contentsPopup.length > 0) {
         for (let i = 0; i < tabListPopup.length; i++) {
-            tabListPopup[i].querySelector('.btn').addEventListener('click', function (e) {
+            tabListPopup[i].querySelector('.btn').addEventListener('click', async function (e) {
                 e.preventDefault();
+                
+                // 모든 탭과 컨텐츠 비활성화
                 for (let j = 0; j < tabListPopup.length; j++) {
                     tabListPopup[j].classList.remove('active');
                     contentsPopup[j].style.display = 'none';
                 }
+                
+                // 클릭된 탭 활성화
                 this.parentNode.classList.add('active');
                 const activeCont = this.getAttribute('href');
                 document.querySelector(activeCont).style.display = 'block';
+                
+                // 탭에 따른 문서 로드
+                const tabId = activeCont.replace('#tab', '');
+                let filePath = '';
+                
+                switch(tabId) {
+                    case '1':
+                        filePath = '/knwlgFile/01_mobile_plan/5G 슬림 요금제 ver.7 [24.03.22]`_eng.html';
+                        break;
+                    case '2':
+                        filePath = '/knwlgFile/01_mobile_plan/5G 슬림 요금제_FAQ_eng.html';
+                        break;
+                    case '3':
+                        filePath = '/knwlgFile/01_mobile_plan/5G 슬림 요금제_이벤트_eng.html';
+                        break;
+                }
+                
+                if (filePath) {
+                    try {
+                        const response = await fetch(filePath);
+                        if (!response.ok) throw new Error('Network response was not ok');
+                        const html = await response.text();
+                        
+                        // 해당 탭의 컨텐츠 영역에 HTML 삽입
+                        const tabContent = document.querySelector(activeCont);
+                        if (tabContent) {
+                            tabContent.innerHTML = html;
+                            // 검색 기능 초기화
+                            initSearchFunction();
+                            // 네비게이션 텍스트 업데이트
+                            updateNavigationText();
+                            // TOP 버튼 이벤트 초기화
+                            initTopButton();
+                        }
+                    } catch (error) {
+                        console.error('Error loading content:', error);
+                        document.querySelector(activeCont).innerHTML = '내용을 불러오는 중 오류가 발생했습니다.';
+                    }
+                }
             });
         }
     }
