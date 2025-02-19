@@ -202,134 +202,137 @@ async function playAudio(audioKey) {
     }
 }
 
+// AI 메시지 요소 생성 함수 수정
+function createStaffMessage(text) {
+    const div = document.createElement('div');
+    div.className = 'chat_area_staff';
+    div.innerHTML = `
+        <div class="staff_name_area">
+            <div class="pic ic_staff">
+                <img src="${window.STATIC_URLS.staff_icon}" alt="아이콘">
+            </div>
+            <h3 class="staff_name">${window.CONSULTANT_NAME}</h3>
+        </div>
+        <div class="staff_comment" style="position: relative;">
+            <p></p>
+            <button class="btn_skip">>>Skip</button>
+        </div>
+    `;
+    return div;
+}
+
+// 고객 메시지 요소 생성 함수 수정
+function createCustomerMessage(text) {
+    const div = document.createElement('div');
+    div.className = 'chat_area_customer';
+    div.innerHTML = `
+        <div class="customer_name_area">
+            <div class="pic ic_profile">
+                <img src="${window.STATIC_URLS.profile_icon}" alt="아이콘">
+            </div>
+            <h3 class="staff_name">John</h3>
+        </div>
+        <div class="customer_comment" style="position: relative;">
+            <p></p>
+            <button class="btn_skip">>>Skip</button>
+        </div>
+    `;
+    return div;
+}
+
+// typeWriter 함수 추가
+async function typeWriter(element, text, speed = 50) {
+    const lines = text.split('\n');
+    element.innerHTML = '';
+    
+    for (let line of lines) {
+        const lineDiv = document.createElement('div');
+        lineDiv.style.whiteSpace = 'pre-wrap';
+        lineDiv.style.wordBreak = 'break-word';
+        element.appendChild(lineDiv);
+        
+        for (let i = 0; i < line.length; i++) {
+            lineDiv.textContent = line.substring(0, i + 1);
+            element.scrollTop = element.scrollHeight;
+            await new Promise(resolve => setTimeout(resolve, speed));
+        }
+    }
+}
+
 // 메시지 생성 및 재생 함수 수정
 async function createAndPlayMessage(isStaff, text, audioKey, chatArea) {
-    // 메시지 요소 생성
     const messageElement = isStaff ? createStaffMessage(text) : createCustomerMessage(text);
     chatArea.appendChild(messageElement);
     
-    // 메시지 타이핑과 오디오 재생을 동시에 시작
     const textElement = messageElement.querySelector(isStaff ? '.staff_comment p' : '.customer_comment p');
+    const skipButton = messageElement.querySelector('.btn_skip');
+    let isSkipped = false;
+    let isTypingComplete = false;
     
-    try {
-        if(isStaff){
-            await Promise.all([
-                typeWriter(textElement, text, 52),
-                playAudio(audioKey)
-            ]);
+    // Skip 버튼 클릭 이벤트
+    skipButton.addEventListener('click', async () => {
+        isSkipped = true;
+        
+        // 텍스트 즉시 표시
+        textElement.textContent = text;
+        isTypingComplete = true;
+        
+        // Skip 버튼 즉시 제거
+        skipButton.remove();
+        
+        // 텍스트가 완료된 후에만 오디오 페이드 아웃
+        if (currentAudio) {
+            // 볼륨을 서서히 낮추며 페이드 아웃
+            const fadeOutDuration = 200;
+            const fadeOutSteps = 10;
+            const volumeStep = currentAudio.volume / fadeOutSteps;
+            
+            for (let i = 0; i < fadeOutSteps; i++) {
+                await new Promise(r => setTimeout(r, fadeOutDuration / fadeOutSteps));
+                currentAudio.volume = currentAudio.volume - volumeStep;
+            }
+            
+            // 오디오 정지
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
         }
-        else{
-            await Promise.all([
-                typeWriter(textElement, text),
-                playAudio(audioKey)
-            ]);
-        } 
-	} catch (error) {
+    });
+
+    try {
+        // 모든 메시지에 타이핑 효과 적용
+        await Promise.race([
+            new Promise(async (resolve) => {
+                const lines = text.split('\n');
+                for (let line of lines) {
+                    if (isSkipped) break;
+                    const lineDiv = document.createElement('div');
+                    lineDiv.style.whiteSpace = 'pre-wrap';
+                    lineDiv.style.wordBreak = 'break-word';
+                    textElement.appendChild(lineDiv);
+                    
+                    for (let i = 0; i < line.length && !isSkipped; i++) {
+                        lineDiv.textContent = line.substring(0, i + 1);
+                        scrollToBottom(chatArea);
+                        await new Promise(r => setTimeout(r, isStaff ? 52 : 50));
+                    }
+                }
+                isTypingComplete = true;
+                // 타이핑이 완료되면 Skip 버튼 제거
+                if (!isSkipped) {
+                    skipButton.remove();
+                }
+                resolve();
+            }),
+            playAudio(audioKey)
+        ]);
+    } catch (error) {
         console.error('Error in createAndPlayMessage:', error);
-	}
-    
+        // 에러 발생 시에도 Skip 버튼 제거
+        skipButton.remove();
+    }
+
     scrollToBottom(chatArea);
-    
-    // 메시지 요소 반환 추가
     return messageElement;
-}
-
-// 메시지 타이핑 효과 수정
-async function typeWriter(element, text, speed = 50) {
-	const lines = text.split('\n');
-	element.innerHTML = '';
-	
-	// 부모 요소가 chat_area인지 확인
-	const isChatArea = element.closest('.chat_area');
-	
-	for (let line of lines) {
-		const lineDiv = document.createElement('div');
-		lineDiv.style.whiteSpace = 'pre-wrap';
-		lineDiv.style.wordBreak = 'break-word';
-		
-		// 채팅 영역일 경우 추가 스타일 적용
-		// if (isChatArea) {
-		// 	if (line.startsWith('- ')) {
-		// 		lineDiv.style.paddingLeft = '1em';
-		// 	} else if (/^\d+\./.test(line)) {
-		// 		lineDiv.style.fontWeight = 'bold';
-		// 		lineDiv.style.marginTop = '0.5em';
-		// 	}
-		// }
-		
-		element.appendChild(lineDiv);
-		
-		const lineSpan = document.createElement('span');
-		lineDiv.appendChild(lineSpan);
-		
-		for (let i = 0; i < line.length; i++) {
-			lineSpan.textContent = line.substring(0, i + 1);
-			if (isChatArea) {
-				scrollToBottom(element.closest('.chat_area'));
-			} else {
-				element.scrollTop = element.scrollHeight;
-			}
-		await new Promise(resolve => setTimeout(resolve, speed));
-		}
-		
-		// 줄간격 조정
-		// if (line !== lines[lines.length - 1]) {
-		// 	// 빈 줄이면 더 큰 간격 추가
-		// 	if (line.trim() === '') {
-		// 		lineDiv.style.marginBottom = '1em';
-		// 	} else {
-		// 		lineDiv.style.marginBottom = '0.5em';
-		// 	}
-		// }
-	}
-}
-
-// AI 메시지 요소 생성
-function createStaffMessage(text) {
-	const div = document.createElement('div');
-	div.className = 'chat_area_staff';
-	div.innerHTML = `
-		<div class="staff_name_area">
-			<div class="pic ic_staff">
-				<img src="${window.STATIC_URLS.staff_icon}" alt="아이콘">
-			</div>
-			<h3 class="staff_name">${window.CONSULTANT_NAME}</h3>
-		</div>
-		<div class="staff_comment">
-			<div class="skip_btn" style="
-				position: absolute;
-				top: -30px;
-				right: 0;
-				background: #526d82;
-				color: white;
-				padding: 5px 15px;
-				border-radius: 15px;
-				cursor: pointer;
-				font-size: 14px;
-				display: none;
-			">Skip</div>
-			<p></p>
-		</div>
-	`;
-	return div;
-}
-
-// 고객 메시지 요소 생성
-function createCustomerMessage(text) {
-	const div = document.createElement('div');
-	div.className = 'chat_area_customer';
-	div.innerHTML = `
-		<div class="customer_name_area">
-			<div class="pic ic_profile">
-				<img src="${window.STATIC_URLS.profile_icon}" alt="아이콘">
-			</div>
-			<h3 class="staff_name">John</h3>
-		</div>
-		<div class="customer_comment">
-			<p>${text}</p>
-		</div>
-	`;
-	return div;
 }
 
 // 현재 날짜를 yyyy.mm.dd 형식으로 표시하는 함수
@@ -848,7 +851,7 @@ let isGeneratingAnswer = false;
 					const chatArea = document.querySelector('.chat_area');
 			
              // AI 답변 가이드 메시지 표시
-            showGuideMessage('AI is Answering', 20000);
+            showGuideMessage('AI is Answering', 2000);
 			// AI 답변을 채팅창에 추가
             const llm_answer = 
             `The 5G plans in the range of 60,000 KRW(40 EUR) are as follows:
