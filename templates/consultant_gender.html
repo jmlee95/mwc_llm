@@ -24,8 +24,10 @@
       <a href="#"><img src="{{ url_for('static', filename='images/kt_logo_w.png') }}" alt="로고"></a>
     </h1>
 
-    <!-- 처음으로 돌아가기 버튼 -->
-    <button type="button" class="btn_home" onclick="location.href='/'"><img src="{{ url_for('static', filename='images/ic_home.png') }}" alt="처음으로"></button>
+    <!-- 이전단계 돌아가기 버튼 -->
+    <button type="button" class="btn_home" onclick="location.href='/'">
+      <img src="{{ url_for('static', filename='images/ic_home.png') }}" alt="이전으로">
+    </button>
     <div class="btn_home_txt"> 
       <p><strong>Customer Service Consultant Support Agent</strong></p>
     </div>
@@ -38,7 +40,7 @@
       <img src="{{ url_for('static', filename='images/ic_settings.png') }}" alt="설정">
     </div>
     <div class="btn_profile">
-      <img src="{{ url_for('static', filename='images/ic_profile1.png') }}" alt="프로필">
+      <img src="{{ url_for('static', filename='images/intro_character.png') }}" alt="프로필">
     </div>
     <!-- 시나리오 선택 / 4개 버튼 -->
     <div class="scenario">
@@ -51,11 +53,11 @@
       </div>
       <div class="btn_wrap_scenario">
         <button class="btn btn_scenario" id="male" onclick="selectGender('male')">
-          <span class="pic"><img src="{{ url_for('static', filename='images/ic_man.png') }}" alt="아이콘1"></span>
+          <span class="pic2"><img src="{{ url_for('static', filename='images/ic_profile_m.png') }}" alt="아이콘1"></span>
           David
         </button>
         <button class="btn btn_scenario" id="female" onclick="selectGender('female')">
-          <span class="pic"><img src="{{ url_for('static', filename='images/ic_woman.png') }}" alt="아이콘"></span>
+          <span class="pic2"><img src="{{ url_for('static', filename='images/ic_profile_w.png') }}" alt="아이콘"></span>
           Ashely
         </button>
       </div>
