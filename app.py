@@ -50,14 +50,14 @@ def main():
 @app.route('/api/stream_message')
 def stream_message():
     messages = [
-        "Hello, this is {consultant_name} from KT. How can I help you?",
+        "Hello, this is {consultant_name} Consultant from KT. How can I help you?",
         "Hello. I would like to change my plan.",
         "Ah, I see. Which plan would you like to change to?",
         "I would like to use a plan that costs around 60,000 KRW(40 EUR)",
         "Yes, please change my plan to the \"5G Slim\" plan.",
         "Understood. The change to the \"5G Slim\" plan at 55,000 KRW (37 EUR) has been completed. Is there anything else I can assist you with?",
         "No, there isn't anything else.",
-        "Yes, thank you. This was {consultant_name} from KT. Have a great day!"
+        "Yes, thank you. This was {consultant_name} Consultant from KT. Have a great day!"
     ]
     return jsonify({"messages": messages})
 
@@ -87,4 +87,4 @@ def serve_audio(filename):
 
 if __name__ == '__main__':
     webbrowser.open('http://localhost:5005')
-    app.run(debug=False, use_reloader=True, port=5005) 
+    app.run(debug=True, use_reloader=True, port=5005) 

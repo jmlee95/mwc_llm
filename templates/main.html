@@ -46,12 +46,12 @@
         <div class="lists">
           <div class="list active">
             <div class="staff_area">
-              <p class="staff_name">AI GENIE</p>
+              <p class="staff_name">{{consultant_name}}</p>
             </div>
             <div class="customer_area">
               <div class="pic ic_profile"><img src="{{ url_for('static', filename='images/ic_profile.png') }}" alt="profile"></div>
               <div class="txt_area">
-                <p class="customer_name">Danny</p>
+                <p class="customer_name">John</p>
                 <p class="txt">Hello</p>
               </div>
               <p class="date">2025.03.04</p>
@@ -59,7 +59,7 @@
           </div>
           <div class="list">
             <div class="staff_area">
-              <p class="staff_name">AI GENIE</p>
+              <p class="staff_name">{{consultant_name}}</p>
             </div>
             <div class="customer_area">
               <div class="pic ic_profile"><img src="{{ url_for('static', filename='images/ic_profile.png') }}" alt="profile"></div>
@@ -77,10 +77,7 @@
       <section class="chat">
         <div class="chat_wrap">
           <div class="top">
-            <button class="btn_speaker">
-              <img src="{{ url_for('static', filename='images/ic_speakerOn.png') }}" alt="">
-            </button>
-            <p class="date">2025.03.04</p>
+            <h2>CHAT</h2>
           </div>
           <div class="chat_area" style="max-height: calc(100vh - 230px); overflow-y: auto;">
             <!-- 채팅 내용은 JavaScript로 동적 생성됨 -->
@@ -257,19 +254,15 @@
   <script>
     // 이미지 경로를 전역 변수로 설정
     window.STATIC_URLS = {
-<<<<<<< HEAD
-      staff_icon: "{{ url_for('static', filename='images/consultant_profile.jpg') }}",
-=======
       staff_icon: "{{ url_for('static', filename='images/ic_profile1.png') }}", //기존 ic_staff_new
->>>>>>> 091e0850840a693ea680bd14a039f6f7f55d094f
       profile_icon: "{{ url_for('static', filename='images/ic_profile.png') }}",
       arrow_icon: "{{ url_for('static', filename='images/ic_arrow_u_w.png') }}"
     };
     
     // sessionStorage에서 저장된 값들을 가져옴
     window.SCENARIO = sessionStorage.getItem('selectedScenario') || 'sc_change';
-    window.CONSULTANT = sessionStorage.getItem('selectedGender') || 'male';
-    window.CONSULTANT_NAME = sessionStorage.getItem('consultantName') || 'AI GENIE';
+    window.CONSULTANT = sessionStorage.getItem('selectedGender') || 'female';
+    window.CONSULTANT_NAME = sessionStorage.getItem('consultantName') || 'Ashely';
 
     // staff_name 업데이트
     document.addEventListener('DOMContentLoaded', function() {

@@ -1,6 +1,30 @@
 //======= 탭
 let activeCont = ''; // 현재 활성화 된 컨텐츠 (기본:#tab1 활성화)
 let closeYN = 0; // 전역 boolean 변수 선언
+const gender = sessionStorage.getItem('selectedGender');
+var audioMap = {
+	'AI_GENIE_1': '/static/audio/1/F/1-1_consultant_01.mp3',
+	'AI_GENIE_2': '/static/audio/1/F/1-1_consultant_02.mp3',
+	'AI_GENIE_3': '/static/audio/1/F/1-1_consultant_03.mp3',
+	'AI_GENIE_4': '/static/audio/1/F/1-1_consultant_04.mp3',
+	'AI_GENIE_5': '/static/audio/1/F/1-1_consultant_05.mp3',
+	'CUSTOMER_1': '/static/audio/1/F/1-1_customer_01.mp3',
+	'CUSTOMER_2': '/static/audio/1/F/1-1_customer_02.mp3',
+	'CUSTOMER_3': '/static/audio/1/F/1-1_customer_03.mp3',
+	'CUSTOMER_4': '/static/audio/1/F/1-1_customer_04.mp3'
+};
+
+var maleAudioMap = {
+	'AI_GENIE_1': '/static/audio/1/M/1-2_consultant_01.mp3',
+	'AI_GENIE_2': '/static/audio/1/M/1-2_consultant_02.mp3',
+	'AI_GENIE_3': '/static/audio/1/M/1-2_consultant_03.mp3',
+	'AI_GENIE_4': '/static/audio/1/M/1-2_consultant_04.mp3',
+	'AI_GENIE_5': '/static/audio/1/M/1-2_consultant_05.mp3',
+	'CUSTOMER_1': '/static/audio/1/M/1-2_customer_01.mp3',
+	'CUSTOMER_2': '/static/audio/1/M/1-2_customer_02.mp3',
+	'CUSTOMER_3': '/static/audio/1/M/1-2_customer_03.mp3',
+	'CUSTOMER_4': '/static/audio/1/M/1-2_customer_04.mp3'
+};
 
 function tab(tablist, contents) {
 	for (var i = 0; i < tablist.length; i++) {
@@ -117,18 +141,7 @@ function scrollToBottom(element) {
 let currentAudio = null;
 let isSpeakerOn = true;
 
-// 오디오 파일 매핑
-const audioMap = {
-    'AI_GENIE_1': '/static/audio/AI_GENIE_1.mp3',
-    'AI_GENIE_2': '/static/audio/AI_GENIE_2.mp3',
-    'AI_GENIE_3': '/static/audio/AI_GENIE_3.mp3',
-    'AI_GENIE_4': '/static/audio/AI_GENIE_4.mp3',
-	'AI_GENIE_5': '/static/audio/AI_GENIE_5.mp3',
-    'CUSTOMER_1': '/static/audio/CUSTOMER_1.mp3',
-    'CUSTOMER_2': '/static/audio/CUSTOMER_2.mp3',
-    'CUSTOMER_3': '/static/audio/CUSTOMER_3.mp3',
-    'CUSTOMER_4': '/static/audio/CUSTOMER_4.mp3'
-};
+
 
 // 스피커 버튼 이벤트 처리
 const speakerBtn = document.querySelector('.btn_speaker');
@@ -155,7 +168,8 @@ async function playAudio(audioKey) {
         currentAudio.pause();
         currentAudio = null;
     }
-    
+    const gender = sessionStorage.getItem('selectedGender');
+
     const audioPath = audioMap[audioKey];
     if (!audioPath) return;
     
@@ -200,7 +214,7 @@ async function createAndPlayMessage(isStaff, text, audioKey, chatArea) {
     try {
         if(isStaff){
             await Promise.all([
-                typeWriter(textElement, text, 44),
+                typeWriter(textElement, text, 52),
                 playAudio(audioKey)
             ]);
         }
@@ -296,7 +310,7 @@ function createCustomerMessage(text) {
 			<div class="pic ic_profile">
 				<img src="${window.STATIC_URLS.profile_icon}" alt="아이콘">
 			</div>
-			<h3 class="staff_name">Danny</h3>
+			<h3 class="staff_name">John</h3>
 		</div>
 		<div class="customer_comment">
 			<p>${text}</p>
@@ -325,6 +339,11 @@ document.addEventListener('DOMContentLoaded', function() {
 	// 현재 날짜 표시 업데이트
 	updateCurrentDate();
 	
+	if(gender =='male'){
+		console.log('male');
+		audioMap = maleAudioMap;
+	}
+
 	const chatArea = document.querySelector('.chat_area');
 	if (chatArea) {
 		// 오디오 컨텍스트 초기화
@@ -740,7 +759,7 @@ let isGeneratingAnswer = false;
 			loadingOverlay.remove();
 			
 			// AI 답변 가져오기
-					const response = await fetch('/api/get_answers');
+			const response = await fetch('/api/get_answers');
 			const answers = await response.json();            
 			// 각 탭에 답변 표시
 			const tab1 = document.querySelector('#tab_ai_1');
@@ -748,7 +767,12 @@ let isGeneratingAnswer = false;
 			
 			await typeWriter(tab1, answers.answer1, 10);
 			//await typeWriter(tab2, answers.answer2, 10);
-			
+
+			// 답변 생성이 완료되면 Customer Inquiry 텍스트 지우기
+			const customerCommentArea = document.querySelector('.box_area.customer_focusing .comment');
+			if (customerCommentArea) {
+				customerCommentArea.textContent = '';
+			}
 			// 답변 생성 완료 후 Knowledge 버튼 표시
 					const knowledgeButtons = document.querySelectorAll('.btn_knowledge');
 			knowledgeButtons.forEach(btn => {
@@ -757,12 +781,16 @@ let isGeneratingAnswer = false;
 			
 			// Knowledge 1 버튼에만 가이드 적용
 			const knowledge1Btn = document.querySelector('#knowledge1');
+			knowledge1Btn.classList.add('focusing');
+
 			if (knowledge1Btn) {
 				setTimeout(() => {
 					createClickGuide(
 						knowledge1Btn,
 						'Please click the button to see the detail knowledge',
-						null,
+						() => {
+							knowledge1Btn.classList.remove('focusing');
+						},
 						'top-left'
 					);
 				}, 500);
@@ -807,7 +835,7 @@ let isGeneratingAnswer = false;
 				return;
 			}
 
-			const chatArea = document.querySelector('.chat_area');
+					const chatArea = document.querySelector('.chat_area');
 			
              // AI 답변 가이드 메시지 표시
             showGuideMessage('Agent is answering', 30000);
@@ -1078,7 +1106,7 @@ if (saveBtn) {
 			const newHistoryItem = document.createElement('li');
 			newHistoryItem.innerHTML = `
 				<p class="num">002</p>
-				<p class="tit">Danny -Change Mobile Plan</p>
+				<p class="tit">John -Change Mobile Plan</p>
 				<p class="date">2025.03.04</p>
 			`;
 			
@@ -1325,7 +1353,7 @@ async function streamMessages() {
 				if (customerComment) {
 					createClickGuide(
 						customerComment,
-						'Please click the button for search knowledge',
+						'Please click the button for search for knowledge using agent',
 						() => {
 							const text = customerComment.querySelector('p').textContent;
 							document.querySelector('.box_area.customer_focusing .comment').textContent = text;
@@ -1336,7 +1364,7 @@ async function streamMessages() {
 								setTimeout(() => {
 									createClickGuide(
 										answerMakerBtn,
-										'Please click the button to see the recommended knowledge',
+										'Please click the button to see the recommended knowledge using agents',
 										null,
 										'top-left'
 									);
