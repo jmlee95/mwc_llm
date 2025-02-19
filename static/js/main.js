@@ -82,27 +82,27 @@ knowledgeBtn1.addEventListener('click', function (e) {
 });
 
 // 두 번째 추천지식 버튼 클릭 이벤트
-// knowledgeBtn2.addEventListener('click', function (e) {
-//     e.preventDefault();
+knowledgeBtn2.addEventListener('click', function (e) {
+    e.preventDefault();
     
-//     // 파일 경로 구성 (백틱과 대괄호를 포함한 정확한 파일명 사용)
-//     const basePath = '/knwlgFile/';
-//     const folderName = '5G 슬림 요금제 ver.7';
-//     const fileName = '5G 슬림 요금제 ver.7 [24.03.22]`_eng.html';
+    // 파일 경로 구성 (백틱과 대괄호를 포함한 정확한 파일명 사용)
+    const basePath = '/knwlgFile/';
+    const folderName = '5G 슬림 요금제 ver.7';
+    const fileName = '5G 슬림 요금제 ver.7 [24.03.22]`_eng.html';
     
-//     // 전체 URL 조합 (encodeURIComponent 사용)
-//     const fullPath = basePath + 
-//         encodeURIComponent(folderName) + '/' + 
-//         encodeURIComponent(fileName);
+    // 전체 URL 조합 (encodeURIComponent 사용)
+    const fullPath = basePath + 
+        encodeURIComponent(folderName) + '/' + 
+        encodeURIComponent(fileName);
     
-//     console.log('Trying to open:', fullPath); // 디버깅용 로그
+    console.log('Trying to open:', fullPath); // 디버깅용 로그
     
-//     // 새 팝업 창 열기
-//     window.open(fullPath, 
-//         '5G Slim Rate Plan', 
-//         'width=900,height=700,scrollbars=yes,resizable=yes'
-//     );
-// });
+    // 새 팝업 창 열기
+    window.open(fullPath, 
+        '5G Slim Rate Plan', 
+        'width=900,height=700,scrollbars=yes,resizable=yes'
+    );
+});
 
 
 // 채팅 영역 스크롤을 최하단으로 이동시키는 함수
@@ -200,7 +200,7 @@ async function createAndPlayMessage(isStaff, text, audioKey, chatArea) {
     try {
         if(isStaff){
             await Promise.all([
-                typeWriter(textElement, text, 44),
+                typeWriter(textElement, text, 65),
                 playAudio(audioKey)
             ]);
         }
@@ -279,8 +279,21 @@ function createStaffMessage(text) {
 			<div class="pic ic_staff">
 				<img src="${window.STATIC_URLS.staff_icon}" alt="아이콘">
 			</div>
+			<h3 class="staff_name">${window.CONSULTANT_NAME}</h3>
 		</div>
 		<div class="staff_comment">
+			<div class="skip_btn" style="
+				position: absolute;
+				top: -30px;
+				right: 0;
+				background: #526d82;
+				color: white;
+				padding: 5px 15px;
+				border-radius: 15px;
+				cursor: pointer;
+				font-size: 14px;
+				display: none;
+			">Skip</div>
 			<p></p>
 		</div>
 	`;
@@ -296,7 +309,7 @@ function createCustomerMessage(text) {
 			<div class="pic ic_profile">
 				<img src="${window.STATIC_URLS.profile_icon}" alt="아이콘">
 			</div>
-			<h3 class="staff_name">Danny</h3>
+			<h3 class="staff_name">Danny Customer</h3>
 		</div>
 		<div class="customer_comment">
 			<p>${text}</p>
@@ -435,7 +448,7 @@ document.addEventListener('DOMContentLoaded', function() {
 				top: 50%;
 				left: 50%;
 				transform: translate(-50%, -50%);
-				background: #9797c5;
+				background: rgba(82, 109, 130, 0.95);
 				padding: 30px;
 				border-radius: 10px;
 				text-align: center;
@@ -445,22 +458,35 @@ document.addEventListener('DOMContentLoaded', function() {
 			completionPopup.innerHTML = `
 				<h2 style="color: white; font-size: 24px; margin-bottom: 20px;">Consultation Completed!</h2>
 				<div style="display: flex; gap: 20px; justify-content: center;">
-					<button type="button" class="btn_red" id="homeButton">Home</button>
-					<button type="button" class="btn_red" id="scenarioButton">Select Scenario</button>
+					<button class="btn_home_popup" style="
+						padding: 10px 30px;
+						background: #2e4455;
+						color: white;
+						border: none;
+						border-radius: 5px;
+						cursor: pointer;
+						font-size: 16px;
+					">Home</button>
+					<button class="btn_scenario_popup" style="
+						padding: 10px 30px;
+						background: #2e4455;
+						color: white;
+						border: none;
+						border-radius: 5px;
+						cursor: pointer;
+						font-size: 16px;
+					">Select Scenario</button>
 				</div>
 			`;
 			
 			document.body.appendChild(completionPopup);
 			
 			// 버튼 이벤트 추가
-			const homeButton = completionPopup.querySelector('#homeButton');
-			const scenarioButton = completionPopup.querySelector('#scenarioButton');
-			
-			homeButton.addEventListener('click', () => {
+			completionPopup.querySelector('.btn_home_popup').addEventListener('click', () => {
 				window.location.href = '/';
 			});
 			
-			scenarioButton.addEventListener('click', () => {
+			completionPopup.querySelector('.btn_scenario_popup').addEventListener('click', () => {
 				window.location.href = '/scenario';
 			});
 		});
@@ -740,7 +766,7 @@ let isGeneratingAnswer = false;
 			loadingOverlay.remove();
 			
 			// AI 답변 가져오기
-					const response = await fetch('/api/get_answers');
+			const response = await fetch('/api/get_answers');
 			const answers = await response.json();            
 			// 각 탭에 답변 표시
 			const tab1 = document.querySelector('#tab_ai_1');
@@ -810,7 +836,7 @@ let isGeneratingAnswer = false;
 			const chatArea = document.querySelector('.chat_area');
 			
              // AI 답변 가이드 메시지 표시
-            showGuideMessage('Agent is answering', 30000);
+            showGuideMessage('AI is Answering', 20000);
 			// AI 답변을 채팅창에 추가
             const llm_answer = 
             `The 5G plans in the range of 60,000 KRW(40 EUR) are as follows:
@@ -961,6 +987,7 @@ let isGeneratingAnswer = false;
 
 			// Summary 영역 업데이트
 				summaryArea.innerHTML = `
+				<h3>Summary of Conversation</h3>
 				<ul>
 					<li>
 						<p class="label"><strong>Duration</strong></p>
@@ -1223,7 +1250,7 @@ function createClickGuide(targetElement, guideText, onClickCallback, position = 
 		transform: ${pos.transform || 'none'};
 		color: #fff;
 		font-size: 16px;
-		background: rgba(0, 0, 0, 0.4);
+		background: rgba(82, 109, 130, 0.9);
 		padding: 10px 20px;
 		border-radius: 5px;
 		white-space: nowrap;
@@ -1367,6 +1394,7 @@ function someOtherFunction() {
 		}
 	);
 }
+
 // 가이드 메시지 표시 함수 수정
 function showGuideMessage(text, duration = 2000) {
     const guideMessage = document.createElement('div');
@@ -1377,7 +1405,7 @@ function showGuideMessage(text, duration = 2000) {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background: rgba(0, 0, 0, 0.4);
+        background: rgba(82, 109, 130, 0.9);
         color: white;
         padding: 10px 20px;
         border-radius: 5px;

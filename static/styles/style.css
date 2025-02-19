@@ -426,6 +426,20 @@
 	padding: 15px;
 }
 
+/* consultant_gender에서 사용. 이미지 크기 조정 */
+.btn_wrap_scenario > button > span.pic2 {
+	position: relative;
+	display: block;
+	width: 80px;
+	height: 80px;
+	background-color: #eef1f6;
+	border-radius: 50%;
+}
+.btn_wrap_scenario > button > span.pic2 > img {
+	margin: 0 auto;
+	padding: 0px;
+}
+
 /* ====== main ======= */
 .inner {
 	display: -webkit-box;

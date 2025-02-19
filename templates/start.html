@@ -24,10 +24,18 @@
       <a href="#"><img src="{{ url_for('static', filename='images/kt_logo_w.png') }}" alt="로고"></a>
     </h1>
 
+    <!-- 이전단계 돌아가기 버튼 -->
+    <button type="button" class="btn_home" onclick="location.href='https://www.google.com'">
+      <img src="{{ url_for('static', filename='images/ic_home.png') }}" alt="이전으로">
+    </button>
+    <div class="btn_home_txt"> 
+      <p><strong>Customer Service Consultant Support Agent</strong></p>
+    </div>
+
     <!-- 시작 -->
     <div class="start_wrap">
       <div class="top">
-        <div class="pic"><img src="{{ url_for('static', filename='images/character.gif') }}" alt="이미지"></div>
+        <div class="pic"><img src="{{ url_for('static', filename='images/intro_character.png') }}" alt="이미지"></div>
         <div class="bubble">
           <!--<p>KT의 상담 Agent가 <span>고객경험과 상담사의 업무</span>를 어떻게 혁신하고 있는지 <strong>직접 체험</strong> 해보세요!</p>-->
           <p><strong>Experience</strong> firsthand how KT's Customer Service Agents are revolutionizing <span>Customer experience and Agent Workflows!</span></p>
@@ -38,3 +46,12 @@
   </div>
 </body>
 </html> 
+
+<script>
+  // 페이지 로드 완료 후 sessionStorage 초기화 (선택사항)
+  window.addEventListener('load', function() {
+        sessionStorage.removeItem('selectedScenario');
+        sessionStorage.removeItem('selectedGender');
+        sessionStorage.removeItem('consultantName');
+    });
+</script>

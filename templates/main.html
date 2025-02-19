@@ -24,7 +24,8 @@
     </h1>
 
     <!-- 처음으로 돌아가기 버튼 -->
-    <button type="button" class="btn_home" onclick="location.href='/'"><img src="{{ url_for('static', filename='images/ic_home.png') }}" alt="처음으로"></button>
+    <button type="button" class="btn_home" onclick="location.href='/scenario'">
+      <img src="{{ url_for('static', filename='images/ic_home.png') }}" alt="이전으로"></button>
     <div class="btn_home_txt"> 
       <p><strong>Customer Service Consultant Support Agent</strong></p>
     </div>
@@ -37,7 +38,7 @@
       <img src="{{ url_for('static', filename='images/ic_settings.png') }}" alt="설정">
     </div>
     <div class="btn_profile">
-      <img src="{{ url_for('static', filename='images/ic_profile1.png') }}" alt="프로필">
+      <img id="profileImage" src="{{ url_for('static', filename='images/ic_profile_m.png') }}" alt="프로필">
     </div>
     <!-- 내용 -->
     <div class="inner">
@@ -257,35 +258,47 @@
   <script>
     // 이미지 경로를 전역 변수로 설정
     window.STATIC_URLS = {
-<<<<<<< HEAD
-      staff_icon: "{{ url_for('static', filename='images/consultant_profile.jpg') }}",
-=======
-      staff_icon: "{{ url_for('static', filename='images/ic_profile1.png') }}", //기존 ic_staff_new
->>>>>>> 091e0850840a693ea680bd14a039f6f7f55d094f
       profile_icon: "{{ url_for('static', filename='images/ic_profile.png') }}",
       arrow_icon: "{{ url_for('static', filename='images/ic_arrow_u_w.png') }}"
     };
     
-    // sessionStorage에서 저장된 값들을 가져옴
-    window.SCENARIO = sessionStorage.getItem('selectedScenario') || 'sc_change';
-    window.CONSULTANT = sessionStorage.getItem('selectedGender') || 'male';
-    window.CONSULTANT_NAME = sessionStorage.getItem('consultantName') || 'AI GENIE';
+    // 성별에 따른 프로필 이미지 경로 반환 함수
+    function getProfileImageByGender(gender) {
+      return gender === 'female' 
+        ? "{{ url_for('static', filename='images/ic_profile_w.png') }}"
+        : "{{ url_for('static', filename='images/ic_profile_m.png') }}";
+    }
 
-    // staff_name 업데이트
-    document.addEventListener('DOMContentLoaded', function() {
-        // 모든 staff_name 클래스를 가진 요소 업데이트
-        const staffNameElements = document.querySelectorAll('.staff_name');
-        staffNameElements.forEach(element => {
-            element.textContent = window.CONSULTANT_NAME;
-        });
-    });
+    // 페이지 초기화 함수
+    function initializePage() {
+      // sessionStorage에서 저장된 값들을 가져옴
+      window.CONSULTANT = sessionStorage.getItem('selectedGender') || 'male';
+      window.CONSULTANT_NAME = sessionStorage.getItem('consultantName') || 'AI GENIE';
+      window.SCENARIO = sessionStorage.getItem('selectedScenario') || 'sc_change';
 
-    // 페이지 로드 완료 후 sessionStorage 초기화 (선택사항)
-    window.addEventListener('load', function() {
-        sessionStorage.removeItem('selectedScenario');
-        sessionStorage.removeItem('selectedGender');
-        sessionStorage.removeItem('consultantName');
-    });
+      // staff_icon 설정
+      window.STATIC_URLS.staff_icon = getProfileImageByGender(window.CONSULTANT);
+
+      // 프로필 이미지 업데이트
+      const profileImage = document.getElementById('profileImage');
+      if (profileImage) {
+        profileImage.src = getProfileImageByGender(window.CONSULTANT);
+      }
+
+      // staff_name 업데이트
+      const staffNameElements = document.querySelectorAll('.staff_name');
+      staffNameElements.forEach(element => {
+        element.textContent = window.CONSULTANT_NAME;
+      });
+
+      // sessionStorage 초기화
+      //sessionStorage.removeItem('selectedScenario');
+      //sessionStorage.removeItem('selectedGender');
+      //sessionStorage.removeItem('consultantName');
+    }
+
+    // DOM이 로드되면 페이지 초기화 실행
+    document.addEventListener('DOMContentLoaded', initializePage);
   </script>
   <script src="{{ url_for('static', filename='js/sliders.js') }}"></script>
   <script src="{{ url_for('static', filename='js/main.js') }}"></script>

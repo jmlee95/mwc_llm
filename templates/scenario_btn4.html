@@ -25,9 +25,9 @@
       <a href="#"><img src="{{ url_for('static', filename='images/kt_logo_w.png') }}" alt="로고"></a>
     </h1>
 
-    <!-- 처음으로 돌아가기 버튼 -->
-    <button type="button" class="btn_home" onclick="location.href='/'">
-      <img src="{{ url_for('static', filename='images/ic_home.png') }}" alt="처음으로">  
+    <!-- 이전단계 돌아가기 버튼 -->
+    <button type="button" class="btn_home" onclick="location.href='/consultant_gender'">
+      <img src="{{ url_for('static', filename='images/ic_home.png') }}" alt="이전으로">  
     </button>
     <div class="btn_home_txt"> 
       <p><strong>Customer Service Consultant Support Agent</strong></p>
@@ -41,7 +41,7 @@
       <img src="{{ url_for('static', filename='images/ic_settings.png') }}" alt="설정">
     </div>
     <div class="btn_profile">
-      <img src="{{ url_for('static', filename='images/ic_profile1.png') }}" alt="프로필">
+      <img id="profileImage" src="{{ url_for('static', filename='images/ic_profile_m.png') }}" alt="프로필">
     </div>
 
     <!-- 시나리오 선택 / 4개 버튼 -->
@@ -75,6 +75,18 @@
   </div>
 
   <script>
+    // 페이지 로드 시 프로필 이미지 설정
+    window.onload = function() {
+        const selectedGender = sessionStorage.getItem('selectedGender');
+        const profileImage = document.getElementById('profileImage');
+        
+        if (selectedGender === 'female') {
+            profileImage.src = "{{ url_for('static', filename='images/ic_profile_w.png') }}";
+        } else {
+            profileImage.src = "{{ url_for('static', filename='images/ic_profile_m.png') }}";
+        }
+    };
+
     function selectScenario(scenarioType) {
         // sessionStorage에 선택된 시나리오 타입 저장
         sessionStorage.setItem('selectedScenario', scenarioType);
