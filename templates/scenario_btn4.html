@@ -94,7 +94,15 @@
         sessionStorage.setItem('selectedScenario', scenarioType);
 
         // 시나리오 타입별 페이지 분기처리
-        window.location.href = '/main';
+        if (scenarioType === 'sc_change') {
+          window.location.href = '/sc_change';
+        } else if (scenarioType === 'sc_combine') {
+          window.location.href = '/sc_combine';
+        } else if (scenarioType === 'sc_membership') {
+          window.location.href = '/sc_membership';
+        } else if (scenarioType === 'sc_roaming') {
+          window.location.href = '/sc_roaming';
+        }
     }
   </script>
 </body>

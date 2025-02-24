@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KT MWC-main</title>
+
+  <!-- 스타일 -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/reset.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles/style.css') }}">
+  <style>
+    body {
+      background-color: #F4F4F4; /* 배경 색상 설정 */
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <!-- 로고 -->
+    <h1 class="logo">
+      <a href="#"><img src="{{ url_for('static', filename='images/kt_logo_w.png') }}" alt="로고"></a>
+    </h1>
+
+    <!-- 처음으로 돌아가기 버튼 -->
+    <button type="button" class="btn_home" onclick="location.href='/scenario'">
+      <img src="{{ url_for('static', filename='images/ic_home.png') }}" alt="이전으로"></button>
+    <div class="btn_home_txt"> 
+      <p><strong>Customer Service Consultant Support Agent</strong></p>
+    </div>
+
+     <!-- 우측상단 공통아이콘 3개-->
+    <div class="btn_noti">
+      <img src="{{ url_for('static', filename='images/ic_notifications.png') }}" alt="알림">
+    </div>
+    <div class="btn_settings">
+      <img src="{{ url_for('static', filename='images/ic_settings.png') }}" alt="설정">
+    </div>
+    <div class="btn_profile">
+      <img id="profileImage" src="{{ url_for('static', filename='images/ic_profile_m.png') }}" alt="프로필">
+    </div>
+    <!-- 내용 -->
+    <div class="inner">
+      <!-- 리스트 -->
+      <section class="customer">
+        <div class="lists">
+          <div class="list active">
+            <div class="staff_area">
+              <p class="staff_name">{{consultant_name}}</p>
+            </div>
+            <div class="customer_area">
+              <div class="pic ic_profile"><img src="{{ url_for('static', filename='images/ic_profile.png') }}" alt="profile"></div>
+              <div class="txt_area">
+                <p class="customer_name">{{customer_name}}</p>
+                <p class="txt">Hello</p>
+              </div>
+              <p class="date">2025.03.04</p>
+            </div>
+          </div>
+          <div class="list">
+            <div class="staff_area">
+              <p class="staff_name">Mike</p>
+            </div>
+            <div class="customer_area">
+              <div class="pic ic_profile"><img src="{{ url_for('static', filename='images/ic_profile.png') }}" alt="profile"></div>
+              <div class="txt_area">
+                <p class="customer_name">Mike</p>
+                <p class="txt">Hello</p>
+              </div>
+              <p class="date">2025.03.03</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 채팅 -->
+      <section class="chat">
+        <div class="chat_wrap">
+          <div class="top">
+            <h2>CHAT</h2>
+          </div>
+          <div class="chat_area" style="max-height: calc(100vh - 230px); overflow-y: auto;">
+            <!-- 채팅 내용은 JavaScript로 동적 생성됨 -->
+          </div>
+          <button type="button" class="btn_red btn_finish" style="float: right; margin-right: 20px;">End Consultation</button>
+        </div>
+      </section>
+
+      <!-- 옵션 -->
+      <section class="options">
+        <div class="options_wrap">
+          <div class="options_answer">
+            <div class="box_area customer_focusing">
+              <div class="top">
+                <h2>Customer Inquiry</h2>
+              </div>
+              <div class="comment">
+                <!-- 고객 문의 내용이 여기에 동적으로 들어갑니다 -->
+              </div>
+            </div>
+            <div class="aiAnswer_wrap">
+
+              <div class="box_area">
+                <div class="top">
+                  <h2>Support Agent</h2>
+                  <button type="button" class="btn_red btn_answerMaker">Generate Answer</button>
+                </div>
+                <div class="context">
+                  <div class="tab_wrap">
+                    <div class="tab_menu">
+                      <ul class="list">
+                        <li class="active">
+                          <a href="#tab_ai_1" class="btn active">Generated Answer</a>
+                        </li>
+                      </ul>
+                      <div class="cont_area">
+                        <div id="tab_ai_1" class="cont" style="display:block;">
+                          <!-- AI 답변 1이 여기에 들어갑니다 -->
+                        </div>
+
+                      </div>
+                    </div>
+                  </div>
+                  <div class="btns">
+                    <button type="button" class="btn_knowledge" id="knowledge1" style="display: none;">Knowledge 1</button>
+                    <button type="button" class="btn_knowledge" id="knowledge2" style="display: none;">Knowledge 2</button>
+                    <button type="button" class="btn_knowledge" id="knowledge3" style="display: none;">Knowledge 3</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="options_gpt box_area">
+            <ul>
+              <li>
+                <label for="productType">Product Type</label>
+                <select name="productType" id="productType" class="select_st">
+                  <option value="mo">Mobile</option>
+                  <option value="pc">PC</option>
+                </select>
+              </li>
+              <li>
+                <label for="mdName">Model Name</label>
+                <select name="mdName" id="mdName" class="select_st">
+                  <option value="mo01">gpt - 4o - mini</option>
+                  <option value="pc01">claude 3.5 sonnet</option>
+                </select>
+              </li>
+              <li>
+                <label for="promptType">Prompt Type</label>
+                <select name="promptType" id="promptType" class="select_st">
+                  <option value="mo02">Friendly</option>
+                  <option value="pc02">Professional</option>
+                </select>
+              </li>
+              <li>
+                <input type="text" class="slider1" name="Temperature" text="Temperature" min=0 max=1 round=2 value=0.5 color="#4d6e91">
+              </li>
+              <li>
+                <input type="text" class="slider1" name="OutputToken" text="Output Token" min=0 max=8000 value=2000 color="#4d6e91">
+              </li>
+            </ul>
+          </div>
+          <div class="summary_wrap">
+            <div class="box_area">
+              <div class="top">
+                <h2>summary</h2>
+                <button type="button" class="btn_red btn_answer">Answer</button>
+              </div>
+              <div class="context">
+                <h3></h3>
+                <ul>
+                  <li>
+                    <p class="label"><strong>Duration</strong></p>
+                    <p>0m 0s</p>
+                  </li>
+                  <li>
+                    <p class="label"><strong>Category</strong></p>
+                    <p>...</p>
+                  </li>
+                  <li>
+                    <p class="label"><strong>Inquiry</strong></p>
+                    <p>...</p>
+                  </li>
+                  <li>
+                    <p class="label"><strong>Summary</strong></p>
+                    <p>...</p>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="history_wrap">
+            <div class="box_area">
+              <div class="top">
+                <h2>history</h2>
+                <button type="button" class="btn_red">Save</button>
+              </div>
+              <div class="context">
+                <ul>
+                  <li>
+                    <p class="num">001</p>
+                    <p class="tit">Mike - TV Plan</p>
+                    <p class="date">2025.03.03</p>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- 레이어팝업 -->
+  {% include 'knwlg_popup.html' %}
+
+  <!-- 히스토리 상세 팝업 -->
+  <div class="history_popup popup">
+    <div class="overlay">
+        <div class="popup_wrap">
+            <div class="top">
+                <h2 class="tit">Consultation Details</h2>
+                <button type="button" class="btn_close"><img src="{{ url_for('static', filename='images/ic_close.png') }}" alt="close"></button>
+            </div>
+            <div class="container">
+                <div class="summary_detail">
+                    <h3>Consultation Summary</h3>
+                    <ul>
+                        <li>
+                            <p class="label"><strong>Duration</strong></p>
+                            <p>2m 30s</p>
+                        </li>
+                        <li>
+                            <p class="label"><strong>Category</strong></p>
+                            <p>Mobile Plan</p>
+                        </li>
+                        <li>
+                            <p class="label"><strong>Inquiry</strong></p>
+                            <p>Change of Plan</p>
+                        </li>
+                        <li>
+                            <p class="label"><strong>Summary</strong></p>
+                            <p>Customer inquired about changing their mobile plan. After reviewing available options, they chose the 5G Slim plan (55,000 KRW/37 EUR) which includes unlimited calls/texts and 14GB data. The plan change was successfully processed.</p>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
+  <!-- 스크립트 -->
+  <script>
+    // 이미지 경로를 전역 변수로 설정
+    window.STATIC_URLS = {
+      profile_icon: "{{ url_for('static', filename='images/ic_profile.png') }}",
+      arrow_icon: "{{ url_for('static', filename='images/ic_arrow_u_w.png') }}"
+    };
+    
+    // 성별에 따른 프로필 이미지 경로 반환 함수
+    function getProfileImageByGender(gender) {
+      return gender === 'female' 
+        ? "{{ url_for('static', filename='images/ic_profile_w.png') }}"
+        : "{{ url_for('static', filename='images/ic_profile_m.png') }}";
+    }
+
+    // 페이지 초기화 함수
+    function initializePage() {
+      // sessionStorage에서 저장된 값들을 가져옴
+      window.CONSULTANT = sessionStorage.getItem('selectedGender') || 'female';
+      window.CONSULTANT_NAME = sessionStorage.getItem('consultantName') || 'Ashely';
+      window.CUSTOMER_NAME = sessionStorage.getItem('customerName') || 'John';
+      window.SCENARIO = sessionStorage.getItem('selectedScenario') || 'sc_change';
+
+      // staff_icon 설정
+      window.STATIC_URLS.staff_icon = getProfileImageByGender(window.CONSULTANT);
+
+      // 프로필 이미지 업데이트
+      const profileImage = document.getElementById('profileImage');
+      if (profileImage) {
+        profileImage.src = getProfileImageByGender(window.CONSULTANT);
+      }
+
+      // staff_name 업데이트
+      const staffNameElements = document.querySelectorAll('.staff_name');
+      staffNameElements.forEach(element => {
+        element.textContent = window.CONSULTANT_NAME;
+      });
+
+      // customer_name 업데이트
+      const customerNameElements = document.querySelectorAll('.customer_name');
+      customerNameElements[0].textContent = window.CUSTOMER_NAME; // 첫 고객 이름 설정
+      if (customerNameElements[1]) {
+        customerNameElements[1].textContent = 'Mike'; // 두 번째 고객 이름 설정
+      }
+
+      // sessionStorage 초기화
+      //sessionStorage.removeItem('selectedScenario');
+      //sessionStorage.removeItem('selectedGender');
+      //sessionStorage.removeItem('consultantName');
+    }
+
+    // DOM이 로드되면 페이지 초기화 실행
+    document.addEventListener('DOMContentLoaded', initializePage);
+  </script>
+  <script src="{{ url_for('static', filename='js/sliders.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/sc_combine.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/knwlg_popup.js') }}"></script>
+</body>
+
+</html> 
