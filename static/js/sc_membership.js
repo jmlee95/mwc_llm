@@ -3,27 +3,27 @@ let activeCont = ''; // 현재 활성화 된 컨텐츠 (기본:#tab1 활성화)
 let closeYN = 0; // 전역 boolean 변수 선언
 const gender = sessionStorage.getItem('selectedGender');
 var audioMap = {
-	'AI_GENIE_1': '/static/audio/1/F/1-1_consultant_01.mp3',
-	'AI_GENIE_2': '/static/audio/1/F/1-1_consultant_02.mp3',
-	'AI_GENIE_3': '/static/audio/1/F/1-1_consultant_03.mp3',
-	'AI_GENIE_4': '/static/audio/1/F/1-1_consultant_04.mp3',
-	'AI_GENIE_5': '/static/audio/1/F/1-1_consultant_05.mp3',
-	'CUSTOMER_1': '/static/audio/1/F/1-1_customer_01.mp3',
-	'CUSTOMER_2': '/static/audio/1/F/1-1_customer_02.mp3',
-	'CUSTOMER_3': '/static/audio/1/F/1-1_customer_03.mp3',
-	'CUSTOMER_4': '/static/audio/1/F/1-1_customer_04.mp3'
+	'AI_GENIE_1': '/static/audio/3/F/3-1_consultant_01.mp3',
+	'AI_GENIE_2': '/static/audio/3/F/3-1_consultant_02.mp3',
+	'AI_GENIE_3': '/static/audio/3/F/3-1_consultant_03.mp3',
+	'AI_GENIE_4': '/static/audio/3/F/3-1_consultant_04.mp3',
+	'AI_GENIE_5': '/static/audio/3/F/3-1_consultant_05.mp3',
+	'CUSTOMER_1': '/static/audio/3/F/3-1_customer_01.mp3',
+	'CUSTOMER_2': '/static/audio/3/F/3-1_customer_02.mp3',
+	'CUSTOMER_3': '/static/audio/3/F/3-1_customer_03.mp3',
+	'CUSTOMER_4': '/static/audio/3/F/3-1_customer_04.mp3'
 };
 
 var maleAudioMap = {
-	'AI_GENIE_1': '/static/audio/1/M/1-2_consultant_01.mp3',
-	'AI_GENIE_2': '/static/audio/1/M/1-2_consultant_02.mp3',
-	'AI_GENIE_3': '/static/audio/1/M/1-2_consultant_03.mp3',
-	'AI_GENIE_4': '/static/audio/1/M/1-2_consultant_04.mp3',
-	'AI_GENIE_5': '/static/audio/1/M/1-2_consultant_05.mp3',
-	'CUSTOMER_1': '/static/audio/1/M/1-2_customer_01.mp3',
-	'CUSTOMER_2': '/static/audio/1/M/1-2_customer_02.mp3',
-	'CUSTOMER_3': '/static/audio/1/M/1-2_customer_03.mp3',
-	'CUSTOMER_4': '/static/audio/1/M/1-2_customer_04.mp3'
+	'AI_GENIE_1': '/static/audio/3/M/3-2_consultant_01.mp3',
+	'AI_GENIE_2': '/static/audio/3/M/3-2_consultant_02.mp3',
+	'AI_GENIE_3': '/static/audio/3/M/3-2_consultant_03.mp3',
+	'AI_GENIE_4': '/static/audio/3/M/3-2_consultant_04.mp3',
+	'AI_GENIE_5': '/static/audio/3/M/3-2_consultant_05.mp3',
+	'CUSTOMER_1': '/static/audio/3/M/3-2_customer_01.mp3',
+	'CUSTOMER_2': '/static/audio/3/M/3-2_customer_02.mp3',
+	'CUSTOMER_3': '/static/audio/3/M/3-2_customer_03.mp3',
+	'CUSTOMER_4': '/static/audio/3/M/3-2_customer_04.mp3'
 };
 
 function tab(tablist, contents) {
@@ -291,67 +291,69 @@ async function createAndPlayMessage(isStaff, text, audioKey, chatArea) {
     const textElement = messageElement.querySelector(isStaff ? '.staff_comment p' : '.customer_comment p');
     const skipButton = messageElement.querySelector('.btn_skip');
     let isSkipped = false;
-    let isTypingComplete = false;
+    let resolveSkip;
+    
+    // Skip 완료를 기다리는 Promise 생성
+    const skipPromise = new Promise(resolve => {
+        resolveSkip = resolve;
+    });
     
     // Skip 버튼 클릭 이벤트
-    skipButton.addEventListener('click', async () => {
+    skipButton.addEventListener('click', () => {
         isSkipped = true;
-        
-        // 텍스트 즉시 표시
         textElement.textContent = text;
-        isTypingComplete = true;
-        
-        // Skip 버튼 즉시 제거
         skipButton.remove();
         
-        // 텍스트가 완료된 후에만 오디오 페이드 아웃
+        // 오디오 즉시 중지
         if (currentAudio) {
-            // 볼륨을 서서히 낮추며 페이드 아웃
-            const fadeOutDuration = 200;
-            const fadeOutSteps = 20;
-            const volumeStep = currentAudio.volume / fadeOutSteps;
-            
-            for (let i = 0; i < fadeOutSteps; i++) {
-                await new Promise(r => setTimeout(r, fadeOutDuration / fadeOutSteps));
-                currentAudio.volume = currentAudio.volume - volumeStep;
-            }
-            
-            // 오디오 정지
             currentAudio.pause();
             currentAudio.currentTime = 0;
         }
+        
+        // Skip 완료 알림
+        resolveSkip();
     });
 
     try {
-        // 모든 메시지에 타이핑 효과 적용
+        // Skip 또는 모든 작업 완료 대기
         await Promise.race([
-            new Promise(async (resolve) => {
-                const lines = text.split('\n');
-                for (let line of lines) {
-                    if (isSkipped) break;
-                    const lineDiv = document.createElement('div');
-                    lineDiv.style.whiteSpace = 'pre-wrap';
-                    lineDiv.style.wordBreak = 'break-word';
-                    textElement.appendChild(lineDiv);
-                    
-                    for (let i = 0; i < line.length && !isSkipped; i++) {
-                        lineDiv.textContent = line.substring(0, i + 1);
-                        scrollToBottom(chatArea);
-                        await new Promise(r => setTimeout(r, isStaff ? 52 : 50));
+            skipPromise,
+            Promise.all([
+                // 텍스트 스트리밍
+                new Promise(async (resolve) => {
+                    if (!isSkipped) {
+                        const lines = text.split('\n');
+                        for (let line of lines) {
+                            if (isSkipped) break;
+                            const lineDiv = document.createElement('div');
+                            lineDiv.style.whiteSpace = 'pre-wrap';
+                            lineDiv.style.wordBreak = 'break-word';
+                            textElement.appendChild(lineDiv);
+                            
+                            for (let i = 0; i < line.length && !isSkipped; i++) {
+                                lineDiv.textContent = line.substring(0, i + 1);
+                                scrollToBottom(chatArea);
+                                await new Promise(r => setTimeout(r, isStaff ? 52 : 50));
+                            }
+                        }
                     }
-                }
-                isTypingComplete = true;
-                // 타이핑이 완료되면 Skip 버튼 제거
-                if (!isSkipped) {
-                    skipButton.remove();
-                }
-                resolve();
-            }),
-            playAudio(audioKey)
+                    resolve();
+                }),
+                // 오디오 재생
+                new Promise(async (resolve) => {
+                    if (!isSkipped) {
+                        await playAudio(audioKey);
+                    }
+                    resolve();
+                })
+            ])
         ]);
+
+        if (!isSkipped) {
+            skipButton.remove();
+        }
     } catch (error) {
         console.error('Error in createAndPlayMessage:', error);
-        // 에러 발생 시에도 Skip 버튼 제거
         skipButton.remove();
     }
 
@@ -805,7 +807,7 @@ let isGeneratingAnswer = false;
 			const tab1 = document.querySelector('#tab_ai_1');
 			//const tab2 = document.querySelector('#tab_ai_2');
 			
-			await typeWriter(tab1, answers.answer1, 10);
+			await typeWriter(tab1, answers.answer3, 10);
 			//await typeWriter(tab2, answers.answer2, 10);
 
 			// 답변 생성이 완료되면 Customer Inquiry 텍스트 지우기
@@ -881,7 +883,8 @@ let isGeneratingAnswer = false;
             showGuideMessage('AI is Answering', 2000);
 			// AI 답변을 채팅창에 추가
             const llm_answer = 
-            `The 5G plans in the range of 60,000 KRW(40 EUR) are as follows:
+			/*
+            `The 5G1 plans in the range of 60,000 KRW(40 EUR) are as follows:
             1. **5G Slim**
              - Monthly Fee: 55,000 KRW(37 EUR)
              - Unlimited voice calls and texts
@@ -893,20 +896,35 @@ let isGeneratingAnswer = false;
              - 300 minutes for video calls and additional calls
              - Basic Data: 30GB (after consumption, speed is limited to a maximum of 1Mbps).
             In addition, there are various options for 5G plans, so you can choose according to your needs.`;
+			*/
+			`The \"VIP Choice\" can be used a total of 6 times per year, allowing for one use each month. To use the VIP Choice, you need to navigate to the KT Membership app and go to More > VIP > VIP Choice menu, or visit the KT.COM website and go to Benefits > Membership Benefits > VIP Membership > VIP Choice menu.
+When using benefits that require reservations, a button will be activated to go to the reservation page. 
+For benefits that require a coupon, a button will be activated to go to the coupon issuance page. 
+Please note that benefits may not be available at all partner stores, 
+so you should check for eligible stores using the [Find Merchant] option on the KT.COM guide page before visiting.`;
 
-			await createAndPlayMessage(true, llm_answer, 'AI_GENIE_3', chatArea);
+
+			await createAndPlayMessage(true, llm_answer, 'AI_GENIE_2', chatArea);
 			await new Promise(resolve => setTimeout(resolve, 1000));
 
 			// 고객 응답 추가
-			await createAndPlayMessage(false, "Yes, please change my plan to the \"5G Slim\" plan.", 'CUSTOMER_3', chatArea);
+			await createAndPlayMessage(false, "Ah, then if I used a beverage this month, other services can only be used once a month, right?", 'CUSTOMER_2', chatArea);
+			await new Promise(resolve => setTimeout(resolve, 1000));
+
+			// AI  응답 추가
+			await createAndPlayMessage(true, "That's correct. The membership general discount benefits are available at all times, while the VIP Choice benefits are limited to once a month.", 'AI_GENIE_3', chatArea);
+			await new Promise(resolve => setTimeout(resolve, 1000));
+
+			// 고객 응답 추가
+			await createAndPlayMessage(false, "Understood. Thank you!", 'CUSTOMER_3', chatArea);
 			await new Promise(resolve => setTimeout(resolve, 1000));
 
 			// AI 최종 응답 추가
-			await createAndPlayMessage(true, "Understood. The change to the \"5G Slim\" plan at 55,000 KRW (37 EUR) has been completed. Is there anything else I can assist you with?", 'AI_GENIE_4', chatArea);
+			await createAndPlayMessage(true, "Is there anything else I can assist you with?", 'AI_GENIE_4', chatArea);
 			await new Promise(resolve => setTimeout(resolve, 1000));
 
 			// 고객 마지막 응답
-			await createAndPlayMessage(false, "No, there isn't anything else.", 'CUSTOMER_4', chatArea);
+			await createAndPlayMessage(false, "No, thank you.", 'CUSTOMER_4', chatArea);
 			await new Promise(resolve => setTimeout(resolve, 1000));
 
 			// AI 마지막 인사
@@ -1025,7 +1043,7 @@ let isGeneratingAnswer = false;
 			const consultationTime = `${minutes}m ${seconds}s`;
 
 			// Summary 내용 설정
-			const summaryContent = `Customer inquired about changing their mobile plan. After reviewing available options, they chose the 5G Slim plan (55,000 KRW/37 EUR) which includes unlimited calls/texts and 14GB data. The plan change was successfully processed.`;
+			const summaryContent = `Customer inquired about using the "VIP Choice" membership benefit. They were informed that it can be used up to 6 times per year, once per month, and accessed via the KT Membership app or website.`;
 
 			// Summary 영역 업데이트
 				summaryArea.innerHTML = `
@@ -1036,11 +1054,11 @@ let isGeneratingAnswer = false;
 					</li>
 					<li>
 						<p class="label"><strong>Category</strong></p>
-						<p>Mobile Plan</p>
+						<p>Membership Benefit</p>
 					</li>
 					<li>
 						<p class="label"><strong>Inquiry</strong></p>
-						<p>Change of Plan</p>
+						<p>VIP Choice Membership</p>
 					</li>
 					<li>
 						<p class="label"><strong>Summary</strong></p>
@@ -1360,7 +1378,7 @@ function createClickGuide(targetElement, guideText, onClickCallback, position = 
 // streamMessages 함수 수정
 async function streamMessages() {
 	try {
-		const response = await fetch('/api/stream_message');
+		const response = await fetch('/api/stream_message3');
 		const data = await response.json();
 		const chatArea = document.querySelector('.chat_area');
 		
@@ -1375,10 +1393,10 @@ async function streamMessages() {
 				staff: { text: messages[0], audio: 'AI_GENIE_1' },
 				customer: { text: messages[1], audio: 'CUSTOMER_1' }
 			},
-			{
-				staff: { text: messages[2], audio: 'AI_GENIE_2' },
-				customer: { text: messages[3], audio: 'CUSTOMER_2' }
-			}
+			// {
+			// 	staff: { text: messages[2], audio: 'AI_GENIE_2' },
+			// 	customer: { text: messages[3], audio: 'CUSTOMER_2' }
+			// }
 		];
 
 		for (const [index, pair] of messagePairs.entries()) {
@@ -1387,8 +1405,8 @@ async function streamMessages() {
 			
 			const customerMessage = await createAndPlayMessage(false, pair.customer.text, pair.customer.audio, chatArea);
 			
-			// 두 번째 고객 응답(index === 1) 후 클릭 가이드 추가
-			if (index === 1 && customerMessage) {
+			// 첫 번째 고객 응답(index === 0) 후 클릭 가이드 추가
+			if (index === 0 && customerMessage) {
 				const customerComment = customerMessage.querySelector('.customer_comment');
 				if (customerComment) {
 					createClickGuide(
