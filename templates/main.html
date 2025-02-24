@@ -52,7 +52,7 @@
             <div class="customer_area">
               <div class="pic ic_profile"><img src="{{ url_for('static', filename='images/ic_profile.png') }}" alt="profile"></div>
               <div class="txt_area">
-                <p class="customer_name">John</p>
+                <p class="customer_name">{{customer_name}}</p>
                 <p class="txt">Hello</p>
               </div>
               <p class="date">2025.03.04</p>
@@ -60,7 +60,7 @@
           </div>
           <div class="list">
             <div class="staff_area">
-              <p class="staff_name">{{consultant_name}}</p>
+              <p class="staff_name">Mike</p>
             </div>
             <div class="customer_area">
               <div class="pic ic_profile"><img src="{{ url_for('static', filename='images/ic_profile.png') }}" alt="profile"></div>
@@ -271,6 +271,7 @@
       // sessionStorage에서 저장된 값들을 가져옴
       window.CONSULTANT = sessionStorage.getItem('selectedGender') || 'female';
       window.CONSULTANT_NAME = sessionStorage.getItem('consultantName') || 'Ashely';
+      window.CUSTOMER_NAME = sessionStorage.getItem('customerName') || 'John';
       window.SCENARIO = sessionStorage.getItem('selectedScenario') || 'sc_change';
 
       // staff_icon 설정
@@ -287,6 +288,13 @@
       staffNameElements.forEach(element => {
         element.textContent = window.CONSULTANT_NAME;
       });
+
+      // customer_name 업데이트
+      const customerNameElements = document.querySelectorAll('.customer_name');
+      customerNameElements[0].textContent = window.CUSTOMER_NAME; // 첫 고객 이름 설정
+      if (customerNameElements[1]) {
+        customerNameElements[1].textContent = 'Mike'; // 두 번째 고객 이름 설정
+      }
 
       // sessionStorage 초기화
       //sessionStorage.removeItem('selectedScenario');

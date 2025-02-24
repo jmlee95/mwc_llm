@@ -11,6 +11,8 @@
   <style>
     body {
       background-image: url('../static/images/background.png'); /* 배경 이미지 설정 */
+      background-color: rgba(255, 255, 255, 0.3); /* 흰색 오버레이 30% 불투명도 */
+      background-blend-mode: overlay; /* 배경 이미지와 오버레이 블렌드 */
       background-size: cover; /* 배경 이미지 크기 조정 */
       background-position: center; /* 배경 이미지 위치 조정 */
     }
@@ -71,6 +73,9 @@
         // 선택된 gender에 따라 컨설턴트 이름 저장
         const consultantName = gender === 'male' ? 'David Consultant' : 'Ashely Consultant';
         sessionStorage.setItem('consultantName', consultantName);
+        // 선택된 gender에 따라 고객 이름 저장
+        const customerName = gender === 'male' ? 'Jenny' : 'John';
+        sessionStorage.setItem('customerName', customerName);
         // 다음 페이지로 이동
         window.location.href = '/scenario';
     }

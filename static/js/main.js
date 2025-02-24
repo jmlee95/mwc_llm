@@ -221,10 +221,10 @@ function createStaffMessage(text) {
                 right: 0;
                 padding: 5px 15px;
                 background: rgba(255, 255, 255, 1);
-                color: white;
                 border: none;
                 border-radius: 15px;
-                font-size: 10px;
+                font-size: 12px;
+				color: #000;
                 cursor: pointer;
                 z-index: 1002;
             ">>>Skip</button>
@@ -242,7 +242,7 @@ function createCustomerMessage(text) {
 			<div class="pic ic_profile">
 				<img src="${window.STATIC_URLS.profile_icon}" alt="아이콘">
 			</div>
-            <h3 class="staff_name">John</h3>
+            <h3 class="staff_name">${window.CUSTOMER_NAME}</h3>
 		</div>
         <div class="customer_comment" style="position: relative;">
             <p></p>
@@ -251,11 +251,11 @@ function createCustomerMessage(text) {
                 bottom: -30px;
                 left: 0;
                 padding: 5px 15px;
-                background: rgba(82, 109, 130, 0.9);
-                color: white;
+                background: rgba(255, 255, 255, 1);
+				color: #000;
                 border: none;
                 border-radius: 15px;
-                font-size: 10px;
+                font-size: 12px;
                 cursor: pointer;
                 z-index: 1002;
             ">>>Skip</button>
@@ -759,41 +759,44 @@ let isGeneratingAnswer = false;
 				selectQuestionBtn.style.display = 'none';
 			}
 			
-			// aiAnswer_wrap 영역에 로딩 표시 추가
-			const aiAnswerWrap = document.querySelector('.aiAnswer_wrap .box_area');
-			const loadingOverlay = document.createElement('div');
-			loadingOverlay.style.cssText = `
-				position: absolute;
-				top: 0;
-				left: 0;
-				width: 100%;
-				height: 100%;
-				background: rgba(0, 0, 0, 0.7);
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				z-index: 9999;
-		 `;
+		// 	// aiAnswer_wrap 영역에 로딩 표시 추가
+		// 	const aiAnswerWrap = document.querySelector('.aiAnswer_wrap .box_area');
+		// 	const loadingOverlay = document.createElement('div');
+		// 	loadingOverlay.style.cssText = `
+		// 		position: absolute;
+		// 		top: 0;
+		// 		left: 0;
+		// 		width: 100%;
+		// 		height: 100%;
+		// 		background: rgba(0, 0, 0, 0.7);
+		// 		display: flex;
+		// 		justify-content: center;
+		// 		align-items: center;
+		// 		z-index: 9999;
+		//  `;
 			
-			loadingOverlay.innerHTML = `
-				<div class="loading" style="
-					width: 40px;
-					height: 40px;
-					border: 4px solid #f3f3f3;
-					border-top: 4px solid #526d82;
-					border-radius: 50%;
-					animation: spin 1s linear infinite;
-			 "></div>
-		 `;
+		// 	loadingOverlay.innerHTML = `
+		// 		<div class="loading" style="
+		// 			width: 40px;
+		// 			height: 40px;
+		// 			border: 4px solid #f3f3f3;
+		// 			border-top: 4px solid #526d82;
+		// 			border-radius: 50%;
+		// 			animation: spin 1s linear infinite;
+		// 	 "></div>
+		//  `;
 			
-			aiAnswerWrap.style.position = 'relative';
-			aiAnswerWrap.appendChild(loadingOverlay);
+		// 	aiAnswerWrap.style.position = 'relative';
+		// 	aiAnswerWrap.appendChild(loadingOverlay);
 			
-			// 1.5초 대기
-			await new Promise(resolve => setTimeout(resolve, 1500));
+		// 	// 1.5초 대기
+		// 	await new Promise(resolve => setTimeout(resolve, 1500));
 			
-			// 로딩 오버레이 제거
-			loadingOverlay.remove();
+		// 	// 로딩 오버레이 제거
+		// 	loadingOverlay.remove();
+
+			showLoadingGif();
+			await new Promise(resolve => setTimeout(resolve, 3500));
 			
 			// AI 답변 가져오기
 			const response = await fetch('/api/get_answers');
@@ -920,7 +923,7 @@ let isGeneratingAnswer = false;
 					null,
 					'top-left'
 				);
-			}, 1000);
+			}, 500);
 			
 			// 추천 지식 버튼들 표시
 			const knowledgeButtons = document.querySelectorAll('.btn_knowledge');
@@ -1143,7 +1146,7 @@ if (saveBtn) {
 			const newHistoryItem = document.createElement('li');
 			newHistoryItem.innerHTML = `
 				<p class="num">002</p>
-				<p class="tit">John -Change Mobile Plan</p>
+				<p class="tit">${window.CUSTOMER_NAME} - Change Mobile Plan</p>
 				<p class="date">2025.03.04</p>
 			`;
 			
@@ -1405,7 +1408,7 @@ async function streamMessages() {
 										null,
 										'top-left'
 									);
-								}, 1000);
+								}, 500);
 							}
 						}
 					);
@@ -1467,4 +1470,40 @@ function showGuideMessage(text, duration = 2000) {
             guideMessage.remove();
         }, 300);
     }, duration);
+}
+
+// 로딩 GIF 표시 함수 추가
+function showLoadingGif() {
+    const loadingOverlay = document.createElement('div');
+    loadingOverlay.className = 'loading-overlay';
+    loadingOverlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+    `;
+
+    const loadingGif = document.createElement('img');
+    loadingGif.src = '/static/images/rag_loading_nonebackground.gif';
+    loadingGif.style.cssText = `
+        width: 600px;
+        height: auto;
+    `;
+
+    loadingOverlay.appendChild(loadingGif);
+    document.body.appendChild(loadingOverlay);
+
+    // 3초 후 로딩 GIF 제거
+    return new Promise(resolve => {
+        setTimeout(() => {
+            loadingOverlay.remove();
+            resolve();
+        }, 3500);
+    });
 }
