@@ -291,67 +291,69 @@ async function createAndPlayMessage(isStaff, text, audioKey, chatArea) {
     const textElement = messageElement.querySelector(isStaff ? '.staff_comment p' : '.customer_comment p');
     const skipButton = messageElement.querySelector('.btn_skip');
     let isSkipped = false;
-    let isTypingComplete = false;
+    let resolveSkip;
+    
+    // Skip 완료를 기다리는 Promise 생성
+    const skipPromise = new Promise(resolve => {
+        resolveSkip = resolve;
+    });
     
     // Skip 버튼 클릭 이벤트
-    skipButton.addEventListener('click', async () => {
+    skipButton.addEventListener('click', () => {
         isSkipped = true;
-        
-        // 텍스트 즉시 표시
         textElement.textContent = text;
-        isTypingComplete = true;
-        
-        // Skip 버튼 즉시 제거
         skipButton.remove();
         
-        // 텍스트가 완료된 후에만 오디오 페이드 아웃
+        // 오디오 즉시 중지
         if (currentAudio) {
-            // 볼륨을 서서히 낮추며 페이드 아웃
-            const fadeOutDuration = 200;
-            const fadeOutSteps = 20;
-            const volumeStep = currentAudio.volume / fadeOutSteps;
-            
-            for (let i = 0; i < fadeOutSteps; i++) {
-                await new Promise(r => setTimeout(r, fadeOutDuration / fadeOutSteps));
-                currentAudio.volume = currentAudio.volume - volumeStep;
-            }
-            
-            // 오디오 정지
             currentAudio.pause();
             currentAudio.currentTime = 0;
         }
+        
+        // Skip 완료 알림
+        resolveSkip();
     });
 
     try {
-        // 모든 메시지에 타이핑 효과 적용
+        // Skip 또는 모든 작업 완료 대기
         await Promise.race([
-            new Promise(async (resolve) => {
-                const lines = text.split('\n');
-                for (let line of lines) {
-                    if (isSkipped) break;
-                    const lineDiv = document.createElement('div');
-                    lineDiv.style.whiteSpace = 'pre-wrap';
-                    lineDiv.style.wordBreak = 'break-word';
-                    textElement.appendChild(lineDiv);
-                    
-                    for (let i = 0; i < line.length && !isSkipped; i++) {
-                        lineDiv.textContent = line.substring(0, i + 1);
-                        scrollToBottom(chatArea);
-                        await new Promise(r => setTimeout(r, isStaff ? 52 : 50));
+            skipPromise,
+            Promise.all([
+                // 텍스트 스트리밍
+                new Promise(async (resolve) => {
+                    if (!isSkipped) {
+                        const lines = text.split('\n');
+                        for (let line of lines) {
+                            if (isSkipped) break;
+                            const lineDiv = document.createElement('div');
+                            lineDiv.style.whiteSpace = 'pre-wrap';
+                            lineDiv.style.wordBreak = 'break-word';
+                            textElement.appendChild(lineDiv);
+                            
+                            for (let i = 0; i < line.length && !isSkipped; i++) {
+                                lineDiv.textContent = line.substring(0, i + 1);
+                                scrollToBottom(chatArea);
+                                await new Promise(r => setTimeout(r, isStaff ? 52 : 50));
+                            }
+                        }
                     }
-                }
-                isTypingComplete = true;
-                // 타이핑이 완료되면 Skip 버튼 제거
-                if (!isSkipped) {
-                    skipButton.remove();
-                }
-                resolve();
-            }),
-            playAudio(audioKey)
+                    resolve();
+                }),
+                // 오디오 재생
+                new Promise(async (resolve) => {
+                    if (!isSkipped) {
+                        await playAudio(audioKey);
+                    }
+                    resolve();
+                })
+            ])
         ]);
+
+        if (!isSkipped) {
+            skipButton.remove();
+        }
     } catch (error) {
         console.error('Error in createAndPlayMessage:', error);
-        // 에러 발생 시에도 Skip 버튼 제거
         skipButton.remove();
     }
 
@@ -1359,68 +1361,67 @@ function createClickGuide(targetElement, guideText, onClickCallback, position = 
 
 // streamMessages 함수 수정
 async function streamMessages() {
-	try {
-		const response = await fetch('/api/stream_message1');
-		const data = await response.json();
-		const chatArea = document.querySelector('.chat_area');
-		
-		// 메시지에서 {consultant_name} 치환
-		const messages = data.messages.map(msg => 
-			msg.replace('{consultant_name}', window.CONSULTANT_NAME)
-		);
-		
-		// 각 메시지 쌍을 순차적으로 처리
-		const messagePairs = [
-			{
-				staff: { text: messages[0], audio: 'AI_GENIE_1' },
-				customer: { text: messages[1], audio: 'CUSTOMER_1' }
-			},
-			{
-				staff: { text: messages[2], audio: 'AI_GENIE_2' },
-				customer: { text: messages[3], audio: 'CUSTOMER_2' }
-			}
-		];
+    try {
+        const response = await fetch('/api/stream_message1');
+        const data = await response.json();
+        const chatArea = document.querySelector('.chat_area');
+        
+        const messages = data.messages.map(msg => 
+            msg.replace('{consultant_name}', window.CONSULTANT_NAME)
+        );
+        
+        const messagePairs = [
+            {
+                staff: { text: messages[0], audio: 'AI_GENIE_1' },
+                customer: { text: messages[1], audio: 'CUSTOMER_1' }
+            },
+            {
+                staff: { text: messages[2], audio: 'AI_GENIE_2' },
+                customer: { text: messages[3], audio: 'CUSTOMER_2' }
+            }
+        ];
 
-		for (const [index, pair] of messagePairs.entries()) {
-			const staffMessage = await createAndPlayMessage(true, pair.staff.text, pair.staff.audio, chatArea);
-			await new Promise(resolve => setTimeout(resolve, 1000));
+        for (const [index, pair] of messagePairs.entries()) {
+            // 상담사 메시지
+            await createAndPlayMessage(true, pair.staff.text, pair.staff.audio, chatArea);
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // 고객 메시지
+            const customerMessage = await createAndPlayMessage(false, pair.customer.text, pair.customer.audio, chatArea);
+            await new Promise(resolve => setTimeout(resolve, 1000));
 			
-			const customerMessage = await createAndPlayMessage(false, pair.customer.text, pair.customer.audio, chatArea);
-			
-			// 두 번째 고객 응답(index === 1) 후 클릭 가이드 추가
-			if (index === 1 && customerMessage) {
-				const customerComment = customerMessage.querySelector('.customer_comment');
-				if (customerComment) {
-					createClickGuide(
-						customerComment,
-						'Please click the button for search for knowledge using agent',
-						() => {
-							const text = customerComment.querySelector('p').textContent;
-							document.querySelector('.box_area.customer_focusing .comment').textContent = text;
-							
-							// Generate Answer 버튼에 가이드 추가
-							const answerMakerBtn = document.querySelector('.btn_answerMaker');
-							if (answerMakerBtn) {
-								setTimeout(() => {
-									createClickGuide(
-										answerMakerBtn,
-										'Please click the button to see the recommended knowledge using agents',
-										null,
-										'top-left'
-									);
-								}, 500);
-							}
-						}
-					);
-				}
-			}
-			
-			await new Promise(resolve => setTimeout(resolve, 1000));
-		}
-		
-	} catch (error) {
-		console.error('Error:', error);
-	}
+            // 두 번째 고객 응답 후 클릭 가이드 추가
+            if (index === 1 && customerMessage) {
+                const customerComment = customerMessage.querySelector('.customer_comment');
+                if (customerComment) {
+                    createClickGuide(
+                        customerComment,
+                        'Please click the button for search for knowledge using agent',
+                        () => {
+                            const text = customerComment.querySelector('p').textContent;
+                            document.querySelector('.box_area.customer_focusing .comment').textContent = text;
+                            
+                            const answerMakerBtn = document.querySelector('.btn_answerMaker');
+                            if (answerMakerBtn) {
+                                setTimeout(() => {
+                                    createClickGuide(
+                                        answerMakerBtn,
+                                        'Please click the button to see the recommended knowledge using agents',
+                                        null,
+                                        'top-left'
+                                    );
+                                }, 500);
+                            }
+                        }
+                    );
+                }
+            }
+            
+            await new Promise(resolve => setTimeout(resolve, 500));
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
 }
 
 // 다른 곳에서 사용 예시

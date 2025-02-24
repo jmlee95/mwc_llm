@@ -46,7 +46,9 @@ def sc_roaming():
 def stream_message():
     messages = [
         "Hello, this is {consultant_name} Consultant from KT. How can I help you?",
-        "Hello. I would like to change my plan."
+        "Hello. I would like to change my plan.",
+        "Ah, I see. Which plan would you like to change to?",
+        "I would like to use a plan that costs around 60,000 KRW(40 EUR)"
     ]
     return jsonify({"messages": messages})
 

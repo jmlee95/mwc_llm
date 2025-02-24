@@ -291,67 +291,69 @@ async function createAndPlayMessage(isStaff, text, audioKey, chatArea) {
     const textElement = messageElement.querySelector(isStaff ? '.staff_comment p' : '.customer_comment p');
     const skipButton = messageElement.querySelector('.btn_skip');
     let isSkipped = false;
-    let isTypingComplete = false;
+    let resolveSkip;
+    
+    // Skip 완료를 기다리는 Promise 생성
+    const skipPromise = new Promise(resolve => {
+        resolveSkip = resolve;
+    });
     
     // Skip 버튼 클릭 이벤트
-    skipButton.addEventListener('click', async () => {
+    skipButton.addEventListener('click', () => {
         isSkipped = true;
-        
-        // 텍스트 즉시 표시
         textElement.textContent = text;
-        isTypingComplete = true;
-        
-        // Skip 버튼 즉시 제거
         skipButton.remove();
         
-        // 텍스트가 완료된 후에만 오디오 페이드 아웃
+        // 오디오 즉시 중지
         if (currentAudio) {
-            // 볼륨을 서서히 낮추며 페이드 아웃
-            const fadeOutDuration = 200;
-            const fadeOutSteps = 20;
-            const volumeStep = currentAudio.volume / fadeOutSteps;
-            
-            for (let i = 0; i < fadeOutSteps; i++) {
-                await new Promise(r => setTimeout(r, fadeOutDuration / fadeOutSteps));
-                currentAudio.volume = currentAudio.volume - volumeStep;
-            }
-            
-            // 오디오 정지
             currentAudio.pause();
             currentAudio.currentTime = 0;
         }
+        
+        // Skip 완료 알림
+        resolveSkip();
     });
 
     try {
-        // 모든 메시지에 타이핑 효과 적용
+        // Skip 또는 모든 작업 완료 대기
         await Promise.race([
-            new Promise(async (resolve) => {
-                const lines = text.split('\n');
-                for (let line of lines) {
-                    if (isSkipped) break;
-                    const lineDiv = document.createElement('div');
-                    lineDiv.style.whiteSpace = 'pre-wrap';
-                    lineDiv.style.wordBreak = 'break-word';
-                    textElement.appendChild(lineDiv);
-                    
-                    for (let i = 0; i < line.length && !isSkipped; i++) {
-                        lineDiv.textContent = line.substring(0, i + 1);
-                        scrollToBottom(chatArea);
-                        await new Promise(r => setTimeout(r, isStaff ? 52 : 50));
+            skipPromise,
+            Promise.all([
+                // 텍스트 스트리밍
+                new Promise(async (resolve) => {
+                    if (!isSkipped) {
+                        const lines = text.split('\n');
+                        for (let line of lines) {
+                            if (isSkipped) break;
+                            const lineDiv = document.createElement('div');
+                            lineDiv.style.whiteSpace = 'pre-wrap';
+                            lineDiv.style.wordBreak = 'break-word';
+                            textElement.appendChild(lineDiv);
+                            
+                            for (let i = 0; i < line.length && !isSkipped; i++) {
+                                lineDiv.textContent = line.substring(0, i + 1);
+                                scrollToBottom(chatArea);
+                                await new Promise(r => setTimeout(r, isStaff ? 52 : 50));
+                            }
+                        }
                     }
-                }
-                isTypingComplete = true;
-                // 타이핑이 완료되면 Skip 버튼 제거
-                if (!isSkipped) {
-                    skipButton.remove();
-                }
-                resolve();
-            }),
-            playAudio(audioKey)
+                    resolve();
+                }),
+                // 오디오 재생
+                new Promise(async (resolve) => {
+                    if (!isSkipped) {
+                        await playAudio(audioKey);
+                    }
+                    resolve();
+                })
+            ])
         ]);
+
+        if (!isSkipped) {
+            skipButton.remove();
+        }
     } catch (error) {
         console.error('Error in createAndPlayMessage:', error);
-        // 에러 발생 시에도 Skip 버튼 제거
         skipButton.remove();
     }
 
@@ -845,11 +847,7 @@ let isGeneratingAnswer = false;
             showGuideMessage('AI is Answering', 2000);
 			// AI 답변을 채팅창에 추가
             const llm_answer = 
-            `If you want to combine two family mobile phones,\n 
-    		you can consider the \"Family Wireless Bundle\"\n
-    		**Family Wireless Bundle**: \n
-    		It is designed for individuals, individual business owners, and foreigners, and is available for users of LTE, 3G, 5G plans, and special plans. The eligible family relationships include direct descendants and siblings of the primary account holder and their spouse, with a maximum of five lines that can be combined.\n
-			When bundled, monthly discounts will be applied to each line.`;
+            `If you want to combine two family mobile phones,you can consider the \"Family Wireless Bundle\"\n**Family Wireless Bundle**: It is designed for individuals, individual business owners, and foreigners, and is available for users of LTE, 3G, 5G plans, and special plans. The eligible family relationships include direct descendants and siblings of the primary account holder and their spouse, with a maximum of five lines that can be combined.When bundled, monthly discounts will be applied to each line.`;
 
 			await createAndPlayMessage(true, llm_answer, 'AI_GENIE_2', chatArea);
 			await new Promise(resolve => setTimeout(resolve, 1000));
@@ -859,16 +857,24 @@ let isGeneratingAnswer = false;
 			await new Promise(resolve => setTimeout(resolve, 1000));
 
 			// AI 최종 응답 추가
-			await createAndPlayMessage(true, "The discount for the \"Family Wireless Bundle\" ranges from a minimum of 1,100 KRW(1 EUR) to a maximum of 11,000 KRW(7 EUR), depending on the monthly fee of the mobile plan. The discount is applied for 24 months (730 days), and once the verification eligibility is completed within the month of the bundle application, the discount starts from the date of application.? To maintain the bundle group, it is required to have at least two lines; if only one line remains, the bundle will be terminated.", 'AI_GENIE_3', chatArea);
+			await createAndPlayMessage(true, "The discount for the \"Family Wireless Bundle\" ranges from a minimum of 1,100 KRW(1 EUR) to a maximum of 11,000 KRW(7 EUR), depending on the monthly fee of the mobile plan. The discount is applied for 24 months (730 days), and once the verification eligibility is completed within the month of the bundle application, the discount starts from the date of application. To maintain the bundle group, it is required to have at least two lines; if only one line remains, the bundle will be terminated.", 'AI_GENIE_3', chatArea);
 			await new Promise(resolve => setTimeout(resolve, 1000));
 
 			// 고객 마지막 응답
 			await createAndPlayMessage(false, "Yes, please sign me up for that.", 'CUSTOMER_3', chatArea);
 			await new Promise(resolve => setTimeout(resolve, 1000));
 
+			// AI 최종 응답 추가
+			await createAndPlayMessage(true, "I will assist you with the registration. Do you have any additional questions?", 'AI_GENIE_4', chatArea);
+			await new Promise(resolve => setTimeout(resolve, 1000));
+			
+			// 고객 마지막 응답
+			await createAndPlayMessage(false, "No, thank you.", 'CUSTOMER_4', chatArea);
+			await new Promise(resolve => setTimeout(resolve, 1000));
+
 			// AI 마지막 인사
 			//await createAndPlayMessage(true, "Yes, thank you. This was AI GENIE from KT. Have a great day!", 'AI_GENIE_5', chatArea);
-			const finalMessage = `Yes, thank you. This was ${window.CONSULTANT_NAME} from KT. Have a great day!`;
+			const finalMessage = `I will always repay the kindness. This was ${window.CONSULTANT_NAME} from KT. Have a great day!`;
 			await createAndPlayMessage(true, finalMessage, 'AI_GENIE_5', chatArea);
 			
 			// End Consultation 버튼 깜빡임 효과
@@ -982,7 +988,7 @@ let isGeneratingAnswer = false;
 			const consultationTime = `${minutes}m ${seconds}s`;
 
 			// Summary 내용 설정
-			const summaryContent = `Customer inquired about changing their mobile plan. After reviewing available options, they chose the 5G Slim plan (55,000 KRW/37 EUR) which includes unlimited calls/texts and 14GB data. The plan change was successfully processed.`;
+			const summaryContent = `Customer inquired about combining two family mobile phones. After reviewing available options, they chose the "Family Wireless Bundle" which includes unlimited calls/texts and 14GB data. The plan change was successfully processed.`;
 
 			// Summary 영역 업데이트
 				summaryArea.innerHTML = `
@@ -993,11 +999,11 @@ let isGeneratingAnswer = false;
 					</li>
 					<li>
 						<p class="label"><strong>Category</strong></p>
-						<p>Mobile Plan</p>
+						<p>Combine two family</p>
 					</li>
 					<li>
 						<p class="label"><strong>Inquiry</strong></p>
-						<p>Change of Plan</p>
+						<p>Combining two family mobile phones</p>
 					</li>
 					<li>
 						<p class="label"><strong>Summary</strong></p>
@@ -1103,7 +1109,7 @@ if (saveBtn) {
 			const newHistoryItem = document.createElement('li');
 			newHistoryItem.innerHTML = `
 				<p class="num">002</p>
-				<p class="tit">${window.CUSTOMER_NAME} - Change Mobile Plan</p>
+				<p class="tit">${window.CUSTOMER_NAME} - Combine two family</p>
 				<p class="date">2025.03.04</p>
 			`;
 			
@@ -1339,7 +1345,8 @@ async function streamMessages() {
 			await new Promise(resolve => setTimeout(resolve, 1000));
 			
 			const customerMessage = await createAndPlayMessage(false, pair.customer.text, pair.customer.audio, chatArea);
-			
+			await new Promise(resolve => setTimeout(resolve, 1000));
+
 			// 두 번째 고객 응답(index === 1) 후 클릭 가이드 추가
 			if ((index === 0 || index === 2) && customerMessage) {
 				const customerComment = customerMessage.querySelector('.customer_comment');
