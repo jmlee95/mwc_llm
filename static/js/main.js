@@ -204,40 +204,64 @@ async function playAudio(audioKey) {
 
 // AI 메시지 요소 생성 함수 수정
 function createStaffMessage(text) {
-    const div = document.createElement('div');
-    div.className = 'chat_area_staff';
-    div.innerHTML = `
-        <div class="staff_name_area">
-            <div class="pic ic_staff">
-                <img src="${window.STATIC_URLS.staff_icon}" alt="아이콘">
-            </div>
+	const div = document.createElement('div');
+	div.className = 'chat_area_staff';
+	div.innerHTML = `
+		<div class="staff_name_area">
+			<div class="pic ic_staff">
+				<img src="${window.STATIC_URLS.staff_icon}" alt="아이콘">
+			</div>
             <h3 class="staff_name">${window.CONSULTANT_NAME}</h3>
-        </div>
+		</div>
         <div class="staff_comment" style="position: relative;">
-            <p></p>
-            <button class="btn_skip">>>Skip</button>
-        </div>
-    `;
-    return div;
+			<p></p>
+            <button class="btn_skip" style="
+                position: absolute;
+                bottom: -30px;
+                right: 0;
+                padding: 5px 15px;
+                background: rgba(255, 255, 255, 1);
+                color: white;
+                border: none;
+                border-radius: 15px;
+                font-size: 10px;
+                cursor: pointer;
+                z-index: 1002;
+            ">>>Skip</button>
+		</div>
+	`;
+	return div;
 }
 
 // 고객 메시지 요소 생성 함수 수정
 function createCustomerMessage(text) {
-    const div = document.createElement('div');
-    div.className = 'chat_area_customer';
-    div.innerHTML = `
-        <div class="customer_name_area">
-            <div class="pic ic_profile">
-                <img src="${window.STATIC_URLS.profile_icon}" alt="아이콘">
-            </div>
+	const div = document.createElement('div');
+	div.className = 'chat_area_customer';
+	div.innerHTML = `
+		<div class="customer_name_area">
+			<div class="pic ic_profile">
+				<img src="${window.STATIC_URLS.profile_icon}" alt="아이콘">
+			</div>
             <h3 class="staff_name">John</h3>
-        </div>
+		</div>
         <div class="customer_comment" style="position: relative;">
             <p></p>
-            <button class="btn_skip">>>Skip</button>
-        </div>
-    `;
-    return div;
+            <button class="btn_skip" style="
+                position: absolute;
+                bottom: -30px;
+                left: 0;
+                padding: 5px 15px;
+                background: rgba(82, 109, 130, 0.9);
+                color: white;
+                border: none;
+                border-radius: 15px;
+                font-size: 10px;
+                cursor: pointer;
+                z-index: 1002;
+            ">>>Skip</button>
+		</div>
+	`;
+	return div;
 }
 
 // typeWriter 함수 추가
@@ -284,7 +308,7 @@ async function createAndPlayMessage(isStaff, text, audioKey, chatArea) {
         if (currentAudio) {
             // 볼륨을 서서히 낮추며 페이드 아웃
             const fadeOutDuration = 200;
-            const fadeOutSteps = 10;
+            const fadeOutSteps = 20;
             const volumeStep = currentAudio.volume / fadeOutSteps;
             
             for (let i = 0; i < fadeOutSteps; i++) {

@@ -2167,27 +2167,3 @@ h3.staff_name {
 	height: 35px;
 	font-size: 14px;
 }
-
-/* Skip 버튼 공통 스타일 */
-.btn_skip {
-	position: absolute;
-	bottom: -30px;
-	padding: 5px 15px;
-	background: rgba(255, 255, 255, 1);
-	color: #000;
-	border: none;
-	border-radius: 15px;
-	font-size: 12px;
-	cursor: pointer;
-	z-index: 1002;
-}
-
-/* 상담사 메시지의 Skip 버튼 */
-.staff_comment .btn_skip {
-	right: 0;
-}
-
-/* 고객 메시지의 Skip 버튼 */
-.customer_comment .btn_skip {
-	left: 0;
-}
