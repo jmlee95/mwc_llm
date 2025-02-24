@@ -45,7 +45,7 @@ def sc_roaming():
 @app.route('/api/stream_message1')
 def stream_message():
     messages = [
-        "Hello, this is {consultant_name} Consultant from KT. How can I help you?",
+        "Hello, this is {consultant_name} from KT. How can I help you?",
         "Hello. I would like to change my plan.",
         "Ah, I see. Which plan would you like to change to?",
         "I would like to use a plan that costs around 60,000 KRW(40 EUR)"
@@ -55,7 +55,7 @@ def stream_message():
 @app.route('/api/stream_message2')
 def stream_message2():
     messages = [
-        "Hello, this is {consultant_name} Consultant from KT. How can I help you?",
+        "Hello, this is {consultant_name} from KT. How can I help you?",
         "I would like to combine two family mobile phones. What types of bundles are available?"
     ]
     return jsonify({"messages": messages})  
@@ -63,7 +63,7 @@ def stream_message2():
 @app.route('/api/stream_message3')
 def stream_message3():
     messages = [
-        "Hello, this is {consultant_name} Consultant from KT. How can I help you?",
+        "Hello, this is {consultant_name} from KT. How can I help you?",
         "I don't know how to use the Membership \"VIP Choice\", so I haven't been able to use it. Can it be used multiple times?"
     ]
     return jsonify({"messages": messages})
@@ -71,8 +71,10 @@ def stream_message3():
 @app.route('/api/stream_message4')
 def stream_message4():
     messages = [
-        "Hello, this is {consultant_name} Consultant from KT. How can I help you?",
-        "Yes, hello. I would like to apply for roaming."
+        "Hello, this is {consultant_name} from KT. How can I help you?",
+        "Yes, hello. I would like to apply for roaming.",
+        "Oh, I see. What country will you be using roaming in, and what are the dates you need it for?",
+        "I plan to go to the Spain and need it from January 15 to January 24, in Korean time. Please recommend suitable roaming services. For your reference, I expect to use a lot of data."
     ]
     return jsonify({"messages": messages})
 
@@ -101,7 +103,16 @@ When bundled, monthly discounts will be applied to each line.""",
     the discount starts from the date of application.\n
     To maintain the bundle group, it is required to have at least two lines if only one line remains, the bundle will be terminated.""",
     "answer3": """The Membership \"VIP Choice\" can be used multiple times. However, it is only available for one person. If you want to use it for multiple people, you need to purchase it for each person.""",
-    "answer4": """Roaming is available for 100 countries. You can use it by purchasing a roaming plan. If you want to use it in a country that is not in the list, you can use it by purchasing a roaming plan for that country.""" 
+    "answer4": """For your trip to the Spain, \n
+I recommend the \"All-Day Roaming Premium\" and \"All-Day Roaming Plus\" services.\n
+1. **All-Day Roaming Premium**\n
+   - Usage Period: Based on a one-day period, it is applicable from the application date/time in Korean time for a duration of 24 hours.\n
+   - Fee: The daily usage fee is 15,000 KRW, and charges will not be incurred if data is not used.\n
+2. **All-Day Roaming Plus**\n
+   - Usage Period: Based on a one-day period, it is applicable from the application date/time in Korean time for a duration of 24 hours.\n
+   - Fee: The daily usage fee is 13,000 KRW, and charges will not be incurred if data is not used.\n
+   - Provided Data: It provides 800MB of data daily, after which usage is available at speeds of 1Mbps or lower.\n
+Both of these services are suitable if you expect to use a lot of data while in the United States, and you can choose according to your needs.""" 
 }
 
 @app.route('/api/get_answers')
