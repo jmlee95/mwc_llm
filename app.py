@@ -142,5 +142,5 @@ def serve_audio(filename):
     return send_from_directory('static/audio', filename)
 
 if __name__ == '__main__':
-    webbrowser.open('http://localhost:5005')
-    app.run(debug=True, use_reloader=True, port=5005) 
+    webbrowser.open('http://localhost:8003')
+    app.run(debug=True, use_reloader=True, port=8003) 
