@@ -105,30 +105,6 @@ knowledgeBtn1.addEventListener('click', function (e) {
     popup.classList.add('active');
 });
 
-// 두 번째 추천지식 버튼 클릭 이벤트
-knowledgeBtn2.addEventListener('click', function (e) {
-    e.preventDefault();
-    
-    // 파일 경로 구성 (백틱과 대괄호를 포함한 정확한 파일명 사용)
-    const basePath = '/knwlgFile/';
-    const folderName = '5G 슬림 요금제 ver.7';
-    const fileName = '5G 슬림 요금제 ver.7 [24.03.22]`_eng.html';
-    
-    // 전체 URL 조합 (encodeURIComponent 사용)
-    const fullPath = basePath + 
-        encodeURIComponent(folderName) + '/' + 
-        encodeURIComponent(fileName);
-    
-    console.log('Trying to open:', fullPath); // 디버깅용 로그
-    
-    // 새 팝업 창 열기
-    window.open(fullPath, 
-        '5G Slim Rate Plan', 
-        'width=900,height=700,scrollbars=yes,resizable=yes'
-    );
-});
-
-
 // 채팅 영역 스크롤을 최하단으로 이동시키는 함수
 function scrollToBottom(element) {
 	element.scrollTo({
@@ -902,7 +878,7 @@ Both of these services are suitable if you expect to use a lot of data while in 
 			await new Promise(resolve => setTimeout(resolve, 1000));
 
 			// AI 최종 응답 추가
-			await createAndPlayMessage(true, "Yes. You have been successfully signed up for the roaming service. To use roaming, please turn off your phone and turn it back on after arriving; it will automatically connect to roaming. Please note that domestic plan benefits do not apply overseas, so separate charges will be incurred when using the service.", 'AI_GENIE_4', chatArea);
+			await createAndPlayMessage(true, "Yes. You have been successfully signed up for the roaming service. To use roaming, please turn off your phone and turn it back on after arriving. It will automatically connect to roaming. Please note that domestic plan benefits do not apply overseas, so separate charges will be incurred when using the service.", 'AI_GENIE_4', chatArea);
 			await new Promise(resolve => setTimeout(resolve, 1000));
 
 			// 고객 마지막 응답

@@ -105,30 +105,6 @@ knowledgeBtn1.addEventListener('click', function (e) {
     popup.classList.add('active');
 });
 
-// 두 번째 추천지식 버튼 클릭 이벤트
-knowledgeBtn2.addEventListener('click', function (e) {
-    e.preventDefault();
-    
-    // 파일 경로 구성 (백틱과 대괄호를 포함한 정확한 파일명 사용)
-    const basePath = '/knwlgFile/';
-    const folderName = '5G 슬림 요금제 ver.7';
-    const fileName = '5G 슬림 요금제 ver.7 [24.03.22]`_eng.html';
-    
-    // 전체 URL 조합 (encodeURIComponent 사용)
-    const fullPath = basePath + 
-        encodeURIComponent(folderName) + '/' + 
-        encodeURIComponent(fileName);
-    
-    console.log('Trying to open:', fullPath); // 디버깅용 로그
-    
-    // 새 팝업 창 열기
-    window.open(fullPath, 
-        '5G Slim Rate Plan', 
-        'width=900,height=700,scrollbars=yes,resizable=yes'
-    );
-});
-
-
 // 채팅 영역 스크롤을 최하단으로 이동시키는 함수
 function scrollToBottom(element) {
 	element.scrollTo({
@@ -760,42 +736,7 @@ let isGeneratingAnswer = false;
 			if (selectQuestionBtn) {
 				selectQuestionBtn.style.display = 'none';
 			}
-			
-		// 	// aiAnswer_wrap 영역에 로딩 표시 추가
-		// 	const aiAnswerWrap = document.querySelector('.aiAnswer_wrap .box_area');
-		// 	const loadingOverlay = document.createElement('div');
-		// 	loadingOverlay.style.cssText = `
-		// 		position: absolute;
-		// 		top: 0;
-		// 		left: 0;
-		// 		width: 100%;
-		// 		height: 100%;
-		// 		background: rgba(0, 0, 0, 0.7);
-		// 		display: flex;
-		// 		justify-content: center;
-		// 		align-items: center;
-		// 		z-index: 9999;
-		//  `;
-			
-		// 	loadingOverlay.innerHTML = `
-		// 		<div class="loading" style="
-		// 			width: 40px;
-		// 			height: 40px;
-		// 			border: 4px solid #f3f3f3;
-		// 			border-top: 4px solid #526d82;
-		// 			border-radius: 50%;
-		// 			animation: spin 1s linear infinite;
-		// 	 "></div>
-		//  `;
-			
-		// 	aiAnswerWrap.style.position = 'relative';
-		// 	aiAnswerWrap.appendChild(loadingOverlay);
-			
-		// 	// 1.5초 대기
-		// 	await new Promise(resolve => setTimeout(resolve, 1500));
-			
-		// 	// 로딩 오버레이 제거
-		// 	loadingOverlay.remove();
+
 
 			showLoadingGif();
 			await new Promise(resolve => setTimeout(resolve, 3500));
@@ -877,27 +818,14 @@ let isGeneratingAnswer = false;
 				return;
 			}
 
-					const chatArea = document.querySelector('.chat_area');
+			const chatArea = document.querySelector('.chat_area');
 			
              // AI 답변 가이드 메시지 표시
             showGuideMessage('AI is Answering', 2000);
 			// AI 답변을 채팅창에 추가
             const llm_answer = 
-			/*
-            `The 5G1 plans in the range of 60,000 KRW(40 EUR) are as follows:
-            1. **5G Slim**
-             - Monthly Fee: 55,000 KRW(37 EUR)
-             - Unlimited voice calls and texts
-             - 300 minutes for video calls and additional calls
-             - Basic Data: 14GB (after consumption, speed is limited to a maximum of 1Mbps)
-            2. **5G Simple**
-             - Monthly Fee: 61,000 KRW(41 EUR)
-             - Unlimited voice calls and texts
-             - 300 minutes for video calls and additional calls
-             - Basic Data: 30GB (after consumption, speed is limited to a maximum of 1Mbps).
-            In addition, there are various options for 5G plans, so you can choose according to your needs.`;
-			*/
-			`The \"VIP Choice\" can be used a total of 6 times per year, allowing for one use each month. To use the VIP Choice, you need to navigate to the KT Membership app and go to More > VIP > VIP Choice menu, or visit the KT.COM website and go to Benefits > Membership Benefits > VIP Membership > VIP Choice menu.
+			`The \"VIP Choice\" can be used a total of 6 times per year, allowing for one use each month.\n
+To use the VIP Choice, you need to navigate to the KT Membership app and go to More > VIP > VIP Choice menu, or visit the KT.COM website and go to Benefits > Membership Benefits > VIP Membership > VIP Choice menu.\n
 When using benefits that require reservations, a button will be activated to go to the reservation page. 
 For benefits that require a coupon, a button will be activated to go to the coupon issuance page. 
 Please note that benefits may not be available at all partner stores, 
@@ -1404,6 +1332,7 @@ async function streamMessages() {
 			await new Promise(resolve => setTimeout(resolve, 1000));
 			
 			const customerMessage = await createAndPlayMessage(false, pair.customer.text, pair.customer.audio, chatArea);
+			await new Promise(resolve => setTimeout(resolve, 1000));
 			
 			// 첫 번째 고객 응답(index === 0) 후 클릭 가이드 추가
 			if (index === 0 && customerMessage) {

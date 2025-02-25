@@ -102,7 +102,10 @@ When bundled, monthly discounts will be applied to each line.""",
     and once the verification eligibility is completed within the month of the bundle application, 
     the discount starts from the date of application.\n
     To maintain the bundle group, it is required to have at least two lines if only one line remains, the bundle will be terminated.""",
-    "answer3": """The Membership \"VIP Choice\" can be used multiple times. However, it is only available for one person. If you want to use it for multiple people, you need to purchase it for each person.""",
+    "answer3": """The \"VIP Choice\" can be used a total of 6 times per year, allowing for one use each month.\n
+To use the VIP Choice, you need to navigate to the KT Membership app and go to More > VIP > VIP Choice menu, or visit the KT.COM website and go to Benefits > Membership Benefits > VIP Membership > VIP Choice menu.\n
+When using benefits that require reservations, a button will be activated to go to the reservation page. For benefits that require a coupon, a button will be activated to go to the coupon issuance page. Please note that benefits may not be available at all partner stores, so you should check for eligible stores using the [Find Merchant] option on the KT.COM guide page before visiting.\n
+    """,
     "answer4": """For your trip to the Spain, \n
 I recommend the \"All-Day Roaming Premium\" and \"All-Day Roaming Plus\" services.\n
 1. **All-Day Roaming Premium**\n

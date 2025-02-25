@@ -105,29 +105,6 @@ knowledgeBtn1.addEventListener('click', function (e) {
     popup.classList.add('active');
 });
 
-// 두 번째 추천지식 버튼 클릭 이벤트
-knowledgeBtn2.addEventListener('click', function (e) {
-    e.preventDefault();
-    
-    // 파일 경로 구성 (백틱과 대괄호를 포함한 정확한 파일명 사용)
-    const basePath = '/knwlgFile/';
-    const folderName = '5G 슬림 요금제 ver.7';
-    const fileName = '5G 슬림 요금제 ver.7 [24.03.22]`_eng.html';
-    
-    // 전체 URL 조합 (encodeURIComponent 사용)
-    const fullPath = basePath + 
-        encodeURIComponent(folderName) + '/' + 
-        encodeURIComponent(fileName);
-    
-    console.log('Trying to open:', fullPath); // 디버깅용 로그
-    
-    // 새 팝업 창 열기
-    window.open(fullPath, 
-        '5G Slim Rate Plan', 
-        'width=900,height=700,scrollbars=yes,resizable=yes'
-    );
-});
-
 
 // 채팅 영역 스크롤을 최하단으로 이동시키는 함수
 function scrollToBottom(element) {
@@ -333,7 +310,7 @@ async function createAndPlayMessage(isStaff, text, audioKey, chatArea) {
                             for (let i = 0; i < line.length && !isSkipped; i++) {
                                 lineDiv.textContent = line.substring(0, i + 1);
                                 scrollToBottom(chatArea);
-                                await new Promise(r => setTimeout(r, isStaff ? 52 : 50));
+                                await new Promise(r => setTimeout(r, isStaff ? 54 : 52));
                             }
                         }
                     }
@@ -1389,7 +1366,7 @@ async function streamMessages() {
             // 고객 메시지
             const customerMessage = await createAndPlayMessage(false, pair.customer.text, pair.customer.audio, chatArea);
             await new Promise(resolve => setTimeout(resolve, 1000));
-			
+
             // 두 번째 고객 응답 후 클릭 가이드 추가
             if (index === 1 && customerMessage) {
                 const customerComment = customerMessage.querySelector('.customer_comment');
