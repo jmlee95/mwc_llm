@@ -99,11 +99,11 @@ popupCloseBtn.addEventListener('click', function (e) {
     }
 });
 
-// 첫 번째 추천지식 버튼 클릭 이벤트
-knowledgeBtn1.addEventListener('click', function (e) {
-    e.preventDefault();
-    popup.classList.add('active');
-});
+// // 첫 번째 추천지식 버튼 클릭 이벤트
+// knowledgeBtn1.addEventListener('click', function (e) {
+//     e.preventDefault();
+//     popup.classList.add('active');
+// });
 
 
 // 채팅 영역 스크롤을 최하단으로 이동시키는 함수
