@@ -64,7 +64,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='KT_MWC_Demo',
+    name='Customer Service Consultant Support Agent',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

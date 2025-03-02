@@ -491,7 +491,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			
 			// 버튼 이벤트 추가
 			completionPopup.querySelector('#btn_home_popup').addEventListener('click', () => {
-				window.location.href = '/';
+				window.location.href = 'http://localhost:8000';
 			});
 			
 			completionPopup.querySelector('#btn_scenario_popup').addEventListener('click', () => {
@@ -1092,7 +1092,7 @@ if (saveBtn) {
 			const newHistoryItem = document.createElement('li');
 			newHistoryItem.innerHTML = `
 				<p class="num">002</p>
-				<p class="tit">${window.CUSTOMER_NAME} - Change Mobile Plan</p>
+				<p class="tit">${window.CUSTOMER_NAME} - Membership Benefit</p>
 				<p class="date">2025.03.04</p>
 			`;
 			
@@ -1333,7 +1333,7 @@ async function streamMessages() {
 			
 			const customerMessage = await createAndPlayMessage(false, pair.customer.text, pair.customer.audio, chatArea);
 			await new Promise(resolve => setTimeout(resolve, 1000));
-			
+
 			// 첫 번째 고객 응답(index === 0) 후 클릭 가이드 추가
 			if (index === 0 && customerMessage) {
 				const customerComment = customerMessage.querySelector('.customer_comment');

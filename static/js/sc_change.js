@@ -488,11 +488,12 @@ document.addEventListener('DOMContentLoaded', function() {
 				</div>
 			`;
 			
+			
 			document.body.appendChild(completionPopup);
 			
 			// 버튼 이벤트 추가
 			completionPopup.querySelector('#btn_home_popup').addEventListener('click', () => {
-				window.location.href = '/';
+				window.location.href = 'http://localhost:8000';
 			});
 			
 			completionPopup.querySelector('#btn_scenario_popup').addEventListener('click', () => {
